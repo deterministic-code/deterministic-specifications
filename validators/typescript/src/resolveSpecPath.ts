@@ -4,6 +4,7 @@ import { fileURLToPath } from "node:url";
 import {
   CURRENT_VERSION,
   isPublishedVersion,
+  VALIDATOR_ENGINE_FILE,
 } from "./specVersion.ts";
 
 async function fileExists(path: string): Promise<boolean> {
@@ -73,31 +74,49 @@ export async function listSpecVersions(start?: string): Promise<string[]> {
 }
 
 /** {@link findSpecPath}, but throws when the spec cannot be located rather than returning a path that later fails to read. */
+async function assertKnownVersion(
+  version: string,
+  start?: string,
+): Promise<void> {
+  if (version === CURRENT_VERSION) return;
+  const published = await listPublishedVersions(start);
+  if (published.includes(version)) return;
+  const hint = published.length ? published.join(", ") : "none";
+  throw new Error(`unknown spec version: ${version} (published: ${hint})`);
+}
+
+async function resolveExisting(
+  found: string | null,
+  version: string,
+  missing: string,
+  start?: string,
+): Promise<string> {
+  if (found !== null) return found;
+  await assertKnownVersion(version, start);
+  throw new Error(missing);
+}
+
 export async function resolveSpecPath(
   subdir: string,
   name: string,
   version: string = CURRENT_VERSION,
   start?: string,
 ): Promise<string> {
-  const found = await findSpecPath(subdir, name, version, start);
-  if (found !== null) return found;
-  if (version !== CURRENT_VERSION) {
-    const published = await listPublishedVersions(start);
-    if (!published.includes(version)) {
-      const hint = published.length ? published.join(", ") : "none";
-      throw new Error(`unknown spec version: ${version} (published: ${hint})`);
-    }
-  }
-  throw new Error(`spec file not found: ${specRelPath(subdir, name, version)}`);
+  return resolveExisting(
+    await findSpecPath(subdir, name, version, start),
+    version,
+    `spec file not found: ${specRelPath(subdir, name, version)}`,
+    start,
+  );
 }
 
 export function engineRelPath(version: string): string {
   return version === CURRENT_VERSION
-    ? join("validators", "typescript")
+    ? join("validators", "typescript", "src", "validators")
     : join("versions", version, "validators");
 }
 
-const CURRENT_ENGINE_FILE = "DatasourceTypesValidator.ts";
+const CURRENT_ENGINE_FILE = join("validators", VALIDATOR_ENGINE_FILE);
 
 export async function findEngineDir(
   version: string = CURRENT_VERSION,
@@ -114,14 +133,10 @@ export async function resolveEngineDir(
   version: string = CURRENT_VERSION,
   start?: string,
 ): Promise<string> {
-  const found = await findEngineDir(version, start);
-  if (found !== null) return found;
-  if (version !== CURRENT_VERSION) {
-    const published = await listPublishedVersions(start);
-    if (!published.includes(version)) {
-      const hint = published.length ? published.join(", ") : "none";
-      throw new Error(`unknown spec version: ${version} (published: ${hint})`);
-    }
-  }
-  throw new Error(`validator engine not found: ${engineRelPath(version)}`);
+  return resolveExisting(
+    await findEngineDir(version, start),
+    version,
+    `validator engine not found: ${engineRelPath(version)}`,
+    start,
+  );
 }

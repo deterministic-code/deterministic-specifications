@@ -2,8 +2,8 @@
 
 Shared TypeScript validation engine for the deterministic YAML contract. AJV
 (draft 2020-12) compilation and source-position mapping live here so every
-error reports `{ line, col }`. CURRENT engines live in this package;
-frozen engines live under [`versions/<semver>/validators/`](../../versions).
+error reports `{ line, col }`. CURRENT engines live in [`src/validators/engines.ts`](./src/validators/engines.ts);
+frozen engines live under [`versions/<semver>/validators/engines.ts`](../../versions).
 
 ```ts
 import { DatasourceTypesValidator } from "@deterministic-code/deterministic-specifications";
@@ -17,13 +17,13 @@ const fromFile = await validator.validateFile("deterministic/datasource_types.ya
 ```
 
 The exported classes are facades: they read `version` from the document and
-load that archive's engine. `CURRENT` uses this package; `1.0.0`
-uses `versions/1.0.0/validators/`. An unknown version is a validation error.
-Each engine is pinned — a CURRENT engine rejects `version: 1.0.0` and vice
-versa.
+load that archive's engine. `CURRENT` uses `src/validators/engines.ts`; `1.0.0`
+uses `versions/1.0.0/validators/engines.ts`. An unknown version is a validation
+error. Each engine is pinned — a CURRENT engine rejects `version: 1.0.0` and
+vice versa.
 
-Frozen tests under `versions/<semver>/validators/validator.test.ts` keep
-running in CI. They are the proof that version is still supported.
+Live tests under `src/validators/validator.test.ts` load every archived engine
+by version. That is the proof that a published snapshot is still supported.
 
 ## Validators
 

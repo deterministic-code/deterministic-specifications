@@ -6,10 +6,8 @@ import {
   resolveSpecPath,
 } from "./index.ts";
 import {
-  ajvFailureErrors,
   errorFromUnknown,
   formatAjvError,
-  pinnedVersionMismatchMessage,
   resolveAjvCtor,
   yamlErrorOffset,
 } from "./SpecValidator.ts";
@@ -51,22 +49,7 @@ describe("parseYamlWithPositions / positionFor", () => {
   });
 });
 
-describe("yamlErrorOffset / ajvFailureErrors", () => {
-  test("yamlErrorOffset uses the first pos entry or 0", () => {
-    expect(yamlErrorOffset([12, 15])).toBe(12);
-    expect(yamlErrorOffset(undefined)).toBe(0);
-    expect(yamlErrorOffset(null)).toBe(0);
-  });
-
-  test("ajvFailureErrors treats nullish as an empty list", () => {
-    const errs = [{ keyword: "type", instancePath: "" }];
-    expect(ajvFailureErrors(errs)).toBe(errs);
-    expect(ajvFailureErrors(null)).toEqual([]);
-    expect(ajvFailureErrors(undefined)).toEqual([]);
-  });
-});
-
-describe("resolveAjvCtor / formatAjvError / pinnedVersionMismatchMessage", () => {
+describe("yamlErrorOffset / resolveAjvCtor / formatAjvError / errorFromUnknown", () => {
   class FakeAjv {
     opts: unknown;
     constructor(opts: unknown) {
@@ -77,86 +60,72 @@ describe("resolveAjvCtor / formatAjvError / pinnedVersionMismatchMessage", () =>
     }
   }
 
+  test("yamlErrorOffset uses the first pos entry or 0", () => {
+    expect(yamlErrorOffset([12, 15])).toBe(12);
+    expect(yamlErrorOffset(undefined)).toBe(0);
+    expect(yamlErrorOffset(null)).toBe(0);
+  });
+
   test("resolveAjvCtor prefers a default export, else the module itself", () => {
     expect(resolveAjvCtor({ default: FakeAjv })).toBe(FakeAjv);
     expect(resolveAjvCtor(FakeAjv)).toBe(FakeAjv);
   });
 
-  test("formatAjvError uses (root) when instancePath is empty", () => {
-    expect(
-      formatAjvError({
-        keyword: "type",
-        instancePath: "",
-        message: "must be string",
-      }),
-    ).toBe("(root) must be string");
-  });
-
-  test("formatAjvError appends additionalProperty / missingProperty / allowedValues", () => {
-    expect(
-      formatAjvError({
+  test.each([
+    [
+      { keyword: "type", instancePath: "", message: "must be string" },
+      "(root) must be string",
+    ],
+    [
+      {
         keyword: "additionalProperties",
         instancePath: "/x",
         message: "must NOT have additional properties",
         params: { additionalProperty: "bogus" },
-      }),
-    ).toBe("/x must NOT have additional properties (property: bogus)");
-    expect(
-      formatAjvError({
+      },
+      "/x must NOT have additional properties (property: bogus)",
+    ],
+    [
+      {
         keyword: "required",
         instancePath: "/x",
         message: "must have required property 'fields'",
         params: { missingProperty: "fields" },
-      }),
-    ).toBe("/x must have required property 'fields' (missing: fields)");
-    expect(
-      formatAjvError({
+      },
+      "/x must have required property 'fields' (missing: fields)",
+    ],
+    [
+      {
         keyword: "enum",
         instancePath: "/x",
         message: "must be equal to one of the allowed values",
         params: { allowedValues: ["a", "b"] },
-      }),
-    ).toBe("/x must be equal to one of the allowed values (allowed: a, b)");
-  });
-
-  test("formatAjvError omits a suffix when params are missing, empty, or falsy", () => {
-    expect(
-      formatAjvError({
-        keyword: "type",
-        instancePath: "/x",
-        message: "must be string",
-      }),
-    ).toBe("/x must be string");
-    expect(
-      formatAjvError({
+      },
+      "/x must be equal to one of the allowed values (allowed: a, b)",
+    ],
+    [
+      {
         keyword: "type",
         instancePath: "/x",
         message: "must be string",
         params: {},
-      }),
-    ).toBe("/x must be string");
-    expect(
-      formatAjvError({
+      },
+      "/x must be string",
+    ],
+    [
+      {
         keyword: "additionalProperties",
         instancePath: "/x",
         message: "must NOT have additional properties",
         params: { additionalProperty: "" },
-      }),
-    ).toBe("/x must NOT have additional properties");
+      },
+      "/x must NOT have additional properties",
+    ],
+  ] as const)("formatAjvError %#", (error, expected) => {
+    expect(formatAjvError(error)).toBe(expected);
   });
 
-  test("pinnedVersionMismatchMessage names the pinned version", () => {
-    expect(pinnedVersionMismatchMessage("CURRENT")).toBe(
-      "version must be CURRENT (this engine is pinned to CURRENT)",
-    );
-    expect(pinnedVersionMismatchMessage("1.0.0")).toBe(
-      "version must be 1.0.0 (this engine is pinned to 1.0.0)",
-    );
-  });
-});
-
-describe("errorFromUnknown", () => {
-  test("uses Error.message or String() for other values", () => {
+  test("errorFromUnknown uses Error.message or String() for other values", () => {
     expect(errorFromUnknown(new Error("boom"))).toBe("boom");
     expect(errorFromUnknown("nope")).toBe("nope");
   });
@@ -181,19 +150,20 @@ describe("SpecValidator constructed with an absolute spec path", () => {
       "datasource-types.spec.yaml",
     );
     const validator = new SpecValidator(async () => specPath);
-    const result = await validator.validate(VALID);
-    expect(result).toEqual({ valid: true, errors: [] });
+    expect(await validator.validate(VALID)).toEqual({
+      valid: true,
+      errors: [],
+    });
   });
 });
 
 describe("SpecValidator pinned to a version", () => {
   test("rejects a document for a different version", async () => {
-    const validator = new SpecValidator({
+    const result = await new SpecValidator({
       subdir: "backend",
       name: "datasource-types.spec.yaml",
       version: "CURRENT",
-    });
-    const result = await validator.validate(VALID.replace("CURRENT", "1.0.0"));
+    }).validate(VALID.replace("CURRENT", "1.0.0"));
     expect(result.valid).toBe(false);
     expect(result.errors[0]?.message).toMatch(/pinned to CURRENT/);
   });

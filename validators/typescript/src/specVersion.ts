@@ -2,24 +2,37 @@ import { asRecord } from "./yamlPositions.ts";
 
 export const CURRENT_VERSION = "CURRENT";
 
+export const VALIDATOR_ENGINES = [
+  ["DatasourceTypesValidator", "backend", "datasource-types.spec.yaml"],
+  ["ViewTypesValidator", "backend", "view-types.spec.yaml"],
+  ["RoutesValidator", "backend", "routes.spec.yaml"],
+  ["ServicesValidator", "backend", "services.spec.yaml"],
+  ["FrontendBindingsValidator", "frontend", "bindings.spec.yaml"],
+] as const;
+
+export type EngineName = (typeof VALIDATOR_ENGINES)[number][0];
+
+export type EngineDef = {
+  className: EngineName;
+  subdir: string;
+  name: string;
+};
+
+export function mapEngines<T>(fn: (engine: EngineDef) => T): Record<EngineName, T> {
+  return Object.fromEntries(
+    VALIDATOR_ENGINES.map(([className, subdir, name]) => [
+      className,
+      fn({ className, subdir, name }),
+    ]),
+  ) as Record<EngineName, T>;
+}
+
 export const SPEC_FILES = [
-  { subdir: "backend", name: "datasource-types.spec.yaml" },
-  { subdir: "backend", name: "view-types.spec.yaml" },
-  { subdir: "backend", name: "routes.spec.yaml" },
-  { subdir: "backend", name: "services.spec.yaml" },
+  ...VALIDATOR_ENGINES.map(([, subdir, name]) => ({ subdir, name })),
   { subdir: "backend", name: "app.spec.yaml" },
-  { subdir: "frontend", name: "bindings.spec.yaml" },
-] as const;
+];
 
-export const VALIDATOR_ENGINE_FILES = [
-  "DatasourceTypesValidator.ts",
-  "ViewTypesValidator.ts",
-  "RoutesValidator.ts",
-  "ServicesValidator.ts",
-  "FrontendBindingsValidator.ts",
-] as const;
-
-export const VALIDATOR_TEST_FILE = "validator.test.ts";
+export const VALIDATOR_ENGINE_FILE = "engines.ts";
 
 export type SpecRef = {
   subdir: string;

@@ -1,4 +1,4 @@
-import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+import { access, mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterAll, beforeAll, describe, expect, test } from "vitest";
@@ -13,7 +13,7 @@ import {
   resolveSpecPath,
   specRelPath,
 } from "./resolveSpecPath.ts";
-import { CURRENT_VERSION, SPEC_FILES } from "./specVersion.ts";
+import { CURRENT_VERSION, SPEC_FILES, VALIDATOR_ENGINE_FILE } from "./specVersion.ts";
 
 describe("specRelPath", () => {
   test("CURRENT is the live root; a semver is under versions/", () => {
@@ -105,7 +105,7 @@ describe("listSpecVersions", () => {
 });
 
 describe("published version completeness", () => {
-  test("every published version ships the full spec set", async () => {
+  test("every published version ships the full spec set and engines.ts", async () => {
     const published = await listPublishedVersions();
     expect(published.length).toBeGreaterThan(0);
     for (const version of published) {
@@ -114,7 +114,15 @@ describe("published version completeness", () => {
           resolveSpecPath(spec.subdir, spec.name, version),
         ).resolves.toContain(join("versions", version, spec.subdir, spec.name));
       }
+      const engineDir = await resolveEngineDir(version);
+      await access(join(engineDir, VALIDATOR_ENGINE_FILE));
     }
+  });
+
+  test("CURRENT has a live validator engine", async () => {
+    const engineDir = await findEngineDir("CURRENT");
+    expect(engineDir).not.toBeNull();
+    await access(join(engineDir!, VALIDATOR_ENGINE_FILE));
   });
 });
 
@@ -150,14 +158,16 @@ describe("version discovery from an isolated tree", () => {
 });
 
 describe("engineRelPath / resolveEngineDir", () => {
-  test("CURRENT is validators/typescript/; a semver is under versions/<semver>/validators/", () => {
-    expect(engineRelPath("CURRENT")).toBe(join("validators", "typescript"));
+  test("CURRENT is validators/typescript/src/validators/; a semver is under versions/<semver>/validators/", () => {
+    expect(engineRelPath("CURRENT")).toBe(
+      join("validators", "typescript", "src", "validators"),
+    );
     expect(engineRelPath("1.0.0")).toBe(join("versions", "1.0.0", "validators"));
   });
 
   test("resolves the live and frozen engine directories", async () => {
     await expect(findEngineDir("CURRENT")).resolves.toContain(
-      join("validators", "typescript"),
+      join("validators", "typescript", "src", "validators"),
     );
     await expect(resolveEngineDir("1.0.0")).resolves.toContain(
       join("versions", "1.0.0", "validators"),
@@ -181,7 +191,7 @@ describe("engineRelPath / resolveEngineDir", () => {
         /validator engine not found: versions[/\\]1\.0\.0[/\\]validators/,
       );
       await expect(resolveEngineDir("CURRENT", dir)).rejects.toThrow(
-        /validator engine not found: validators[/\\]typescript/,
+        /validator engine not found: validators[/\\]typescript[/\\]src[/\\]validators/,
       );
     } finally {
       await rm(dir, { force: true, recursive: true });
