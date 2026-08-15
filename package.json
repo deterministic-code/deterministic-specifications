@@ -1,6 +1,6 @@
 {
   "name": "@deterministic-code/specifications",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Canonical YAML contract (JSON Schema) for the deterministic code generator: the specs consumers author against and emitters read.",
   "license": "MIT",
   "type": "module",
