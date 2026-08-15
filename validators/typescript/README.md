@@ -2,8 +2,8 @@
 
 Strict TypeScript validators for the deterministic YAML contract. One validator
 per spec, all sharing a common `SpecValidator` base class that carries the
-engine — AJV (draft 2020-12) compilation, `oneOf` error collapsing, and
-source-position mapping so every error reports `{ line, col }`.
+engine — AJV (draft 2020-12) compilation and source-position mapping so every
+error reports `{ line, col }`.
 
 ```ts
 import { DatasourceTypesValidator } from "@deterministic-code/deterministic-specifications";

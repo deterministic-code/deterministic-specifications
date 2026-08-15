@@ -30,8 +30,3 @@ export interface ValidateFn {
 export interface AjvLike {
   compile(schema: unknown): ValidateFn;
 }
-
-export interface CompiledSpec {
-  validate: ValidateFn;
-  schema: unknown;
-}
