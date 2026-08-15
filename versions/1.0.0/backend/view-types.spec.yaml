@@ -1,6 +1,6 @@
-version: CURRENT
+version: 1.0.0
 $schema: https://json-schema.org/draft/2020-12/schema
-$id: https://cali-services.local/schemas/deterministic/backend/view-types.spec.yaml
+$id: https://cali-services.local/schemas/deterministic/versions/1.0.0/backend/view-types.spec.yaml
 title: view_types.yaml
 description: >
   Strict schema for deterministic/view_types.yaml. View types compose
