@@ -10,10 +10,11 @@ import {
 import { describe, expect, test } from "vitest";
 
 describe("catalog", () => {
-  test("engine module is engines.ts and five named engines are listed", () => {
+  test("engine module is engines.ts and named engines are listed", () => {
     expect(VALIDATOR_ENGINE_FILE).toBe("engines.ts");
     expect(VALIDATOR_ENGINES.map(([className]) => className)).toEqual([
       "DatasourceTypesValidator",
+      "DatasourceSeedsValidator",
       "ViewTypesValidator",
       "RoutesValidator",
       "ServicesValidator",

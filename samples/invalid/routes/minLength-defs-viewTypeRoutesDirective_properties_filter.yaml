@@ -1,0 +1,14 @@
+expect:
+  covers: minLength:#/$defs/viewTypeRoutesDirective/properties/filter
+---
+version: CURRENT
+routes: []
+includes:
+  - view_type_routes:
+      filter: ""
+      eager_path:
+        - person.reports
+      eager_read_member_only:
+        - person.reports
+      eager_write_path:
+        - person.reports

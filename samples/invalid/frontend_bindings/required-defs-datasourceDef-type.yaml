@@ -1,0 +1,10 @@
+expect:
+  covers: required:#/$defs/datasourceDef:type
+---
+version: CURRENT
+datasources:
+  - core:
+      schema_type: OpenAPI
+      schema: https://example.com/o.json
+      clients:
+        - fetch

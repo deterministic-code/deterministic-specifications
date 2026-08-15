@@ -1,0 +1,9 @@
+expect:
+  covers: type:#/$defs/customRouteShape/properties/scopes
+---
+version: CURRENT
+routes:
+  - ping:
+      path: /ping
+      method: GET
+      scopes: {}

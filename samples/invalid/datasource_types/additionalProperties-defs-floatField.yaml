@@ -1,0 +1,10 @@
+expect:
+  covers: additionalProperties:#/$defs/floatField
+---
+version: CURRENT
+types:
+  - user:
+      fields:
+        - n:
+            type: float
+            extra: true

@@ -1,0 +1,7 @@
+expect:
+  includes: "must match pattern"
+---
+version: CURRENT
+services:
+  - name: personService
+    description: Person CRUD

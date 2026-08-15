@@ -1,0 +1,5 @@
+expect:
+  covers: minLength:#/properties/name
+---
+version: CURRENT
+name: ""

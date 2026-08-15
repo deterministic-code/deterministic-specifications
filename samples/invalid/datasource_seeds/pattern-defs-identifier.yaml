@@ -1,0 +1,6 @@
+expect:
+  covers: pattern:#/$defs/identifier
+---
+version: CURRENT
+seeds:
+  - NOT VALID

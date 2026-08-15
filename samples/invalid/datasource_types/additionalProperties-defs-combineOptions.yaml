@@ -1,0 +1,12 @@
+expect:
+  covers: additionalProperties:#/$defs/combineOptions
+---
+version: CURRENT
+types: []
+includes:
+  - file: x.yaml
+    combine_options:
+      source:
+        remove_types:
+          - user
+      extra: true

@@ -1,0 +1,8 @@
+expect:
+  covers: minLength:#/$defs/datasourceDirectiveInclude/properties/datasource_types/properties/include
+---
+version: CURRENT
+types: []
+includes:
+  - datasource_types:
+      include: ""

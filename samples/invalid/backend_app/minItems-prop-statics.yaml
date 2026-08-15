@@ -1,0 +1,5 @@
+expect:
+  covers: minItems:#/properties/statics
+---
+version: CURRENT
+statics: []

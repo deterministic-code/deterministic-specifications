@@ -1,0 +1,7 @@
+expect:
+  covers: type:#/$defs/viewTypeServicesDirectiveInclude/properties/view_type_services
+---
+version: CURRENT
+services: []
+includes:
+  - view_type_services: []

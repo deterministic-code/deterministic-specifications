@@ -1,0 +1,7 @@
+expect:
+  covers: type:#/$defs/combinedRouteEntry
+---
+version: CURRENT
+routes: []
+combined_routes:
+  - []

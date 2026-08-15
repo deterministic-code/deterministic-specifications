@@ -1,0 +1,10 @@
+expect:
+  covers: not:#/$defs/middlewareOptions
+---
+version: CURRENT
+middleware:
+  - cors:
+      apply_routes:
+        - /a
+      deny_routes:
+        - /b

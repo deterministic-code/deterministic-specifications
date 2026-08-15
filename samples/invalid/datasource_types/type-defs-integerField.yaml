@@ -1,0 +1,8 @@
+expect:
+  covers: type:#/$defs/integerField
+---
+version: CURRENT
+types:
+  - user:
+      fields:
+        - n: []

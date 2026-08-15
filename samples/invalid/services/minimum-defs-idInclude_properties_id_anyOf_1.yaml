@@ -1,0 +1,7 @@
+expect:
+  covers: minimum:#/$defs/idInclude/properties/id/anyOf/1
+---
+version: CURRENT
+services: []
+includes:
+  - id: -1

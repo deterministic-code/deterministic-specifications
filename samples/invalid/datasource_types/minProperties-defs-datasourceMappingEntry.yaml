@@ -1,0 +1,11 @@
+expect:
+  covers: minProperties:#/$defs/datasourceMappingEntry
+---
+version: CURRENT
+types:
+  - user:
+      fields:
+        - n:
+            type: integer
+datasource_mappings:
+  - {}

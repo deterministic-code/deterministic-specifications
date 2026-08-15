@@ -1,0 +1,6 @@
+expect:
+  covers: type:#/$defs/tableDef
+---
+version: CURRENT
+types:
+  - user: []

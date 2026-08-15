@@ -1,0 +1,8 @@
+expect:
+  covers: additionalProperties:#/$defs/middlewareOptions
+---
+version: CURRENT
+middleware:
+  - cors:
+      type: app
+      extra: true

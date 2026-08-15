@@ -1,0 +1,7 @@
+expect:
+  covers: oneOf:#/$defs/includeEntry
+---
+version: CURRENT
+routes: []
+includes:
+  - nope: true

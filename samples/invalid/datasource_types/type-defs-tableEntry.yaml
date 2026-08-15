@@ -1,0 +1,6 @@
+expect:
+  covers: type:#/$defs/tableEntry
+---
+version: CURRENT
+types:
+  - []

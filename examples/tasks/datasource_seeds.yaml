@@ -1,0 +1,13 @@
+version: CURRENT
+seeds:
+  - user:
+      - id1:
+          email: alice@example.com
+  - project:
+      - id1:
+          name: Inbox
+          owner_id: 1
+  - task:
+      - id1:
+          title: First task
+          project_id: 1

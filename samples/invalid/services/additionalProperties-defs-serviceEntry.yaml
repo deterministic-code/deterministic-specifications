@@ -1,0 +1,9 @@
+expect:
+  covers: additionalProperties:#/$defs/serviceEntry
+---
+version: CURRENT
+services:
+  - name: PersonService
+    description: x
+    module: ./x
+    extra: true

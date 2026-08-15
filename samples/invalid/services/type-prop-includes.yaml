@@ -1,0 +1,6 @@
+expect:
+  covers: type:#/properties/includes
+---
+version: CURRENT
+services: []
+includes: {}

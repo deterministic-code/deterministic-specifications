@@ -1,0 +1,17 @@
+expect:
+  covers: minLength:#/$defs/argSpec/oneOf/0/properties/name
+---
+version: CURRENT
+services:
+  - name: PersonService
+    description: x
+    args:
+      - kind: repo
+        name: ""
+      - kind: service
+        name: Audit
+      - kind: config
+        key: a.b
+      - kind: undefined
+      - kind: literal
+        value: 1

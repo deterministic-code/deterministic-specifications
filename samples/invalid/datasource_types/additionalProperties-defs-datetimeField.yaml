@@ -1,0 +1,10 @@
+expect:
+  covers: additionalProperties:#/$defs/datetimeField
+---
+version: CURRENT
+types:
+  - user:
+      fields:
+        - n:
+            type: datetime
+            extra: true

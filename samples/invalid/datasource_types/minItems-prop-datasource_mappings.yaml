@@ -1,0 +1,10 @@
+expect:
+  covers: minItems:#/properties/datasource_mappings
+---
+version: CURRENT
+types:
+  - user:
+      fields:
+        - n:
+            type: integer
+datasource_mappings: []

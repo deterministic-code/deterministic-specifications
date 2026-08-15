@@ -1,0 +1,7 @@
+expect:
+  covers: type:#/$defs/uuidInclude
+---
+version: CURRENT
+services: []
+includes:
+  - []

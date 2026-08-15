@@ -1,0 +1,8 @@
+expect:
+  includes: "must NOT be valid"
+---
+version: CURRENT
+middleware:
+  - auth:
+      apply_routes: [/api/tasks]
+      deny_routes: [/api/health]

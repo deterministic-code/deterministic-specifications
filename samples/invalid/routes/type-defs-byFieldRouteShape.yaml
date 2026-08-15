@@ -1,0 +1,6 @@
+expect:
+  covers: type:#/$defs/byFieldRouteShape
+---
+version: CURRENT
+routes:
+  - by_email: []

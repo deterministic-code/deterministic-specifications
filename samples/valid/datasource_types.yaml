@@ -1,0 +1,240 @@
+version: CURRENT
+includes:
+  - file: shared/base.yaml
+    combine_options:
+      source:
+        remove_types: [legacy_user]
+        remove_fields: [legacy_user.old_email]
+        modify_types:
+          - type: legacy_user
+            new_type: user
+        modify_fields:
+          - field: legacy_user.old_email
+            new_field: email
+          - field: legacy_user.legacy_flag
+            def:
+              type: boolean
+              default_value: false
+        add_fields:
+          - type: legacy_user
+            add_field:
+              extra_code:
+                type: string
+                size: 32
+      destination:
+        remove_types: [scratch]
+        remove_fields: [scratch.tmp]
+        modify_types:
+          - type: scratch
+            new_type: note
+        modify_fields:
+          - field: scratch.tmp
+            new_field: body
+          - field: scratch.flag
+            def:
+              type: integer
+              default_value: 0
+        add_fields:
+          - type: scratch
+            add_field:
+              tag:
+                type: string
+                size: 16
+  - id: saved_backend
+    combine_options:
+      source:
+        remove_types: [extra]
+  - id: 7
+    combine_options:
+      destination:
+        remove_types: [scratch]
+  - uuid: 11111111-1111-1111-1111-111111111111
+    combine_options:
+      source:
+        remove_fields: [user.bio]
+  - user_id: 1
+    name: demo_app
+    combine_options:
+      destination:
+        remove_fields: [note.body]
+datasource_mappings:
+  - user:
+      source: users
+      field_mappings:
+        - email:
+            source: email_address
+            type_converter: lower
+        - display_name:
+            source: full_name
+        - active:
+            type_converter: boolish
+  - role:
+      source: roles
+  - perm:
+      field_mappings:
+        - code:
+            source: perm_code
+types:
+  - user:
+      datasource_type: readonly-lookup
+      skip_migrations: true
+      use_optimistic_concurrency: false
+      target: StandardCrud
+      fields:
+        - email:
+            type: string
+            primary_key: false
+            size: 256
+            min_size: 1
+            is_nullable: false
+            is_unique: true
+            default_value: ""
+            references: user.email
+            validation:
+              - email
+              - 1
+        - bio:
+            type: string
+            size: unlimited
+        - initial:
+            type: character
+            size: 1
+            is_nullable: true
+            is_unique: false
+            default_value: X
+        - score:
+            type: number
+            primary_key: false
+            size: 8
+            min_size: 0
+            is_nullable: true
+            is_unique: false
+            default_value: 0
+            references: user.score
+        - count:
+            type: integer
+            primary_key: false
+            size: 4
+            min_size: 0
+            is_nullable: false
+            is_unique: false
+            default_value: 0
+            references: user.count
+        - visits:
+            type: unsignedinteger
+            primary_key: false
+            size: 4
+            min_size: 0
+            is_nullable: false
+            is_unique: false
+            default_value: 0
+            references: user.visits
+        - big_count:
+            type: biginteger
+            primary_key: false
+            is_nullable: false
+            is_unique: false
+            default_value: "0"
+            references: user.big_count
+        - huge_count:
+            type: unsignedbiginteger
+            primary_key: false
+            is_nullable: false
+            is_unique: false
+            default_value: "0"
+            references: user.huge_count
+        - small_count:
+            type: smallinteger
+            primary_key: false
+            size: 2
+            min_size: 0
+            is_nullable: false
+            is_unique: false
+            default_value: 0
+            references: user.small_count
+        - tiny_count:
+            type: unsignedsmallinteger
+            primary_key: false
+            size: 2
+            min_size: 0
+            is_nullable: false
+            is_unique: false
+            default_value: 0
+            references: user.tiny_count
+        - ratio:
+            type: float
+            is_nullable: false
+            is_unique: false
+            default_value: 1.5
+            references: user.ratio
+        - price:
+            type: decimal
+            size: [10, 2]
+            is_nullable: false
+            is_unique: false
+            default_value: "0.00"
+        - amount:
+            type: decimal
+            default_value: 0
+        - active:
+            type: boolean
+            is_nullable: false
+            is_unique: false
+            default_value: true
+        - avatar:
+            type: binary
+            size: 16
+            is_nullable: true
+            is_unique: false
+            default_value: ""
+        - payload:
+            type: binary
+            size: unlimited
+        - created_on:
+            type: datetime
+            is_nullable: false
+            is_unique: false
+            default_value: "2020-01-01T00:00:00Z"
+        - uid:
+            type: uuid
+            is_nullable: false
+            is_unique: true
+            default_value: "00000000-0000-0000-0000-000000000000"
+            references: user.uid
+        - parent_id:
+            references: user.id
+            primary_key: false
+            is_nullable: true
+            is_unique: false
+      indexes:
+        - email_uidx:
+            fields: [email]
+            is_unique: true
+        - score_idx:
+            fields: [score, count]
+            is_unique: false
+  - link:
+      datasource_type: many-to-many
+      target: Crud
+      fields:
+        - left_id:
+            type: integer
+            primary_key: true
+            references: user.id
+        - right_id:
+            type: integer
+            references: role.id
+  - note:
+      target: None
+      fields:
+        - body:
+            type: string
+            size: 1024
+  - _internal:
+      use_optimistic_concurrency: true
+      skip_migrations: false
+      fields:
+        - key:
+            type: string
+            size: 64
+            primary_key: true

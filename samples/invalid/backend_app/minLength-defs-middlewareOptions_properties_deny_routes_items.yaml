@@ -1,0 +1,8 @@
+expect:
+  covers: minLength:#/$defs/middlewareOptions/properties/deny_routes/items
+---
+version: CURRENT
+middleware:
+  - auth:
+      deny_routes:
+        - ""

@@ -1,0 +1,17 @@
+expect:
+  covers: minLength:#/$defs/customRouteShape/properties/service
+---
+version: CURRENT
+routes:
+  - ping:
+      path: /ping
+      method: GET
+      description: x
+      request: person
+      response: person
+      service: ""
+      serviceMethod: run
+      routeClass: PingRoute
+      module: ./x
+      authentication: none
+      x-implementation: stub

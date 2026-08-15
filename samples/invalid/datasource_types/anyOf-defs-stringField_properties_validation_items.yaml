@@ -1,0 +1,11 @@
+expect:
+  covers: anyOf:#/$defs/stringField/properties/validation/items
+---
+version: CURRENT
+types:
+  - user:
+      fields:
+        - n:
+            type: string
+            validation:
+              nope: true

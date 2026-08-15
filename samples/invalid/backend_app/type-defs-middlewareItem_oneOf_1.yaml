@@ -1,0 +1,5 @@
+expect:
+  covers: type:#/$defs/middlewareItem/oneOf/1
+---
+version: CURRENT
+middleware: {}

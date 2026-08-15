@@ -1,0 +1,5 @@
+expect:
+  covers: type:#/properties/statics
+---
+version: CURRENT
+statics: {}

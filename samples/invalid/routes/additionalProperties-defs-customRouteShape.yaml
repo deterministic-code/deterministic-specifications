@@ -1,0 +1,9 @@
+expect:
+  covers: additionalProperties:#/$defs/customRouteShape
+---
+version: CURRENT
+routes:
+  - ping:
+      path: /ping
+      method: GET
+      extra: true

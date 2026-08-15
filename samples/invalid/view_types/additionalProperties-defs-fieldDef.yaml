@@ -1,0 +1,10 @@
+expect:
+  covers: additionalProperties:#/$defs/fieldDef
+---
+version: CURRENT
+types:
+  - person:
+      fields:
+        - Name:
+            type: string
+            extra: true

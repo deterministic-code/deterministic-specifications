@@ -1,0 +1,9 @@
+expect:
+  includes: "allowed: REST, GraphQL"
+---
+version: CURRENT
+datasources:
+  - tasks:
+      type: grpc
+      schema_type: OpenAPI
+      schema: https://example.com/openapi.json

@@ -1,0 +1,6 @@
+expect:
+  covers: required:#/$defs/tableDef:fields
+---
+version: CURRENT
+types:
+  - user: {}

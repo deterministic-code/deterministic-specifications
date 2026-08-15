@@ -1,0 +1,6 @@
+expect:
+  covers: type:#/$defs/unionView/properties/one_of
+---
+version: CURRENT
+types:
+  - result: []

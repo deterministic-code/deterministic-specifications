@@ -1,0 +1,17 @@
+expect:
+  includes: "auto-injected"
+  datasource_types: |
+    version: CURRENT
+    types:
+      - user:
+          fields:
+            - email:
+                type: string
+                size: 256
+---
+version: CURRENT
+seeds:
+  - user:
+      - id1:
+          email: a@b.c
+          created: "2020-01-01T00:00:00Z"

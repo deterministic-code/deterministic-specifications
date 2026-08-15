@@ -1,0 +1,6 @@
+expect:
+  covers: type:#/$defs/tableSeedsEntry
+---
+version: CURRENT
+seeds:
+  - []

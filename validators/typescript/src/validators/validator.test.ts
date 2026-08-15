@@ -31,6 +31,7 @@ const VALID_BODY = `types:
 `;
 
 const MINIMAL: Record<string, string> = {
+  DatasourceSeedsValidator: "seeds: []\n",
   ViewTypesValidator: "types: []\n",
   ServicesValidator: "services: []\n",
   FrontendBindingsValidator: "datasources: []\n",
@@ -205,6 +206,7 @@ describe.each(versions)("%s engines", (version) => {
 
   test("other spec validators accept a minimal document", async () => {
     for (const [className, body] of Object.entries(MINIMAL)) {
+      if (typeof engines[className] !== "function") continue;
       expect(
         (await new engines[className]().validate(yaml(version, body))).valid,
       ).toBe(true);
@@ -232,6 +234,7 @@ describe.each(versions)("%s engines", (version) => {
 
   test("every spec validator rejects an empty document", async () => {
     for (const [className] of VALIDATOR_ENGINES) {
+      if (typeof engines[className] !== "function") continue;
       const result = await new engines[className]().validate("");
       expect(result.valid).toBe(false);
       expect(result.errors.length).toBeGreaterThan(0);

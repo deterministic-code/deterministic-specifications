@@ -1,0 +1,24 @@
+expect:
+  covers: pattern:#/$defs/identifier
+---
+version: CURRENT
+types: []
+includes:
+  - file: x.yaml
+    combine_options:
+      source:
+        remove_types:
+          - NOT VALID
+        remove_fields:
+          - old.Name
+        modify_types:
+          - type: old
+            new_type: person
+        modify_fields:
+          - field: old.Name
+            new_field: Display
+        add_fields:
+          - type: old
+            add_field:
+              Extra:
+                type: string

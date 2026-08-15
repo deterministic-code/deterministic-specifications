@@ -1,0 +1,5 @@
+expect:
+  covers: type:#/$defs/handlerItem/oneOf/1
+---
+version: CURRENT
+handlers: {}

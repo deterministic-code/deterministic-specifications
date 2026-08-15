@@ -1,0 +1,7 @@
+expect:
+  covers: maxProperties:#/$defs/middlewareItem/oneOf/1
+---
+version: CURRENT
+middleware:
+  a: {}
+  b: {}

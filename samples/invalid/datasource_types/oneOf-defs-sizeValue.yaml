@@ -1,0 +1,11 @@
+expect:
+  covers: oneOf:#/$defs/sizeValue
+---
+version: CURRENT
+types:
+  - user:
+      fields:
+        - n:
+            type: string
+            size:
+              nope: true

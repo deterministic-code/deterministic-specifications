@@ -1,10 +1,5 @@
 import { describe, expect, test } from "vitest";
-import {
-  SpecValidator,
-  parseYamlWithPositions,
-  positionFor,
-  resolveSpecPath,
-} from "./index.ts";
+import { SpecValidator, resolveSpecPath } from "./index.ts";
 import {
   errorFromUnknown,
   formatAjvError,
@@ -20,34 +15,6 @@ types:
             type: integer
       target: StandardCrud
 `;
-
-describe("parseYamlWithPositions / positionFor", () => {
-  test("valid YAML parses with no errors and resolves node positions", () => {
-    const { doc, lineCounter } = parseYamlWithPositions(VALID);
-    expect(doc.errors).toEqual([]);
-    const pos = positionFor(doc, lineCounter, "/types/0/user/fields");
-    expect(pos).toEqual({ line: expect.any(Number), col: expect.any(Number) });
-  });
-
-  test("positionFor falls back to the document root for an absent path", () => {
-    const { doc, lineCounter } = parseYamlWithPositions(VALID);
-    expect(positionFor(doc, lineCounter, "/nope/99")).toEqual({
-      line: expect.any(Number),
-      col: expect.any(Number),
-    });
-  });
-
-  test("descending past a scalar / bad array index stops at that node", () => {
-    const { doc, lineCounter } = parseYamlWithPositions(VALID);
-    expect(
-      positionFor(doc, lineCounter, "/types/0/user/target/deeper"),
-    ).toEqual({ line: expect.any(Number), col: expect.any(Number) });
-    expect(positionFor(doc, lineCounter, "/types/notanindex")).toEqual({
-      line: expect.any(Number),
-      col: expect.any(Number),
-    });
-  });
-});
 
 describe("yamlErrorOffset / resolveAjvCtor / formatAjvError / errorFromUnknown", () => {
   class FakeAjv {

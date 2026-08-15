@@ -1,0 +1,12 @@
+expect:
+  covers: additionalProperties:#/$defs/combineOptions
+---
+version: CURRENT
+services: []
+includes:
+  - file: x.yaml
+    combine_options:
+      source:
+        remove_services:
+          - OldService
+      extra: true

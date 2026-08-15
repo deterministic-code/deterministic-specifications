@@ -1,0 +1,11 @@
+expect:
+  covers: type:#/$defs/datasourceMappingEntry
+---
+version: CURRENT
+types:
+  - user:
+      fields:
+        - n:
+            type: integer
+datasource_mappings:
+  - []

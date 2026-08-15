@@ -4,6 +4,7 @@ export const CURRENT_VERSION = "CURRENT";
 
 export const VALIDATOR_ENGINES = [
   ["DatasourceTypesValidator", "backend", "datasource-types.spec.yaml"],
+  ["DatasourceSeedsValidator", "backend", "datasource-seeds.spec.yaml"],
   ["ViewTypesValidator", "backend", "view-types.spec.yaml"],
   ["RoutesValidator", "backend", "routes.spec.yaml"],
   ["ServicesValidator", "backend", "services.spec.yaml"],

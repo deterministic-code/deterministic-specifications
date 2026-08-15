@@ -1,0 +1,6 @@
+expect:
+  covers: minLength:#/$defs/identifier
+---
+version: CURRENT
+types:
+  - ""

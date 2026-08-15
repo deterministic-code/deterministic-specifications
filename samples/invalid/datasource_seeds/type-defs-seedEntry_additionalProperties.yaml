@@ -1,0 +1,7 @@
+expect:
+  covers: type:#/$defs/seedEntry/additionalProperties
+---
+version: CURRENT
+seeds:
+  - user:
+      - id1: []

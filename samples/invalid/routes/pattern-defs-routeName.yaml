@@ -1,0 +1,11 @@
+expect:
+  covers: pattern:#/$defs/routeName
+---
+version: CURRENT
+routes: []
+includes:
+  - file: x.yaml
+    combine_options:
+      source:
+        remove_routes:
+          - NOT VALID

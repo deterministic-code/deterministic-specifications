@@ -1,0 +1,10 @@
+version: CURRENT
+includes:
+  - datasource_types:
+      include: "*"
+      auto_enrich: true
+types:
+  - health:
+      fields:
+        - ok:
+            type: boolean

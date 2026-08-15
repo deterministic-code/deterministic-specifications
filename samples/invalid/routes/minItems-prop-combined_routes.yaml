@@ -1,0 +1,6 @@
+expect:
+  covers: minItems:#/properties/combined_routes
+---
+version: CURRENT
+routes: []
+combined_routes: []

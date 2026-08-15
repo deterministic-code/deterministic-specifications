@@ -1,0 +1,8 @@
+expect:
+  covers: additionalProperties:#/$defs/handlerOptions
+---
+version: CURRENT
+handlers:
+  - ErrorHandlerMiddlewareService:
+      enabled: true
+      extra: true

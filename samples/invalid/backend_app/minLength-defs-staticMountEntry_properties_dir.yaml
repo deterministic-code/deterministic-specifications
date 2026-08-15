@@ -1,0 +1,7 @@
+expect:
+  covers: minLength:#/$defs/staticMountEntry/properties/dir
+---
+version: CURRENT
+statics:
+  - path: /public
+    dir: ""

@@ -1,0 +1,6 @@
+expect:
+  covers: oneOf:#/$defs/middlewareItem
+---
+version: CURRENT
+middleware:
+  nope: true

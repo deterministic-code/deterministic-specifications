@@ -1,0 +1,6 @@
+expect:
+  covers: additionalProperties:#
+---
+version: CURRENT
+routes: []
+extra: true

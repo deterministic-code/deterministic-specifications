@@ -1,0 +1,6 @@
+expect:
+  covers: pattern:#/$defs/unionView/properties/one_of/items
+---
+version: CURRENT
+types:
+  - result: NOT VALID

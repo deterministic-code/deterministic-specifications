@@ -1,0 +1,7 @@
+expect:
+  covers: type:#/$defs/middlewareOptions/properties/apply_routes
+---
+version: CURRENT
+middleware:
+  - auth:
+      apply_routes: {}

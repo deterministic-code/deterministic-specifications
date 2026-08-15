@@ -1,0 +1,9 @@
+expect:
+  covers: type:#/$defs/customRouteShape/properties/errors
+---
+version: CURRENT
+routes:
+  - ping:
+      path: /ping
+      method: GET
+      errors: {}

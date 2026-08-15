@@ -1,0 +1,11 @@
+expect:
+  covers: type:#/$defs/indexEntry/additionalProperties
+---
+version: CURRENT
+types:
+  - user:
+      fields:
+        - n:
+            type: integer
+      indexes:
+        - idx: []

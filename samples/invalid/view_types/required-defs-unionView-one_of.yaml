@@ -1,0 +1,6 @@
+expect:
+  covers: required:#/$defs/unionView:one_of
+---
+version: CURRENT
+types:
+  - result: {}

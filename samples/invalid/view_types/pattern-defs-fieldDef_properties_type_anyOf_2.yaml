@@ -1,0 +1,9 @@
+expect:
+  covers: pattern:#/$defs/fieldDef/properties/type/anyOf/2
+---
+version: CURRENT
+types:
+  - person:
+      fields:
+        - Name:
+            type: NOT VALID

@@ -1,0 +1,8 @@
+expect:
+  covers: type:#/$defs/fieldEntry
+---
+version: CURRENT
+types:
+  - user:
+      fields:
+        - []

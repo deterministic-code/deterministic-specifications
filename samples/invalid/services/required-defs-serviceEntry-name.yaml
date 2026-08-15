@@ -1,0 +1,7 @@
+expect:
+  covers: required:#/$defs/serviceEntry:name
+---
+version: CURRENT
+services:
+  - description: x
+    module: ./x

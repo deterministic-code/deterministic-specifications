@@ -1,0 +1,6 @@
+expect:
+  covers: minProperties:#/$defs/viewEntry
+---
+version: CURRENT
+types:
+  - {}

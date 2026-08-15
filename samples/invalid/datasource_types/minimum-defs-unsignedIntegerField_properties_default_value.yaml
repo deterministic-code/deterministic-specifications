@@ -1,0 +1,10 @@
+expect:
+  covers: minimum:#/$defs/unsignedIntegerField/properties/default_value
+---
+version: CURRENT
+types:
+  - user:
+      fields:
+        - n:
+            type: unsignedinteger
+            default_value: -1

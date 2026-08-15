@@ -1,0 +1,15 @@
+expect:
+  covers: additionalProperties:#/$defs/addFieldOp
+---
+version: CURRENT
+types: []
+includes:
+  - file: other.yaml
+    combine_options:
+      source:
+        add_fields:
+          - type: user
+            add_field:
+              extra:
+                type: integer
+            extra: true

@@ -1,0 +1,11 @@
+expect:
+  covers: pattern:#/$defs/serviceName
+---
+version: CURRENT
+services: []
+includes:
+  - file: x.yaml
+    combine_options:
+      source:
+        remove_services:
+          - NOT VALID

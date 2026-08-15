@@ -1,0 +1,7 @@
+expect:
+  covers: minProperties:#/$defs/seedEntry
+---
+version: CURRENT
+seeds:
+  - user:
+      - {}

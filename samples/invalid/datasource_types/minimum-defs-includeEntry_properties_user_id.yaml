@@ -1,0 +1,8 @@
+expect:
+  covers: minimum:#/$defs/includeEntry/properties/user_id
+---
+version: CURRENT
+types: []
+includes:
+  - user_id: -1
+    name: app

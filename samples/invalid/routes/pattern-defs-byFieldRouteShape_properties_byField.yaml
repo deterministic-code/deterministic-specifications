@@ -1,0 +1,6 @@
+expect:
+  covers: pattern:#/$defs/byFieldRouteShape/properties/byField
+---
+version: CURRENT
+routes:
+  - by_email: NOT VALID

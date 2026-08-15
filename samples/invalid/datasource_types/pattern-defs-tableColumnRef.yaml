@@ -1,0 +1,6 @@
+expect:
+  covers: pattern:#/$defs/tableColumnRef
+---
+version: CURRENT
+types:
+  - NOT VALID

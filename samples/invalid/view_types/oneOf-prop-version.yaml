@@ -1,0 +1,6 @@
+expect:
+  covers: oneOf:#/properties/version
+---
+version:
+  nope: true
+types: []

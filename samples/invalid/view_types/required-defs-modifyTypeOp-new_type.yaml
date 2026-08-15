@@ -1,0 +1,23 @@
+expect:
+  covers: required:#/$defs/modifyTypeOp:new_type
+---
+version: CURRENT
+types: []
+includes:
+  - file: x.yaml
+    combine_options:
+      source:
+        remove_types:
+          - old
+        remove_fields:
+          - old.Name
+        modify_types:
+          - type: old
+        modify_fields:
+          - field: old.Name
+            new_field: Display
+        add_fields:
+          - type: old
+            add_field:
+              Extra:
+                type: string

@@ -1,0 +1,8 @@
+expect:
+  covers: minLength:#/$defs/serviceEntry/properties/description
+---
+version: CURRENT
+services:
+  - name: PersonService
+    description: ""
+    module: ./x

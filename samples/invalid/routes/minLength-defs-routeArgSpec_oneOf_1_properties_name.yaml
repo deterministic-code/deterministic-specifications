@@ -1,0 +1,18 @@
+expect:
+  covers: minLength:#/$defs/routeArgSpec/oneOf/1/properties/name
+---
+version: CURRENT
+routes:
+  - ping:
+      path: /ping
+      method: GET
+      args:
+        - kind: repo
+          name: person
+        - kind: service
+          name: ""
+        - kind: config
+          key: a.b
+        - kind: undefined
+        - kind: literal
+          value: 1

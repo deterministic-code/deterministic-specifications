@@ -1,0 +1,22 @@
+expect:
+  covers: minItems:#/$defs/sideOptions/properties/modify_fields
+---
+version: CURRENT
+types: []
+includes:
+  - file: x.yaml
+    combine_options:
+      source:
+        remove_types:
+          - old
+        remove_fields:
+          - old.Name
+        modify_types:
+          - type: old
+            new_type: person
+        modify_fields: []
+        add_fields:
+          - type: old
+            add_field:
+              Extra:
+                type: string

@@ -1,0 +1,11 @@
+expect:
+  covers: additionalProperties:#/$defs/unsignedSmallIntegerField
+---
+version: CURRENT
+types:
+  - user:
+      fields:
+        - n:
+            type: unsignedsmallinteger
+            default_value: 0
+            extra: true

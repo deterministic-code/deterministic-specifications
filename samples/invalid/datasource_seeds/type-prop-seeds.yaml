@@ -1,0 +1,5 @@
+expect:
+  covers: type:#/properties/seeds
+---
+version: CURRENT
+seeds: {}

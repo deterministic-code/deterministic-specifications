@@ -1,0 +1,7 @@
+expect:
+  covers: minItems:#/$defs/tableDef/properties/fields
+---
+version: CURRENT
+types:
+  - user:
+      fields: []

@@ -1,0 +1,143 @@
+version: CURRENT
+includes:
+  - datasource_types:
+      include: "*"
+      filter: type != "link"
+      auto_enrich: true
+  - file: shared/views.yaml
+    combine_options:
+      source:
+        remove_types: [old_view]
+        remove_fields: [old_view.OldField]
+        modify_types:
+          - type: old_view
+            new_type: person
+        modify_fields:
+          - field: old_view.OldField
+            new_field: DisplayName
+          - field: old_view.Flag
+            def:
+              type: boolean
+              is_nullable: true
+        add_fields:
+          - type: old_view
+            add_field:
+              Extra:
+                type: string
+                size: 32
+      destination:
+        remove_types: [scratch_view]
+        remove_fields: [scratch_view.Tmp]
+        modify_types:
+          - type: scratch_view
+            new_type: summary
+        modify_fields:
+          - field: scratch_view.Tmp
+            new_field: Body
+          - field: scratch_view.N
+            def:
+              type: integer
+              min_size: 0
+        add_fields:
+          - type: scratch_view
+            add_field:
+              Tag:
+                type: string
+  - id: saved_views
+    combine_options:
+      source:
+        remove_types: [extra_view]
+  - id: 3
+    combine_options:
+      destination:
+        remove_types: [scratch_view]
+  - uuid: 22222222-2222-2222-2222-222222222222
+    combine_options:
+      source:
+        remove_fields: [person.Bio]
+  - user_id: 2
+    name: demo_views
+    combine_options:
+      destination:
+        remove_fields: [person.Score]
+types:
+  - person:
+      inherits: datasource_types.user
+      omit: [bio, payload]
+      fields:
+        - DisplayName:
+            type: string
+            size: 128
+            min_size: 0
+            is_nullable: false
+            is_unique: true
+            default_value: ""
+        - Score:
+            type: number
+            size: unlimited
+            default_value: 0
+        - Count:
+            type: integer
+            default_value: 0
+        - Visits:
+            type: unsignedinteger
+        - BigCount:
+            type: biginteger
+        - HugeCount:
+            type: unsignedbiginteger
+        - SmallCount:
+            type: smallinteger
+        - TinyCount:
+            type: unsignedsmallinteger
+        - Ratio:
+            type: float
+        - Active:
+            type: boolean
+            default_value: true
+        - CreatedOn:
+            type: datetime
+        - Avatar:
+            type: binary
+        - Uid:
+            type: uuid
+        - Labels:
+            type: "string[]"
+        - Scores:
+            type: "number[]"
+        - Counts:
+            type: "integer[]"
+        - VisitList:
+            type: "unsignedinteger[]"
+        - BigList:
+            type: "biginteger[]"
+        - HugeList:
+            type: "unsignedbiginteger[]"
+        - SmallList:
+            type: "smallinteger[]"
+        - TinyList:
+            type: "unsignedsmallinteger[]"
+        - RatioList:
+            type: "float[]"
+        - Flags:
+            type: "boolean[]"
+        - Dates:
+            type: "datetime[]"
+        - Blobs:
+            type: "binary[]"
+        - Ids:
+            type: "uuid[]"
+        - Role:
+            type: datasource_types.role
+            references: datasource_types.role.id
+        - Roles:
+            type: datasource_types.role[]
+            references: datasource_types.user.role_id
+        - Manager:
+            type: person
+        - Reports:
+            type: person[]
+            references: view_types.person.parent_id
+  - empty_shape:
+      fields: []
+  - result:
+      one_of: [person, empty_shape]

@@ -1,0 +1,18 @@
+expect:
+  covers: additionalProperties:#/$defs/argSpec/oneOf/1
+---
+version: CURRENT
+services:
+  - name: PersonService
+    description: x
+    args:
+      - kind: repo
+        name: person
+      - kind: service
+        name: Audit
+        extra: true
+      - kind: config
+        key: a.b
+      - kind: undefined
+      - kind: literal
+        value: 1

@@ -1,0 +1,13 @@
+expect:
+  covers: minItems:#/$defs/datasourceMappingDef/properties/field_mappings
+---
+version: CURRENT
+types:
+  - user:
+      fields:
+        - n:
+            type: integer
+datasource_mappings:
+  - user:
+      source: users
+      field_mappings: []

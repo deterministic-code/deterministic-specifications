@@ -1,0 +1,16 @@
+version: CURRENT
+datasources:
+  - core:
+      type: REST
+      schema_type: OpenAPI
+      schema: https://example.com/openapi.json
+      clients: [fetch, axios, tanstack]
+  - local:
+      type: REST
+      schema_type: OpenAPI
+      schema: "file:./openapi.json"
+  - sibling:
+      type: GraphQL
+      schema_type: GraphQL
+      schema: "id:demo_backend"
+      clients: [fetch]

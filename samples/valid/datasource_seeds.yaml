@@ -1,0 +1,16 @@
+version: CURRENT
+seeds:
+  - user:
+      - id1:
+          email: a@b.c
+          bio: hello
+          payload: ""
+          count: 1
+          active: true
+          initial: null
+      - id2:
+          bio: other
+          payload: AA
+  - note:
+      - id1:
+          body: a note

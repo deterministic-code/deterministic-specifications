@@ -1,0 +1,14 @@
+expect:
+  covers: pattern:#/$defs/combinedTypeItem/oneOf/1/additionalProperties/properties/target
+---
+version: CURRENT
+routes: []
+combined_routes:
+  - people:
+      route: /api/people
+      combined_types:
+        - Person
+        - reports:
+            via: manager
+            target: NOT VALID
+            route: /r

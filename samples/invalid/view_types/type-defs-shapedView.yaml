@@ -1,0 +1,6 @@
+expect:
+  covers: type:#/$defs/shapedView
+---
+version: CURRENT
+types:
+  - person: []

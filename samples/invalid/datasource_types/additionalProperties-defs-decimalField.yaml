@@ -1,0 +1,13 @@
+expect:
+  covers: additionalProperties:#/$defs/decimalField
+---
+version: CURRENT
+types:
+  - user:
+      fields:
+        - n:
+            type: decimal
+            size:
+              - 10
+              - 2
+            extra: true

@@ -1,0 +1,17 @@
+expect:
+  covers: enum:#/$defs/customRouteShape/properties/method
+---
+version: CURRENT
+routes:
+  - ping:
+      path: /ping
+      method: nope
+      description: x
+      request: person
+      response: person
+      service: PersonService
+      serviceMethod: run
+      routeClass: PingRoute
+      module: ./x
+      authentication: none
+      x-implementation: stub

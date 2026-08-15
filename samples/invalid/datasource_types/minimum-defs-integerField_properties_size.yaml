@@ -1,0 +1,10 @@
+expect:
+  covers: minimum:#/$defs/integerField/properties/size
+---
+version: CURRENT
+types:
+  - user:
+      fields:
+        - n:
+            type: integer
+            size: -1

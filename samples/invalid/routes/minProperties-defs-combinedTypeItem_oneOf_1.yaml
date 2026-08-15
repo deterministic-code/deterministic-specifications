@@ -1,0 +1,11 @@
+expect:
+  covers: minProperties:#/$defs/combinedTypeItem/oneOf/1
+---
+version: CURRENT
+routes: []
+combined_routes:
+  - people:
+      route: /api/people
+      combined_types:
+        - Person
+        - {}

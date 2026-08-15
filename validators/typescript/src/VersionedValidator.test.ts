@@ -3,6 +3,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { describe, expect, test } from "vitest";
 import {
+  DatasourceSeedsValidator,
   DatasourceTypesValidator,
   FrontendBindingsValidator,
   RoutesValidator,
@@ -22,6 +23,7 @@ types:
 `;
 
 const MINIMAL: Record<string, string> = {
+  DatasourceSeedsValidator: "version: CURRENT\nseeds: []\n",
   ViewTypesValidator: "version: CURRENT\ntypes: []\n",
   ServicesValidator: "version: CURRENT\nservices: []\n",
   RoutesValidator: "version: CURRENT\nroutes: []\n",
@@ -132,6 +134,13 @@ describe("VersionedValidator dispatcher", () => {
   });
 
   test("other facades dispatch CURRENT documents", async () => {
+    expect(
+      (
+        await new DatasourceSeedsValidator().validate(
+          MINIMAL.DatasourceSeedsValidator,
+        )
+      ).valid,
+    ).toBe(true);
     expect(
       (await new ViewTypesValidator().validate(MINIMAL.ViewTypesValidator))
         .valid,

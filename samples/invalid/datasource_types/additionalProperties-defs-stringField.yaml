@@ -1,0 +1,11 @@
+expect:
+  covers: additionalProperties:#/$defs/stringField
+---
+version: CURRENT
+types:
+  - user:
+      fields:
+        - n:
+            type: string
+            size: 8
+            extra: true

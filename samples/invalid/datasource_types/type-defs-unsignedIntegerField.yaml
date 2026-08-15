@@ -1,0 +1,8 @@
+expect:
+  covers: type:#/$defs/unsignedIntegerField
+---
+version: CURRENT
+types:
+  - user:
+      fields:
+        - n: []

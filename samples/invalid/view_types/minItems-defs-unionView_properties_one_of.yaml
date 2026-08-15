@@ -1,0 +1,6 @@
+expect:
+  covers: minItems:#/$defs/unionView/properties/one_of
+---
+version: CURRENT
+types:
+  - result: []

@@ -1,0 +1,6 @@
+expect:
+  covers: type:#/$defs/handlerOptions
+---
+version: CURRENT
+handlers:
+  - ErrorHandlerMiddlewareService: []

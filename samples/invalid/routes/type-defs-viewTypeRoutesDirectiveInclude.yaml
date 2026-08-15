@@ -1,0 +1,7 @@
+expect:
+  covers: type:#/$defs/viewTypeRoutesDirectiveInclude
+---
+version: CURRENT
+routes: []
+includes:
+  - []

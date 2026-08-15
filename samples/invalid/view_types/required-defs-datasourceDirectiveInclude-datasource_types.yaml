@@ -1,0 +1,7 @@
+expect:
+  covers: required:#/$defs/datasourceDirectiveInclude:datasource_types
+---
+version: CURRENT
+types: []
+includes:
+  - {}

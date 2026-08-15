@@ -1,0 +1,7 @@
+expect:
+  covers: minProperties:#/$defs/combinedRouteEntry
+---
+version: CURRENT
+routes: []
+combined_routes:
+  - {}

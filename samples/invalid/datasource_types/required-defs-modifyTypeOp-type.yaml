@@ -1,0 +1,11 @@
+expect:
+  covers: required:#/$defs/modifyTypeOp:type
+---
+version: CURRENT
+types: []
+includes:
+  - file: other.yaml
+    combine_options:
+      source:
+        modify_types:
+          - new_type: person

@@ -1,0 +1,8 @@
+expect:
+  covers: type:#/$defs/floatField
+---
+version: CURRENT
+types:
+  - user:
+      fields:
+        - n: []

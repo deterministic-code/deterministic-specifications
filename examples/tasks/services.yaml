@@ -1,0 +1,5 @@
+version: CURRENT
+includes:
+  - view_type_services:
+      filter: type is datasource_type
+services: []

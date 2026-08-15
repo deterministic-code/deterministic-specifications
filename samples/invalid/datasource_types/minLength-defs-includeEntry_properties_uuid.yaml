@@ -1,0 +1,7 @@
+expect:
+  covers: minLength:#/$defs/includeEntry/properties/uuid
+---
+version: CURRENT
+types: []
+includes:
+  - uuid: ""

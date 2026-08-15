@@ -1,0 +1,8 @@
+expect:
+  covers: pattern:#/$defs/shapedView/properties/inherits
+---
+version: CURRENT
+types:
+  - person:
+      inherits: NOT VALID
+      fields: []
