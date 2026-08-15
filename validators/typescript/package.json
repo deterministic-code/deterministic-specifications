@@ -1,0 +1,42 @@
+{
+  "name": "@deterministic-code/deterministic-specifications",
+  "version": "0.1.0",
+  "description": "Strict TypeScript validators for the deterministic YAML contract (one validator per spec).",
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "files": [
+    "src",
+    "backend",
+    "frontend"
+  ],
+  "scripts": {
+    "sync-specs": "node scripts/sync-specs.mjs",
+    "prepack": "npm run sync-specs",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "ajv": "^8.18.0",
+    "yaml": "^2.6.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "typescript": "^5.8.0",
+    "vitest": "^2.1.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/deterministic-code/deterministic-specifications.git",
+    "directory": "validators/typescript"
+  },
+  "engines": {
+    "node": ">=22.18"
+  }
+}
