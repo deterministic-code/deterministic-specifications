@@ -4,8 +4,8 @@ export default defineConfig({
   test: {
     include: [
       "src/**/*.test.ts",
-      "../../validator/**/*.test.ts",
-      "../../versions/**/validator/**/*.test.ts",
+      "validator.test.ts",
+      "../../versions/**/validators/**/*.test.ts",
     ],
     coverage: {
       provider: "v8",

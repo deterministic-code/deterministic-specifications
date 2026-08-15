@@ -1,4 +1,4 @@
-const LIVE_ENGINE_IMPORT = 'from "../validators/typescript/src/';
+const LIVE_ENGINE_IMPORT = 'from "./src/';
 const FROZEN_ENGINE_IMPORT = 'from "../../../validators/typescript/src/';
 const ID_PREFIX = "https://cali-services.local/schemas/deterministic/";
 

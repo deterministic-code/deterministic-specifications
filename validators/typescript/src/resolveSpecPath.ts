@@ -93,14 +93,20 @@ export async function resolveSpecPath(
 
 export function engineRelPath(version: string): string {
   return version === CURRENT_VERSION
-    ? "validator"
-    : join("versions", version, "validator");
+    ? join("validators", "typescript")
+    : join("versions", version, "validators");
 }
+
+const CURRENT_ENGINE_FILE = "DatasourceTypesValidator.ts";
 
 export async function findEngineDir(
   version: string = CURRENT_VERSION,
   start?: string,
 ): Promise<string | null> {
+  if (version === CURRENT_VERSION) {
+    const engineFile = await findAncestorPath(CURRENT_ENGINE_FILE, start);
+    if (engineFile !== null) return dirname(engineFile);
+  }
   return findAncestorPath(engineRelPath(version), start);
 }
 

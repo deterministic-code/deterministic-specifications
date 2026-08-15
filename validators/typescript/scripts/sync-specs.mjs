@@ -30,14 +30,6 @@ async function syncDir(subdir) {
 await syncDir("backend");
 await syncDir("frontend");
 
-try {
-  await syncValidatorDir(join(repoRoot, "validator"), join(pkgRoot, "validator"));
-} catch (err) {
-  if (!(err && typeof err === "object" && "code" in err && err.code === "ENOENT")) {
-    throw err;
-  }
-}
-
 const versionRoot = join(repoRoot, "versions");
 const versionDest = join(pkgRoot, "versions");
 await rm(versionDest, { force: true, recursive: true });
@@ -68,11 +60,11 @@ for (const version of versions) {
       throw err;
     }
   }
-  const fromValidator = join(versionRoot, version, "validator");
+  const fromValidator = join(versionRoot, version, "validators");
   try {
     await syncValidatorDir(
       fromValidator,
-      join(versionDest, version, "validator"),
+      join(versionDest, version, "validators"),
     );
   } catch (err) {
     if (

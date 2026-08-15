@@ -7,7 +7,6 @@
   "files": [
     "backend",
     "frontend",
-    "validator",
     "versions"
   ],
   "scripts": {

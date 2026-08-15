@@ -31,7 +31,7 @@ describe("published archive completeness", () => {
         ).resolves.toContain(join("versions", version, spec.subdir, spec.name));
       }
       const engineDir = await resolveEngineDir(version);
-      expect(engineDir).toContain(join("versions", version, "validator"));
+      expect(engineDir).toContain(join("versions", version, "validators"));
       for (const file of VALIDATOR_ENGINE_FILES) {
         expect(await exists(join(engineDir, file))).toBe(true);
       }

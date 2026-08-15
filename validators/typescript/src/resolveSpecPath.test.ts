@@ -150,15 +150,17 @@ describe("version discovery from an isolated tree", () => {
 });
 
 describe("engineRelPath / resolveEngineDir", () => {
-  test("CURRENT is validator/; a semver is under versions/<semver>/validator/", () => {
-    expect(engineRelPath("CURRENT")).toBe("validator");
-    expect(engineRelPath("1.0.0")).toBe(join("versions", "1.0.0", "validator"));
+  test("CURRENT is validators/typescript/; a semver is under versions/<semver>/validators/", () => {
+    expect(engineRelPath("CURRENT")).toBe(join("validators", "typescript"));
+    expect(engineRelPath("1.0.0")).toBe(join("versions", "1.0.0", "validators"));
   });
 
   test("resolves the live and frozen engine directories", async () => {
-    await expect(findEngineDir("CURRENT")).resolves.toMatch(/validator$/);
+    await expect(findEngineDir("CURRENT")).resolves.toContain(
+      join("validators", "typescript"),
+    );
     await expect(resolveEngineDir("1.0.0")).resolves.toContain(
-      join("versions", "1.0.0", "validator"),
+      join("versions", "1.0.0", "validators"),
     );
   });
 
@@ -176,10 +178,10 @@ describe("engineRelPath / resolveEngineDir", () => {
     try {
       await mkdir(join(dir, "versions", "1.0.0"), { recursive: true });
       await expect(resolveEngineDir("1.0.0", dir)).rejects.toThrow(
-        /validator engine not found: versions[/\\]1\.0\.0[/\\]validator/,
+        /validator engine not found: versions[/\\]1\.0\.0[/\\]validators/,
       );
       await expect(resolveEngineDir("CURRENT", dir)).rejects.toThrow(
-        /validator engine not found: validator/,
+        /validator engine not found: validators[/\\]typescript/,
       );
     } finally {
       await rm(dir, { force: true, recursive: true });

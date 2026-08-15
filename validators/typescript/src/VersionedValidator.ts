@@ -52,7 +52,7 @@ async function loadEngine(
 
 /**
  * Public facade: read `version` from the document, load that archive's
- * engine (root `validator/` or `versions/<semver>/validator/`), and
+ * engine (this package for CURRENT, or `versions/<semver>/validators/`), and
  * delegate. Unknown versions fail before an engine is constructed.
  */
 export class VersionedValidator {
