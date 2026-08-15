@@ -21,5 +21,9 @@ types:
         - done:
             type: boolean
             default_value: false
+        - notes:
+            type: string
+            size: 1024
+            is_nullable: true
         - project_id:
             references: project.id

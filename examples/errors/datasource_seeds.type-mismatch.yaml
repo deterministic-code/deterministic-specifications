@@ -1,0 +1,16 @@
+expect:
+  includes: "must be string"
+  datasource_types: |
+    version: CURRENT
+    types:
+      - user:
+          fields:
+            - email:
+                type: string
+                size: 256
+---
+version: CURRENT
+seeds:
+  - user:
+      - id1:
+          email: 12

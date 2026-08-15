@@ -4,12 +4,13 @@ $id: https://cali-services.local/schemas/deterministic/backend/datasource-types.
 title: datasource_types.yaml
 description: >
   Strict schema for deterministic/datasource_types.yaml. Defines the
-  physical data model: one entry per table, with fields, indexes, seeds, and
+  physical data model: one entry per table, with fields, indexes, and
   optional datasource_type flags (readonly-lookup / many-to-many) that drive
-  migration generation and CRUD-service scaffolding. The `types:` key is
-  required (must exist) but may be an empty array — a no-data-model app
-  (no entities, no migrations) declares `types: []` and the migration
-  emitter short-circuits accordingly.
+  migration generation and CRUD-service scaffolding. Seed rows live in
+  datasource_seeds.yaml, not here. The `types:` key is required (must exist)
+  but may be an empty array — a no-data-model app (no entities, no
+  migrations) declares `types: []` and the migration emitter short-circuits
+  accordingly.
 
 type: object
 additionalProperties: false
@@ -221,11 +222,6 @@ $defs:
         minItems: 1
         items:
           $ref: "#/$defs/fieldEntry"
-      seeds:
-        type: array
-        minItems: 1
-        items:
-          $ref: "#/$defs/seedEntry"
       indexes:
         type: array
         minItems: 1
@@ -553,22 +549,6 @@ $defs:
       is_unique: { type: boolean }
       default_value:
         type: string
-
-  seedEntry:
-    type: object
-    minProperties: 1
-    maxProperties: 1
-    propertyNames:
-      pattern: "^id[0-9]+$"
-    additionalProperties:
-      type: object
-      minProperties: 1
-      additionalProperties:
-        anyOf:
-          - type: string
-          - type: number
-          - type: boolean
-          - type: "null"
 
   indexEntry:
     type: object

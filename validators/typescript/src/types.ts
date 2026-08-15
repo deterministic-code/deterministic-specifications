@@ -15,6 +15,13 @@ export interface SpecValidationResult {
   errors: SpecValidationError[];
 }
 
+export interface ValidateOptions {
+  /** Companion `datasource_types.yaml` text. Required for non-empty seeds. */
+  datasourceTypes?: string;
+  /** Path to companion `datasource_types.yaml`. Ignored when `datasourceTypes` is set. */
+  datasourceTypesPath?: string;
+}
+
 export interface AjvError {
   keyword: string;
   instancePath: string;

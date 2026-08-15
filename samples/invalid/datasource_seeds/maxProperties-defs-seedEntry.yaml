@@ -1,0 +1,8 @@
+expect:
+  covers: maxProperties:#/$defs/seedEntry
+---
+version: CURRENT
+seeds:
+  - user:
+      - a: {}
+        b: {}

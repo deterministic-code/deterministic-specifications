@@ -1,0 +1,8 @@
+expect:
+  includes: "must match pattern"
+---
+version: CURRENT
+seeds:
+  - user:
+      - row1:
+          email: a@b.c

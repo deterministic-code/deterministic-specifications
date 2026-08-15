@@ -21,6 +21,11 @@ const SPECS = [
     subdir: "backend",
     name: "datasource-types.spec.yaml",
   },
+  {
+    dir: "datasource_seeds",
+    subdir: "backend",
+    name: "datasource-seeds.spec.yaml",
+  },
   { dir: "view_types", subdir: "backend", name: "view-types.spec.yaml" },
   { dir: "routes", subdir: "backend", name: "routes.spec.yaml" },
   { dir: "services", subdir: "backend", name: "services.spec.yaml" },
@@ -91,6 +96,7 @@ function dsSide(side: Host): Host {
 }
 
 const VIEW_MIN: Host = { version: "CURRENT", types: [] };
+const SEEDS_MIN: Host = { version: "CURRENT", seeds: [] };
 const ROUTES_MIN: Host = { version: "CURRENT", routes: [] };
 const SERVICES_MIN: Host = { version: "CURRENT", services: [] };
 const APP_MIN: Host = { version: "CURRENT" };
@@ -100,6 +106,7 @@ type Mut = { loc: Array<string | number>; host: Host };
 
 function locFor(spec: string, path: string): Mut | null {
   if (spec === "datasource_types") return dsLoc(path);
+  if (spec === "datasource_seeds") return seedsLoc(path);
   if (spec === "view_types") return viewLoc(path);
   if (spec === "routes") return routesLoc(path);
   if (spec === "services") return servicesLoc(path);
@@ -123,11 +130,6 @@ function dsLoc(path: string): Mut | null {
     return { host: DS_INT, loc: ["types", 0, "user"] };
   if (path.startsWith("#/$defs/tableDef/properties/fields"))
     return { host: DS_INT, loc: ["types", 0, "user", "fields"] };
-  if (path.startsWith("#/$defs/tableDef/properties/seeds"))
-    return {
-      host: set(DS_INT, ["types", 0, "user", "seeds"], [{ id1: { n: 1 } }]),
-      loc: ["types", 0, "user", "seeds"],
-    };
   if (path.startsWith("#/$defs/tableDef/properties/indexes"))
     return {
       host: set(DS_INT, ["types", 0, "user", "indexes"], [
@@ -153,15 +155,6 @@ function dsLoc(path: string): Mut | null {
     if (path.includes("additionalProperties/properties/fields"))
       return { host, loc: ["types", 0, "user", "indexes", 0, "idx", "fields"] };
     return { host, loc: ["types", 0, "user", "indexes", 0, "idx"] };
-  }
-  if (path.startsWith("#/$defs/seedEntry")) {
-    const host = set(DS_INT, ["types", 0, "user", "seeds"], [{ id1: { n: 1 } }]);
-    if (path === "#/$defs/seedEntry") return { host, loc: ["types", 0, "user", "seeds", 0] };
-    if (path === "#/$defs/seedEntry/propertyNames")
-      return { host, loc: ["types", 0, "user", "seeds", 0] };
-    if (path.includes("additionalProperties/additionalProperties"))
-      return { host, loc: ["types", 0, "user", "seeds", 0, "id1", "n"] };
-    return { host, loc: ["types", 0, "user", "seeds", 0, "id1"] };
   }
   const fieldHosts: Record<string, Host> = {
     stringField: { type: "string", size: 8 },
@@ -374,6 +367,35 @@ function dsLoc(path: string): Mut | null {
   }
   if (path.startsWith("#/properties/version"))
     return { host: DS_INT, loc: ["version"] };
+  return null;
+}
+
+const SEEDS_ONE: Host = {
+  version: "CURRENT",
+  seeds: [{ user: [{ id1: { n: 1 } }] }],
+};
+
+function seedsLoc(path: string): Mut | null {
+  if (path === "#") return { host: SEEDS_MIN, loc: [] };
+  if (path === "#/properties/seeds") return { host: SEEDS_ONE, loc: ["seeds"] };
+  if (path === "#/$defs/tableSeedsEntry")
+    return { host: SEEDS_ONE, loc: ["seeds", 0] };
+  if (path === "#/$defs/identifier")
+    return { host: SEEDS_ONE, loc: ["seeds", 0] };
+  if (path.startsWith("#/$defs/tableSeedsEntry")) {
+    if (path.includes("propertyNames") || path.endsWith("tableSeedsEntry"))
+      return { host: SEEDS_ONE, loc: ["seeds", 0] };
+    return { host: SEEDS_ONE, loc: ["seeds", 0, "user"] };
+  }
+  if (path.startsWith("#/$defs/seedEntry")) {
+    if (path === "#/$defs/seedEntry" || path.includes("propertyNames"))
+      return { host: SEEDS_ONE, loc: ["seeds", 0, "user", 0] };
+    if (path.includes("additionalProperties/additionalProperties"))
+      return { host: SEEDS_ONE, loc: ["seeds", 0, "user", 0, "id1", "n"] };
+    return { host: SEEDS_ONE, loc: ["seeds", 0, "user", 0, "id1"] };
+  }
+  if (path.startsWith("#/properties/version"))
+    return { host: SEEDS_MIN, loc: ["version"] };
   return null;
 }
 

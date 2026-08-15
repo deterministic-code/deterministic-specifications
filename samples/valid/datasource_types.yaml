@@ -206,12 +206,6 @@ types:
             primary_key: false
             is_nullable: true
             is_unique: false
-      seeds:
-        - id1:
-            email: a@b.c
-            count: 1
-            active: true
-            note: null
       indexes:
         - email_uidx:
             fields: [email]

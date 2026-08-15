@@ -37,6 +37,7 @@ error gallery live under [`examples/`](../../examples).
 | Class                       | Contract file                  |
 | --------------------------- | ------------------------------ |
 | `DatasourceTypesValidator`  | `backend/datasource-types.spec.yaml` |
+| `DatasourceSeedsValidator`  | `backend/datasource-seeds.spec.yaml` |
 | `ViewTypesValidator`        | `backend/view-types.spec.yaml` |
 | `RoutesValidator`           | `backend/routes.spec.yaml`     |
 | `ServicesValidator`         | `backend/services.spec.yaml`   |
@@ -57,6 +58,8 @@ Archive a new version (moves `backend/`, `frontend/`, and this package's engine 
 npm run bump-version -- 1.1.0
 ```
 
-This package validates **schema shape** only. Cross-document and semantic rules
-(foreign-key resolution, defaults, type constraints) are layered on top by the
-consumer.
+This package validates **schema shape** first. `DatasourceSeedsValidator` then
+checks seed rows against the companion `datasource_types.yaml` (known tables and
+fields, value types, required vs `is_nullable` / `default_value`). Other
+cross-document rules (foreign-key resolution, merged includes) stay in the
+consuming generator.

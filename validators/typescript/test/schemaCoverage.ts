@@ -319,6 +319,7 @@ function cover(
 export type InvalidMeta = {
   covers: string[];
   includes?: string[];
+  datasourceTypes?: string;
 };
 
 export function parseInvalidSample(text: string): { meta: InvalidMeta; yaml: string } {
@@ -344,8 +345,10 @@ export function parseInvalidSample(text: string): { meta: InvalidMeta; yaml: str
     : includesRaw != null
       ? [String(includesRaw)]
       : undefined;
+  const datasourceTypes =
+    typeof rec.datasource_types === "string" ? rec.datasource_types : undefined;
   if (covers.length === 0 && (includes?.length ?? 0) === 0) {
     throw new Error("expect.covers or expect.includes is required");
   }
-  return { meta: { covers, includes }, yaml: parts.slice(1).join("\n---\n") };
+  return { meta: { covers, includes, datasourceTypes }, yaml: parts.slice(1).join("\n---\n") };
 }

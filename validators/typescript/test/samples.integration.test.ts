@@ -2,6 +2,7 @@ import { readdir, readFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { describe, expect, test } from "vitest";
 import {
+  DatasourceSeedsValidator,
   DatasourceTypesValidator,
   FrontendBindingsValidator,
   RoutesValidator,
@@ -21,7 +22,10 @@ import {
 } from "./schemaCoverage.ts";
 
 type Validator = {
-  validate(text: string): Promise<{
+  validate(
+    text: string,
+    options?: { datasourceTypes?: string },
+  ): Promise<{
     valid: boolean;
     errors: { message: string; instancePath: string }[];
   }>;
@@ -42,6 +46,11 @@ const SAMPLE_SPECS: SampleSpec[] = [
     file: "datasource_types.yaml",
     spec: { subdir: "backend", name: "datasource-types.spec.yaml" },
     validator: () => new DatasourceTypesValidator(),
+  },
+  {
+    file: "datasource_seeds.yaml",
+    spec: { subdir: "backend", name: "datasource-seeds.spec.yaml" },
+    validator: () => new DatasourceSeedsValidator(),
   },
   {
     file: "view_types.yaml",
@@ -171,6 +180,7 @@ describe("sample documents", () => {
 
 const EXAMPLE_STEM: Record<string, () => Validator> = {
   datasource_types: () => new DatasourceTypesValidator(),
+  datasource_seeds: () => new DatasourceSeedsValidator(),
   view_types: () => new ViewTypesValidator(),
   routes: () => new RoutesValidator(),
   services: () => new ServicesValidator(),
@@ -228,7 +238,12 @@ describe("example documents", () => {
       expect(meta.includes?.length, `${file} needs expect.includes`).toBeGreaterThan(
         0,
       );
-      const result = await validatorForExample(file).validate(yaml);
+      const result = await validatorForExample(file).validate(
+        yaml,
+        meta.datasourceTypes
+          ? { datasourceTypes: meta.datasourceTypes }
+          : undefined,
+      );
       expect(result.valid, file).toBe(false);
       const blob = result.errors.map((e) => e.message).join("\n");
       for (const needle of meta.includes!) {

@@ -2,10 +2,6 @@ expect:
   covers: type:#/$defs/seedEntry/additionalProperties
 ---
 version: CURRENT
-types:
+seeds:
   - user:
-      fields:
-        - n:
-            type: integer
-      seeds:
-        - id1: []
+      - id1: []

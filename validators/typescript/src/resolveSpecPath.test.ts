@@ -1,4 +1,4 @@
-import { access, mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+import { access, mkdir, mkdtemp, readdir, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterAll, beforeAll, describe, expect, test } from "vitest";
@@ -105,17 +105,34 @@ describe("listSpecVersions", () => {
 });
 
 describe("published version completeness", () => {
-  test("every published version ships the full spec set and engines.ts", async () => {
+  test("CURRENT ships every catalogued spec", async () => {
+    for (const spec of SPEC_FILES) {
+      await expect(
+        resolveSpecPath(spec.subdir, spec.name),
+      ).resolves.toContain(spec.name);
+    }
+  });
+
+  test("every published version ships its spec set and engines.ts", async () => {
     const published = await listPublishedVersions();
     expect(published.length).toBeGreaterThan(0);
     for (const version of published) {
-      for (const spec of SPEC_FILES) {
+      const engineDir = await resolveEngineDir(version);
+      await access(join(engineDir, VALIDATOR_ENGINE_FILE));
+      const archiveRoot = join(engineDir, "..");
+      const specs: { subdir: string; name: string }[] = [];
+      for (const subdir of ["backend", "frontend"] as const) {
+        const names = (await readdir(join(archiveRoot, subdir))).filter((f) =>
+          f.endsWith(".spec.yaml"),
+        );
+        expect(names.length, `${version}/${subdir}`).toBeGreaterThan(0);
+        for (const name of names) specs.push({ subdir, name });
+      }
+      for (const spec of specs) {
         await expect(
           resolveSpecPath(spec.subdir, spec.name, version),
         ).resolves.toContain(join("versions", version, spec.subdir, spec.name));
       }
-      const engineDir = await resolveEngineDir(version);
-      await access(join(engineDir, VALIDATOR_ENGINE_FILE));
     }
   });
 

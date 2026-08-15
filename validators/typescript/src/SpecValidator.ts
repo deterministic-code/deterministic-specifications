@@ -7,6 +7,7 @@ import type {
   SpecValidationError,
   SpecValidationResult,
   ValidateFn,
+  ValidateOptions,
 } from "./types.ts";
 import { parseYamlWithPositions, positionFor } from "./yamlPositions.ts";
 import { resolveSpecPath } from "./resolveSpecPath.ts";
@@ -117,19 +118,36 @@ export function errorFromUnknown(err: unknown): string {
  * implement {@link check} against the parsed document.
  */
 export abstract class FileValidator {
-  async validate(text: string): Promise<SpecValidationResult> {
+  async validate(
+    text: string,
+    options?: ValidateOptions,
+  ): Promise<SpecValidationResult> {
     const { doc, lineCounter, errors, data } = readYaml(text);
     if (errors.length > 0) return { valid: false, errors };
-    return this.check({ doc, lineCounter, data }, text);
+    return this.check({ doc, lineCounter, data }, text, options);
   }
 
   protected abstract check(
     parsed: ParsedYaml,
     text: string,
+    options?: ValidateOptions,
   ): Promise<SpecValidationResult>;
 
-  async validateFile(path: string): Promise<SpecValidationResult> {
-    return this.validate(await readFile(path, "utf8"));
+  protected async optionsForFile(
+    _path: string,
+    options?: ValidateOptions,
+  ): Promise<ValidateOptions | undefined> {
+    return options;
+  }
+
+  async validateFile(
+    path: string,
+    options?: ValidateOptions,
+  ): Promise<SpecValidationResult> {
+    return this.validate(
+      await readFile(path, "utf8"),
+      await this.optionsForFile(path, options),
+    );
   }
 }
 
@@ -163,6 +181,7 @@ export class SpecValidator extends FileValidator {
   protected async check(
     { doc, lineCounter, data }: ParsedYaml,
     _text: string,
+    _options?: ValidateOptions,
   ): Promise<SpecValidationResult> {
     const resolved = await this.#resolvePath(data, doc, lineCounter);
     if (!("path" in resolved)) return resolved;

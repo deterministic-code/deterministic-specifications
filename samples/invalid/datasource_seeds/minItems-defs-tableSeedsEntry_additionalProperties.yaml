@@ -1,0 +1,6 @@
+expect:
+  covers: minItems:#/$defs/tableSeedsEntry/additionalProperties
+---
+version: CURRENT
+seeds:
+  - user: []

@@ -1,0 +1,16 @@
+expect:
+  includes: "unknown type"
+  datasource_types: |
+    version: CURRENT
+    types:
+      - user:
+          fields:
+            - email:
+                type: string
+                size: 256
+---
+version: CURRENT
+seeds:
+  - account:
+      - id1:
+          email: a@b.c

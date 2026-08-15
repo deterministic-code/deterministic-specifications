@@ -1,0 +1,6 @@
+expect:
+  covers: type:#/$defs/tableSeedsEntry/additionalProperties
+---
+version: CURRENT
+seeds:
+  - user: {}

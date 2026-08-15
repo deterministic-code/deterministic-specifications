@@ -1,0 +1,20 @@
+expect:
+  includes: "missing required field"
+  datasource_types: |
+    version: CURRENT
+    types:
+      - user:
+          fields:
+            - email:
+                type: string
+                size: 256
+            - nickname:
+                type: string
+                size: 64
+                is_nullable: true
+---
+version: CURRENT
+seeds:
+  - user:
+      - id1:
+          nickname: al

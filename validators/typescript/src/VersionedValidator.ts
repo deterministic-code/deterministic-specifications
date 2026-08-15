@@ -12,10 +12,14 @@ import {
   versionFail,
   type ParsedYaml,
 } from "./SpecValidator.ts";
-import type { SpecValidationResult } from "./types.ts";
+import type { SpecValidationResult, ValidateOptions } from "./types.ts";
+import { withSiblingDatasourceTypes } from "./seedSemantics.ts";
 
 type Engine = {
-  validate(text: string): Promise<SpecValidationResult>;
+  validate(
+    text: string,
+    options?: ValidateOptions,
+  ): Promise<SpecValidationResult>;
 };
 
 export function engineConstructor(
@@ -57,27 +61,40 @@ export class VersionedValidator extends FileValidator {
   protected async check(
     { doc, lineCounter, data }: ParsedYaml,
     text: string,
+    options?: ValidateOptions,
   ): Promise<SpecValidationResult> {
     const parsed = parseSpecVersion(data);
     if (!parsed.ok) return versionFail(doc, lineCounter, parsed.message);
     try {
-      return (await loadEngine(this.#exportName, parsed.version)).validate(text);
+      return (await loadEngine(this.#exportName, parsed.version)).validate(
+        text,
+        options,
+      );
     } catch (err) {
       return versionFail(doc, lineCounter, errorFromUnknown(err));
     }
   }
 }
 
-export const {
-  DatasourceTypesValidator,
-  ViewTypesValidator,
-  RoutesValidator,
-  ServicesValidator,
-  FrontendBindingsValidator,
-} = mapEngines(({ className }) =>
+const facades = mapEngines(({ className }) =>
   class extends VersionedValidator {
     constructor() {
       super(className);
     }
   },
 );
+
+export const DatasourceTypesValidator = facades.DatasourceTypesValidator;
+export const ViewTypesValidator = facades.ViewTypesValidator;
+export const RoutesValidator = facades.RoutesValidator;
+export const ServicesValidator = facades.ServicesValidator;
+export const FrontendBindingsValidator = facades.FrontendBindingsValidator;
+
+export class DatasourceSeedsValidator extends facades.DatasourceSeedsValidator {
+  protected async optionsForFile(
+    path: string,
+    options?: ValidateOptions,
+  ): Promise<ValidateOptions | undefined> {
+    return withSiblingDatasourceTypes(path, options);
+  }
+}

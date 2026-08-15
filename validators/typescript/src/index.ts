@@ -1,6 +1,7 @@
 export { SpecValidator } from "./SpecValidator.ts";
 export {
   DatasourceTypesValidator,
+  DatasourceSeedsValidator,
   ViewTypesValidator,
   RoutesValidator,
   ServicesValidator,
@@ -37,5 +38,6 @@ export type {
   Position,
   SpecValidationError,
   SpecValidationResult,
+  ValidateOptions,
 } from "./types.ts";
 export type { SpecRef, ParseSpecVersionResult, EngineName, EngineDef } from "./specVersion.ts";
