@@ -10,7 +10,6 @@ The canonical YAML contract for the [deterministic](https://github.com/rmcfadden
 | [`view_types.spec.yaml`](spec/view_types.spec.yaml) | `view_types.yaml` | View shapes composed from datasource tables and other views. |
 | [`routes.spec.yaml`](spec/routes.spec.yaml) | `routes.yaml` | The HTTP route surface. |
 | [`services.spec.yaml`](spec/services.spec.yaml) | `services.yaml` | Service classes resolved via DI at app bootstrap. |
-| [`settings.spec.yaml`](spec/settings.spec.yaml) | `settings.yaml` | Generation knobs — casing, dialects, comment style, library-reference mode. |
 | [`backend-app.spec.yaml`](spec/backend-app.spec.yaml) | `backend-app.yaml` | Express app bootstrap — middleware, statics, tail handlers. |
 | [`frontend-bindings.spec.yaml`](spec/frontend-bindings.spec.yaml) | `frontend_bindings.yaml` | External datasources a frontend binds to (REST/GraphQL). |
 
