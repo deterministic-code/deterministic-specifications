@@ -21,17 +21,27 @@ types:
       target: StandardCrud
 `;
 
+const MINIMAL: Record<string, string> = {
+  ViewTypesValidator: "version: CURRENT\ntypes: []\n",
+  ServicesValidator: "version: CURRENT\nservices: []\n",
+  RoutesValidator: "version: CURRENT\nroutes: []\n",
+  FrontendBindingsValidator: "version: CURRENT\ndatasources: []\n",
+};
+
 describe("VersionedValidator dispatcher", () => {
   test("CURRENT documents use the live engine", async () => {
-    const result = await new DatasourceTypesValidator().validate(VALID);
-    expect(result).toEqual({ valid: true, errors: [] });
+    expect(await new DatasourceTypesValidator().validate(VALID)).toEqual({
+      valid: true,
+      errors: [],
+    });
   });
 
   test("1.0.0 documents use the frozen engine", async () => {
-    const result = await new DatasourceTypesValidator().validate(
-      VALID.replace("CURRENT", "1.0.0"),
-    );
-    expect(result).toEqual({ valid: true, errors: [] });
+    expect(
+      await new DatasourceTypesValidator().validate(
+        VALID.replace("CURRENT", "1.0.0"),
+      ),
+    ).toEqual({ valid: true, errors: [] });
   });
 
   test("rejects a missing version with a positioned error", async () => {
@@ -89,37 +99,33 @@ describe("VersionedValidator dispatcher", () => {
     try {
       const path = join(dir, "ok.yaml");
       await writeFile(path, VALID);
-      const result = await new DatasourceTypesValidator().validateFile(path);
-      expect(result.valid).toBe(true);
+      expect(
+        (await new DatasourceTypesValidator().validateFile(path)).valid,
+      ).toBe(true);
     } finally {
       await rm(dir, { force: true, recursive: true });
     }
   });
 
-  test("engineConstructor requires the class export named after the file", () => {
-    expect(() =>
-      engineConstructor({}, "DatasourceTypesValidator.ts"),
-    ).toThrow(/missing export DatasourceTypesValidator/);
+  test("engineConstructor requires the class export named after the facade", () => {
+    expect(() => engineConstructor({}, "DatasourceTypesValidator")).toThrow(
+      /missing export DatasourceTypesValidator/,
+    );
     class Fake {
       async validate() {
-        return { valid: true, errors: [] };
-      }
-      async validateFile() {
         return { valid: true, errors: [] };
       }
     }
     expect(
       engineConstructor(
         { DatasourceTypesValidator: Fake },
-        "DatasourceTypesValidator.ts",
+        "DatasourceTypesValidator",
       ),
     ).toBe(Fake);
   });
 
-  test("surfaces a missing engine module as a version-path error", async () => {
-    const result = await new VersionedValidator("DoesNotExist.ts").validate(
-      VALID,
-    );
+  test("surfaces a missing engine export as a version-path error", async () => {
+    const result = await new VersionedValidator("DoesNotExist").validate(VALID);
     expect(result.valid).toBe(false);
     expect(result.errors[0]?.instancePath).toBe("/version");
     expect(result.errors[0]?.message.length).toBeGreaterThan(0);
@@ -127,25 +133,20 @@ describe("VersionedValidator dispatcher", () => {
 
   test("other facades dispatch CURRENT documents", async () => {
     expect(
-      (await new ViewTypesValidator().validate("version: CURRENT\ntypes: []\n"))
+      (await new ViewTypesValidator().validate(MINIMAL.ViewTypesValidator))
         .valid,
     ).toBe(true);
     expect(
-      (
-        await new ServicesValidator().validate(
-          "version: CURRENT\nservices: []\n",
-        )
-      ).valid,
+      (await new ServicesValidator().validate(MINIMAL.ServicesValidator))
+        .valid,
     ).toBe(true);
     expect(
-      (
-        await new RoutesValidator().validate("version: CURRENT\nroutes: []\n")
-      ).valid,
+      (await new RoutesValidator().validate(MINIMAL.RoutesValidator)).valid,
     ).toBe(true);
     expect(
       (
         await new FrontendBindingsValidator().validate(
-          "version: CURRENT\ndatasources: []\n",
+          MINIMAL.FrontendBindingsValidator,
         )
       ).valid,
     ).toBe(true);

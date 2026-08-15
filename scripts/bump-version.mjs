@@ -1,18 +1,19 @@
 #!/usr/bin/env node
 /**
- * Archive CURRENT backend/, frontend/, and live engine files into versions/<semver>/.
+ * Archive CURRENT backend/, frontend/, and live engines.ts into versions/<semver>/.
  *
  *   node scripts/bump-version.mjs 1.1.0
  *
- * Moves the live spec folders and the engine files from validators/typescript/
+ * Moves the live spec folders and validators/typescript/src/validators/engines.ts
  * into the archive, stamps spec `version:` / `$id`, and rewrites the frozen
- * validator engine + tests so they stay pinned to that semver. Those frozen
- * tests keep running as proof the old version still works.
+ * engine so it stays pinned to that semver. Live tests stay put and load every
+ * archived engine by version.
  *
- * Does not move the rest of validators/typescript/ (src, package.json, etc.).
+ * Does not move the rest of validators/typescript/ (shared engine, tests,
+ * package.json, etc.).
  *
- * If versions/<semver>/ already has specs but no validators/ (first 1.0.0 freeze),
- * only the live engine files are moved in.
+ * If versions/<semver>/ already has specs but no validators/ (first freeze),
+ * only the live engine file is moved in.
  */
 import {
   access,
@@ -28,17 +29,16 @@ import { stampSpecText, stampValidatorText } from "./lib/stamp-version.mjs";
 
 const SEMVER = /^[0-9]+\.[0-9]+\.[0-9]+$/;
 const LIVE_SPEC_DIRS = ["backend", "frontend"];
-const ENGINE_FILES = [
-  "DatasourceTypesValidator.ts",
-  "ViewTypesValidator.ts",
-  "RoutesValidator.ts",
-  "ServicesValidator.ts",
-  "FrontendBindingsValidator.ts",
-];
-const LIVE_ENGINE_FILES = [...ENGINE_FILES, "validator.test.ts"];
+const ENGINE_FILE = "engines.ts";
 
 const repoRoot = dirname(dirname(fileURLToPath(import.meta.url)));
-const liveEngineDir = join(repoRoot, "validators", "typescript");
+const liveEngineDir = join(
+  repoRoot,
+  "validators",
+  "typescript",
+  "src",
+  "validators",
+);
 const version = process.argv[2];
 
 if (!version || !SEMVER.test(version)) {
@@ -65,24 +65,12 @@ async function stampSpecs(dir, semver) {
   }
 }
 
-async function stampValidator(dir, semver) {
-  const validatorDir = join(dir, "validators");
-  for (const entry of await readdir(validatorDir)) {
-    if (!entry.endsWith(".ts")) continue;
-    const path = join(validatorDir, entry);
-    await writeFile(
-      path,
-      stampValidatorText(await readFile(path, "utf8"), semver),
-    );
-  }
-}
-
-async function moveLiveEngines(destRoot) {
+async function moveLiveEngine(destRoot) {
   const to = join(destRoot, "validators");
   await mkdir(to, { recursive: true });
-  for (const file of LIVE_ENGINE_FILES) {
-    await rename(join(liveEngineDir, file), join(to, file));
-  }
+  const dest = join(to, ENGINE_FILE);
+  await rename(join(liveEngineDir, ENGINE_FILE), dest);
+  await writeFile(dest, stampValidatorText(await readFile(dest, "utf8"), version));
 }
 
 async function assertCompleteArchive(dir) {
@@ -90,10 +78,8 @@ async function assertCompleteArchive(dir) {
   for (const subdir of [...LIVE_SPEC_DIRS, "validators"]) {
     if (!(await exists(join(dir, subdir)))) missing.push(subdir);
   }
-  for (const file of LIVE_ENGINE_FILES) {
-    if (!(await exists(join(dir, "validators", file)))) {
-      missing.push(`validators/${file}`);
-    }
+  if (!(await exists(join(dir, "validators", ENGINE_FILE)))) {
+    missing.push(`validators/${ENGINE_FILE}`);
   }
   if (missing.length > 0) {
     console.error(`incomplete archive: missing ${missing.join(", ")}`);
@@ -107,11 +93,11 @@ for (const name of LIVE_SPEC_DIRS) {
     process.exit(1);
   }
 }
-for (const file of LIVE_ENGINE_FILES) {
-  if (!(await exists(join(liveEngineDir, file)))) {
-    console.error(`missing live engine: validators/typescript/${file}`);
-    process.exit(1);
-  }
+if (!(await exists(join(liveEngineDir, ENGINE_FILE)))) {
+  console.error(
+    `missing live engine: validators/typescript/src/validators/${ENGINE_FILE}`,
+  );
+  process.exit(1);
 }
 
 await mkdir(join(repoRoot, "versions"), { recursive: true });
@@ -130,12 +116,10 @@ if (!destExists) {
   for (const name of LIVE_SPEC_DIRS) {
     await rename(join(repoRoot, name), join(destRoot, name));
   }
-  await moveLiveEngines(destRoot);
+  await moveLiveEngine(destRoot);
   await stampSpecs(destRoot, version);
-  await stampValidator(destRoot, version);
 } else {
-  await moveLiveEngines(destRoot);
-  await stampValidator(destRoot, version);
+  await moveLiveEngine(destRoot);
 }
 
 await assertCompleteArchive(destRoot);

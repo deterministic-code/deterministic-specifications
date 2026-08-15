@@ -1,11 +1,26 @@
-import { describe, expect, test } from "vitest";
 import {
   CURRENT_VERSION,
+  VALIDATOR_ENGINE_FILE,
+  VALIDATOR_ENGINES,
   isPublishedVersion,
   isSpecRef,
   isSpecVersion,
   parseSpecVersion,
 } from "./specVersion.ts";
+import { describe, expect, test } from "vitest";
+
+describe("catalog", () => {
+  test("engine module is engines.ts and five named engines are listed", () => {
+    expect(VALIDATOR_ENGINE_FILE).toBe("engines.ts");
+    expect(VALIDATOR_ENGINES.map(([className]) => className)).toEqual([
+      "DatasourceTypesValidator",
+      "ViewTypesValidator",
+      "RoutesValidator",
+      "ServicesValidator",
+      "FrontendBindingsValidator",
+    ]);
+  });
+});
 
 describe("isPublishedVersion / isSpecVersion", () => {
   test("accepts X.Y.Z and CURRENT", () => {

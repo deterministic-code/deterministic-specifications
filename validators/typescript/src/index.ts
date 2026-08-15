@@ -21,11 +21,12 @@ export {
 export {
   CURRENT_VERSION,
   SPEC_FILES,
-  VALIDATOR_ENGINE_FILES,
-  VALIDATOR_TEST_FILE,
+  VALIDATOR_ENGINES,
+  VALIDATOR_ENGINE_FILE,
   isPublishedVersion,
   isSpecRef,
   isSpecVersion,
+  mapEngines,
   parseSpecVersion,
 } from "./specVersion.ts";
 export {
@@ -37,4 +38,4 @@ export type {
   SpecValidationError,
   SpecValidationResult,
 } from "./types.ts";
-export type { SpecRef, ParseSpecVersionResult } from "./specVersion.ts";
+export type { SpecRef, ParseSpecVersionResult, EngineName, EngineDef } from "./specVersion.ts";

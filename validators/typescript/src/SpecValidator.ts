@@ -12,13 +12,23 @@ import { parseYamlWithPositions, positionFor } from "./yamlPositions.ts";
 import { resolveSpecPath } from "./resolveSpecPath.ts";
 import {
   isSpecRef,
+  mapEngines,
   parseSpecVersion,
+  type EngineName,
   type SpecRef,
 } from "./specVersion.ts";
 
 type SpecPathFn = () => Promise<string>;
 type SpecPathSource = string | SpecPathFn | SpecRef;
 type AjvCtorType = new (opts: unknown) => AjvLike;
+type YamlDoc = ReturnType<typeof parseYamlWithPositions>["doc"];
+type YamlLines = ReturnType<typeof parseYamlWithPositions>["lineCounter"];
+
+export type ParsedYaml = {
+  doc: YamlDoc;
+  lineCounter: YamlLines;
+  data: unknown;
+};
 
 export function yamlErrorOffset(
   pos: readonly number[] | undefined | null,
@@ -26,10 +36,47 @@ export function yamlErrorOffset(
   return pos ? pos[0] : 0;
 }
 
-export function ajvFailureErrors(
-  errors: AjvError[] | null | undefined,
-): AjvError[] {
-  return errors ?? [];
+export function yamlParseErrors(
+  doc: YamlDoc,
+  lineCounter: YamlLines,
+): SpecValidationError[] {
+  return doc.errors.map((e): SpecValidationError => {
+    const { line, col } = lineCounter.linePos(yamlErrorOffset(e.pos));
+    return { line, col, instancePath: "", message: e.message };
+  });
+}
+
+export function specError(
+  doc: YamlDoc,
+  lineCounter: YamlLines,
+  instancePath: string,
+  message: string,
+): SpecValidationError {
+  const { line, col } = positionFor(doc, lineCounter, instancePath);
+  return { line, col, instancePath, message };
+}
+
+export function versionFail(
+  doc: YamlDoc,
+  lineCounter: YamlLines,
+  message: string,
+): SpecValidationResult {
+  return {
+    valid: false,
+    errors: [specError(doc, lineCounter, "/version", message)],
+  };
+}
+
+export function readYaml(text: string): ParsedYaml & {
+  errors: SpecValidationError[];
+} {
+  const { doc, lineCounter } = parseYamlWithPositions(text);
+  return {
+    doc,
+    lineCounter,
+    errors: yamlParseErrors(doc, lineCounter),
+    data: doc.toJS(),
+  };
 }
 
 /** CJS/ESM interop: `ajv/dist/2020.js` may be the class or `{ default: class }`. */
@@ -65,8 +112,25 @@ export function errorFromUnknown(err: unknown): string {
   return err instanceof Error ? err.message : String(err);
 }
 
-export function pinnedVersionMismatchMessage(pinned: string): string {
-  return `version must be ${pinned} (this engine is pinned to ${pinned})`;
+/**
+ * Shared parse + file entry: YAML syntax errors are mapped here; subclasses
+ * implement {@link check} against the parsed document.
+ */
+export abstract class FileValidator {
+  async validate(text: string): Promise<SpecValidationResult> {
+    const { doc, lineCounter, errors, data } = readYaml(text);
+    if (errors.length > 0) return { valid: false, errors };
+    return this.check({ doc, lineCounter, data }, text);
+  }
+
+  protected abstract check(
+    parsed: ParsedYaml,
+    text: string,
+  ): Promise<SpecValidationResult>;
+
+  async validateFile(path: string): Promise<SpecValidationResult> {
+    return this.validate(await readFile(path, "utf8"));
+  }
 }
 
 /**
@@ -79,12 +143,13 @@ export function pinnedVersionMismatchMessage(pinned: string): string {
  * loaded and nothing else. Pass an absolute path (or path thunk) to validate
  * against a spec that lives outside this package — the pin check is skipped.
  */
-export class SpecValidator {
+export class SpecValidator extends FileValidator {
   readonly #specRef: SpecRef | null;
   readonly #resolveFixedPath: SpecPathFn | null;
   readonly #compiled = new Map<string, ValidateFn>();
 
   constructor(specPath: SpecPathSource) {
+    super();
     if (isSpecRef(specPath)) {
       this.#specRef = specPath;
       this.#resolveFixedPath = null;
@@ -95,102 +160,72 @@ export class SpecValidator {
     }
   }
 
-  async validate(text: string): Promise<SpecValidationResult> {
-    const { doc, lineCounter } = parseYamlWithPositions(text);
-
-    if (doc.errors.length > 0) {
-      const errors = doc.errors.map((e): SpecValidationError => {
-        const offset = yamlErrorOffset(e.pos);
-        const { line, col } = lineCounter.linePos(offset);
-        return { line, col, instancePath: "", message: e.message };
-      });
-      return { valid: false, errors };
-    }
-
-    const data = doc.toJS();
+  protected async check(
+    { doc, lineCounter, data }: ParsedYaml,
+    _text: string,
+  ): Promise<SpecValidationResult> {
     const resolved = await this.#resolvePath(data, doc, lineCounter);
-    if ("errors" in resolved) return { valid: false, errors: resolved.errors };
+    if (!("path" in resolved)) return resolved;
 
     const validate = await this.#compiledSpec(resolved.path);
     if (validate(data)) return { valid: true, errors: [] };
 
-    const errors = ajvFailureErrors(validate.errors).map(
-      (e): SpecValidationError => {
-        const { line, col } = positionFor(doc, lineCounter, e.instancePath);
-        return {
-          line,
-          col,
-          instancePath: e.instancePath,
-          message: formatAjvError(e),
-        };
-      },
-    );
-    return { valid: false, errors };
-  }
-
-  async validateFile(path: string): Promise<SpecValidationResult> {
-    const text = await readFile(path, "utf8");
-    return this.validate(text);
+    return {
+      valid: false,
+      errors: validate.errors!.map((e) =>
+        specError(doc, lineCounter, e.instancePath, formatAjvError(e)),
+      ),
+    };
   }
 
   async #resolvePath(
     data: unknown,
-    doc: ReturnType<typeof parseYamlWithPositions>["doc"],
-    lineCounter: ReturnType<typeof parseYamlWithPositions>["lineCounter"],
-  ): Promise<{ path: string } | { errors: SpecValidationError[] }> {
+    doc: YamlDoc,
+    lineCounter: YamlLines,
+  ): Promise<{ path: string } | SpecValidationResult> {
     if (this.#resolveFixedPath) {
       return { path: await this.#resolveFixedPath() };
     }
     const ref = this.#specRef!;
     const parsed = parseSpecVersion(data);
-    const { line, col } = positionFor(doc, lineCounter, "/version");
-    if (!parsed.ok) {
-      return {
-        errors: [
-          {
-            line,
-            col,
-            instancePath: "/version",
-            message: parsed.message,
-          },
-        ],
-      };
-    }
+    if (!parsed.ok) return versionFail(doc, lineCounter, parsed.message);
     if (parsed.version !== ref.version) {
-      return {
-        errors: [
-          {
-            line,
-            col,
-            instancePath: "/version",
-            message: pinnedVersionMismatchMessage(ref.version),
-          },
-        ],
-      };
+      return versionFail(
+        doc,
+        lineCounter,
+        `version must be ${ref.version} (this engine is pinned to ${ref.version})`,
+      );
     }
     try {
-      const path = await resolveSpecPath(ref.subdir, ref.name, ref.version);
-      return { path };
-    } catch (err) {
       return {
-        errors: [
-          {
-            line,
-            col,
-            instancePath: "/version",
-            message: errorFromUnknown(err),
-          },
-        ],
+        path: await resolveSpecPath(ref.subdir, ref.name, ref.version),
       };
+    } catch (err) {
+      return versionFail(doc, lineCounter, errorFromUnknown(err));
     }
+  }
+
+  static pinned(ref: SpecRef): new () => SpecValidator {
+    return class extends SpecValidator {
+      constructor() {
+        super(ref);
+      }
+    };
+  }
+
+  static pinnedEngines(
+    version: string,
+  ): Record<EngineName, new () => SpecValidator> {
+    return mapEngines(({ subdir, name }) =>
+      SpecValidator.pinned({ subdir, name, version }),
+    );
   }
 
   async #compiledSpec(specPath: string): Promise<ValidateFn> {
     const hit = this.#compiled.get(specPath);
     if (hit) return hit;
     const specText = await readFile(specPath, "utf8");
-    const schema = parseDocument(specText).toJS();
-    const compiled = newAjv().compile(schema);
+    const compiled = newAjv().compile(parseDocument(specText).toJS());
     this.#compiled.set(specPath, compiled);
     return compiled;
   }
