@@ -1,5 +1,5 @@
 $schema: https://json-schema.org/draft/2020-12/schema
-$id: https://cali-services.local/schemas/deterministic/routes.spec.yaml
+$id: https://cali-services.local/schemas/deterministic/backend/routes.spec.yaml
 title: routes.yaml
 description: >
   Strict schema for deterministic/routes.yaml. Declares the REST route
