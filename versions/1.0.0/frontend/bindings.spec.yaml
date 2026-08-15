@@ -1,6 +1,6 @@
-version: CURRENT
+version: 1.0.0
 $schema: https://json-schema.org/draft/2020-12/schema
-$id: https://cali-services.local/schemas/deterministic/frontend/bindings.spec.yaml
+$id: https://cali-services.local/schemas/deterministic/versions/1.0.0/frontend/bindings.spec.yaml
 title: frontend_bindings.yaml
 description: >
   Strict schema for deterministic/frontend_bindings.yaml. Declares the external

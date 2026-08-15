@@ -5,7 +5,7 @@ import {
   parseJsonPointer,
   parseYamlWithPositions,
   positionFor,
-} from "./yaml-positions.ts";
+} from "./yamlPositions.ts";
 
 describe("asRecord", () => {
   test("returns the object for plain objects and arrays", () => {

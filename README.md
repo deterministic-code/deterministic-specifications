@@ -15,10 +15,41 @@ The canonical YAML contract for the [deterministic](https://github.com/rmcfadden
 
 ## Conventions
 
-- Every schema is `additionalProperties: false` — unknown keys are rejected so typos fail loudly rather than being silently ignored.
+- Every authored document must declare `version: CURRENT` or a published semver. Unknown keys are rejected (`additionalProperties: false`) so typos fail loudly rather than being silently ignored.
 - Shared identifier patterns (`^[a-z_][a-z0-9_]*$`), the `file:`/`id:`/`uuid:`/`user_id+name` include machinery, and the `combine_options` merge transforms recur across several specs.
 - Schema shape is only the first gate; several specs pair with a semantic layer (cross-document reference checks, merged-settings validation) in the consuming generator.
 
 ## Versioning
 
-These are contract files: adding a field, key, `x-` extension, or op annotation is a deliberate contract change — every emitter that reads the spec must honor it. Treat changes here as breaking until every consumer is updated.
+CURRENT lives at the repo root as three sibling folders:
+
+```
+backend/       # live specs
+frontend/
+validator/      # live engines + tests, pinned to CURRENT
+```
+
+Every authored `deterministic/*.yaml` document must declare a `version`:
+
+```yaml
+version: CURRENT   # live root specs and validator/ — may change without notice
+# or
+version: 1.0.0     # frozen archive under versions/1.0.0/
+```
+
+- **`CURRENT`** binds to the live specs and the live [`validator/`](./validator) engine. Use this only when you want to track the moving contract (reckless).
+- **A published semver** binds to [`versions/<semver>/`](./versions), which contains `backend/`, `frontend/`, and `validator/` (engine **and frozen tests**). Those tests keep running as proof that version is still supported.
+
+Root spec files start with `version: CURRENT`. Each frozen copy is stamped with `version: <semver>` and a versioned `$id`. Each frozen engine is pinned to that semver and rejects documents that declare any other version.
+
+Archive a new version by moving the three live folders:
+
+```sh
+npm run bump-version -- 1.1.0
+```
+
+That relocates `backend/`, `frontend/`, and `validator/` into `versions/1.1.0/`, stamps the specs, and rewrites the engine + tests so they stay pinned to `1.1.0`. After a bump, the next CURRENT is authored again at repo root. Bumps are infrequent and take an explicit semver — no auto-increment.
+
+The TypeScript validator suite enumerates every folder under `versions/` and fails if any published version is missing specs, an engine, or `validator/validator.test.ts`.
+
+These are contract files: adding a field, key, `x-` extension, or op annotation is a deliberate contract change. Freeze a new semver before changing CURRENT so existing documents stay valid against their pinned snapshot.

@@ -1,9 +1,10 @@
 # @deterministic-code/deterministic-specifications
 
-Strict TypeScript validators for the deterministic YAML contract. One validator
-per spec, all sharing a common `SpecValidator` base class that carries the
-engine — AJV (draft 2020-12) compilation and source-position mapping so every
-error reports `{ line, col }`.
+Shared TypeScript validation engine for the deterministic YAML contract. AJV
+(draft 2020-12) compilation and source-position mapping live here so every
+error reports `{ line, col }`. Per-version engines and their tests live next
+to the specs: [`validator/`](../../validator) for CURRENT,
+[`versions/<semver>/validator/`](../../versions) for a freeze.
 
 ```ts
 import { DatasourceTypesValidator } from "@deterministic-code/deterministic-specifications";
@@ -15,6 +16,15 @@ const fromFile = await validator.validateFile("deterministic/datasource_types.ya
 
 // { valid: boolean, errors: [{ line, col, instancePath, message }] }
 ```
+
+The exported classes are facades: they read `version` from the document and
+load that archive's engine. `CURRENT` uses repo-root `validator/`; `1.0.0`
+uses `versions/1.0.0/validator/`. An unknown version is a validation error.
+Each engine is pinned — a CURRENT engine rejects `version: 1.0.0` and vice
+versa.
+
+Frozen tests under `versions/<semver>/validator/validator.test.ts` keep
+running in CI. They are the proof that version is still supported.
 
 ## Validators
 
@@ -31,8 +41,15 @@ Each exposes two methods:
 - `validate(text: string)` — validate an in-memory YAML string.
 - `validateFile(path: string)` — read a file from disk, then validate it.
 
-Construct `SpecValidator` directly with an absolute path to validate against a
-spec that lives outside this package.
+Construct `SpecValidator` with `{ subdir, name, version }` to pin an engine
+to one snapshot, or with an absolute path to validate against a spec that
+lives outside this package (the pin check is skipped).
+
+Archive a new version (moves `backend/`, `frontend/`, and `validator/`):
+
+```sh
+npm run bump-version -- 1.1.0
+```
 
 This package validates **schema shape** only. Cross-document and semantic rules
 (foreign-key resolution, defaults, type constraints) are layered on top by the

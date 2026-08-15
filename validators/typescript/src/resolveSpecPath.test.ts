@@ -1,0 +1,188 @@
+import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+import { afterAll, beforeAll, describe, expect, test } from "vitest";
+import {
+  engineRelPath,
+  findAncestorPath,
+  findEngineDir,
+  findSpecPath,
+  listPublishedVersions,
+  listSpecVersions,
+  resolveEngineDir,
+  resolveSpecPath,
+  specRelPath,
+} from "./resolveSpecPath.ts";
+import { CURRENT_VERSION, SPEC_FILES } from "./specVersion.ts";
+
+describe("specRelPath", () => {
+  test("CURRENT is the live root; a semver is under versions/", () => {
+    expect(specRelPath("backend", "routes.spec.yaml")).toBe(
+      join("backend", "routes.spec.yaml"),
+    );
+    expect(specRelPath("backend", "routes.spec.yaml", CURRENT_VERSION)).toBe(
+      join("backend", "routes.spec.yaml"),
+    );
+    expect(specRelPath("backend", "routes.spec.yaml", "1.0.0")).toBe(
+      join("versions", "1.0.0", "backend", "routes.spec.yaml"),
+    );
+  });
+});
+
+describe("findSpecPath", () => {
+  test("resolves a bundled backend spec to a readable file", async () => {
+    const path = await findSpecPath("backend", "routes.spec.yaml");
+    expect(path).not.toBeNull();
+    const text = await readFile(path!, "utf8");
+    expect(text).toContain("$schema");
+  });
+
+  test("resolves a bundled frontend spec", async () => {
+    const path = await findSpecPath("frontend", "bindings.spec.yaml");
+    expect(path).not.toBeNull();
+  });
+
+  test("resolves a published snapshot", async () => {
+    const path = await findSpecPath(
+      "backend",
+      "datasource-types.spec.yaml",
+      "1.0.0",
+    );
+    expect(path).not.toBeNull();
+    expect(path).toContain(join("versions", "1.0.0"));
+    const text = await readFile(path!, "utf8");
+    expect(text).toContain("version: 1.0.0");
+  });
+
+  test("returns null for an unknown spec", async () => {
+    expect(await findSpecPath("backend", "does-not-exist.spec.yaml")).toBeNull();
+  });
+
+  test("returns null when walking from a tree that has no specs", async () => {
+    expect(
+      await findSpecPath("backend", "routes.spec.yaml", "CURRENT", tmpdir()),
+    ).toBeNull();
+  });
+});
+
+describe("findAncestorPath", () => {
+  test("returns null when the relative path is never found", async () => {
+    expect(await findAncestorPath("no-such-rel-path-xyz", tmpdir())).toBeNull();
+  });
+});
+
+describe("resolveSpecPath", () => {
+  test("returns the path for a known spec", async () => {
+    await expect(
+      resolveSpecPath("backend", "services.spec.yaml"),
+    ).resolves.toContain("services.spec.yaml");
+  });
+
+  test("returns the path for a published version", async () => {
+    await expect(
+      resolveSpecPath("frontend", "bindings.spec.yaml", "1.0.0"),
+    ).resolves.toContain(join("versions", "1.0.0", "frontend"));
+  });
+
+  test("throws for an unknown spec on CURRENT", async () => {
+    await expect(
+      resolveSpecPath("backend", "nope.spec.yaml"),
+    ).rejects.toThrow(/spec file not found: backend[/\\]nope\.spec\.yaml/);
+  });
+
+  test("throws for an unknown published version", async () => {
+    await expect(
+      resolveSpecPath("backend", "routes.spec.yaml", "9.9.9"),
+    ).rejects.toThrow(/unknown spec version: 9.9.9 \(published: 1\.0\.0\)/);
+  });
+});
+
+describe("listSpecVersions", () => {
+  test("CURRENT plus every published folder", async () => {
+    await expect(listSpecVersions()).resolves.toEqual(["CURRENT", "1.0.0"]);
+    await expect(listPublishedVersions()).resolves.toEqual(["1.0.0"]);
+  });
+});
+
+describe("published version completeness", () => {
+  test("every published version ships the full spec set", async () => {
+    const published = await listPublishedVersions();
+    expect(published.length).toBeGreaterThan(0);
+    for (const version of published) {
+      for (const spec of SPEC_FILES) {
+        await expect(
+          resolveSpecPath(spec.subdir, spec.name, version),
+        ).resolves.toContain(join("versions", version, spec.subdir, spec.name));
+      }
+    }
+  });
+});
+
+describe("version discovery from an isolated tree", () => {
+  let dir = "";
+  beforeAll(async () => {
+    dir = await mkdtemp(join(tmpdir(), "spec-versions-"));
+    await mkdir(join(dir, "versions", "0.0.0"), { recursive: true });
+    await mkdir(join(dir, "versions", "1.0.0"), { recursive: true });
+    await mkdir(join(dir, "versions", "not-a-version"), { recursive: true });
+    await writeFile(join(dir, "versions", "readme.txt"), "skip\n");
+  });
+  afterAll(async () => {
+    await rm(dir, { force: true, recursive: true });
+  });
+
+  test("lists only semver directories and reports a missing spec in a known version", async () => {
+    await expect(listPublishedVersions(dir)).resolves.toEqual(["0.0.0", "1.0.0"]);
+    await expect(listPublishedVersions(tmpdir())).resolves.toEqual([]);
+    await expect(listSpecVersions(tmpdir())).resolves.toEqual(["CURRENT"]);
+    await expect(
+      resolveSpecPath("backend", "routes.spec.yaml", "1.0.0", dir),
+    ).rejects.toThrow(
+      /spec file not found: versions[/\\]1\.0\.0[/\\]backend[/\\]routes\.spec\.yaml/,
+    );
+    await expect(
+      resolveSpecPath("backend", "routes.spec.yaml", "9.9.9", dir),
+    ).rejects.toThrow(/unknown spec version: 9.9.9 \(published: 0\.0\.0, 1\.0\.0\)/);
+    await expect(
+      resolveSpecPath("backend", "routes.spec.yaml", "8.8.8", tmpdir()),
+    ).rejects.toThrow(/unknown spec version: 8\.8\.8 \(published: none\)/);
+  });
+});
+
+describe("engineRelPath / resolveEngineDir", () => {
+  test("CURRENT is validator/; a semver is under versions/<semver>/validator/", () => {
+    expect(engineRelPath("CURRENT")).toBe("validator");
+    expect(engineRelPath("1.0.0")).toBe(join("versions", "1.0.0", "validator"));
+  });
+
+  test("resolves the live and frozen engine directories", async () => {
+    await expect(findEngineDir("CURRENT")).resolves.toMatch(/validator$/);
+    await expect(resolveEngineDir("1.0.0")).resolves.toContain(
+      join("versions", "1.0.0", "validator"),
+    );
+  });
+
+  test("throws for an unknown published version", async () => {
+    await expect(resolveEngineDir("9.9.9")).rejects.toThrow(
+      /unknown spec version: 9.9.9/,
+    );
+    await expect(resolveEngineDir("8.8.8", tmpdir())).rejects.toThrow(
+      /unknown spec version: 8\.8\.8 \(published: none\)/,
+    );
+  });
+
+  test("throws when a known version has no validator engine", async () => {
+    const dir = await mkdtemp(join(tmpdir(), "engine-missing-"));
+    try {
+      await mkdir(join(dir, "versions", "1.0.0"), { recursive: true });
+      await expect(resolveEngineDir("1.0.0", dir)).rejects.toThrow(
+        /validator engine not found: versions[/\\]1\.0\.0[/\\]validator/,
+      );
+      await expect(resolveEngineDir("CURRENT", dir)).rejects.toThrow(
+        /validator engine not found: validator/,
+      );
+    } finally {
+      await rm(dir, { force: true, recursive: true });
+    }
+  });
+});

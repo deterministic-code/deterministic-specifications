@@ -10,7 +10,9 @@
   "files": [
     "src",
     "backend",
-    "frontend"
+    "frontend",
+    "validator",
+    "versions"
   ],
   "scripts": {
     "sync-specs": "node scripts/sync-specs.mjs",

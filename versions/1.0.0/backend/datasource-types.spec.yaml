@@ -1,6 +1,6 @@
-version: CURRENT
+version: 1.0.0
 $schema: https://json-schema.org/draft/2020-12/schema
-$id: https://cali-services.local/schemas/deterministic/backend/datasource-types.spec.yaml
+$id: https://cali-services.local/schemas/deterministic/versions/1.0.0/backend/datasource-types.spec.yaml
 title: datasource_types.yaml
 description: >
   Strict schema for deterministic/datasource_types.yaml. Defines the
