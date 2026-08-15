@@ -7,7 +7,7 @@ The canonical YAML contract for the [deterministic](https://github.com/rmcfadden
 | Spec | Governs | Purpose |
 | --- | --- | --- |
 | [`datasource-types.spec.yaml`](spec/datasource-types.spec.yaml) | `datasource_types.yaml` | The physical data model — tables, fields, indexes, seeds, FKs. |
-| [`view_types.spec.yaml`](spec/view_types.spec.yaml) | `view_types.yaml` | View shapes composed from datasource tables and other views. |
+| [`view-types.spec.yaml`](spec/view-types.spec.yaml) | `view_types.yaml` | View shapes composed from datasource tables and other views. |
 | [`routes.spec.yaml`](spec/routes.spec.yaml) | `routes.yaml` | The HTTP route surface. |
 | [`services.spec.yaml`](spec/services.spec.yaml) | `services.yaml` | Service classes resolved via DI at app bootstrap. |
 | [`backend-app.spec.yaml`](spec/backend-app.spec.yaml) | `backend-app.yaml` | Express app bootstrap — middleware, statics, tail handlers. |
