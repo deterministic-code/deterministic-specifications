@@ -1,0 +1,7 @@
+expect:
+  covers: required:#/$defs/userNameInclude:user_id
+---
+version: CURRENT
+routes: []
+includes:
+  - name: app

@@ -1,0 +1,11 @@
+expect:
+  covers: enum:#/$defs/datasourceDef/properties/schema_type
+---
+version: CURRENT
+datasources:
+  - core:
+      type: REST
+      schema_type: nope
+      schema: https://example.com/o.json
+      clients:
+        - fetch

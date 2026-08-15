@@ -1,0 +1,25 @@
+version: CURRENT
+types:
+  - user:
+      fields:
+        - email:
+            type: string
+            size: 256
+            is_unique: true
+  - project:
+      fields:
+        - name:
+            type: string
+            size: 128
+        - owner_id:
+            references: user.id
+  - task:
+      fields:
+        - title:
+            type: string
+            size: 256
+        - done:
+            type: boolean
+            default_value: false
+        - project_id:
+            references: project.id

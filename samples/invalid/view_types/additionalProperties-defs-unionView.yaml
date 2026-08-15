@@ -1,0 +1,10 @@
+expect:
+  covers: additionalProperties:#/$defs/unionView
+---
+version: CURRENT
+types:
+  - result:
+      one_of:
+        - person
+        - other
+      extra: true

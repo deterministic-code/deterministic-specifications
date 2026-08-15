@@ -1,0 +1,6 @@
+expect:
+  covers: pattern:#/$defs/routeEntry/oneOf/0
+---
+version: CURRENT
+routes:
+  - NOT VALID

@@ -1,0 +1,11 @@
+expect:
+  covers: minProperties:#/$defs/seedEntry/additionalProperties
+---
+version: CURRENT
+types:
+  - user:
+      fields:
+        - n:
+            type: integer
+      seeds:
+        - id1: {}

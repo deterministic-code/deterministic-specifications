@@ -1,0 +1,14 @@
+expect:
+  covers: minLength:#/$defs/combinedTypeItem/oneOf/1/additionalProperties/properties/target
+---
+version: CURRENT
+routes: []
+combined_routes:
+  - people:
+      route: /api/people
+      combined_types:
+        - Person
+        - reports:
+            via: manager
+            target: ""
+            route: /r

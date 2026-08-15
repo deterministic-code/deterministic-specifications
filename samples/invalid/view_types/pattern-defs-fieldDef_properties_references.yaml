@@ -1,0 +1,10 @@
+expect:
+  covers: pattern:#/$defs/fieldDef/properties/references
+---
+version: CURRENT
+types:
+  - person:
+      fields:
+        - Role:
+            type: datasource_types.role
+            references: NOT VALID

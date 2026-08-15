@@ -1,0 +1,12 @@
+expect:
+  covers: additionalProperties:#/$defs/combineOptions
+---
+version: CURRENT
+routes: []
+includes:
+  - file: x.yaml
+    combine_options:
+      source:
+        remove_routes:
+          - OldRoute
+      extra: true

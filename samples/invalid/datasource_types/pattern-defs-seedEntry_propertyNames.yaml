@@ -1,0 +1,11 @@
+expect:
+  covers: pattern:#/$defs/seedEntry/propertyNames
+---
+version: CURRENT
+types:
+  - user:
+      fields:
+        - n:
+            type: integer
+      seeds:
+        - NOT VALID

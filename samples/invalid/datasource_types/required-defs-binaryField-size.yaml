@@ -1,0 +1,9 @@
+expect:
+  covers: required:#/$defs/binaryField:size
+---
+version: CURRENT
+types:
+  - user:
+      fields:
+        - n:
+            type: binary

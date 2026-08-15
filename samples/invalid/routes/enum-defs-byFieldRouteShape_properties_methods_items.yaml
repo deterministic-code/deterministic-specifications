@@ -1,0 +1,10 @@
+expect:
+  covers: enum:#/$defs/byFieldRouteShape/properties/methods/items
+---
+version: CURRENT
+routes:
+  - by_email:
+      entity: user
+      byField: email
+      methods:
+        - nope

@@ -1,0 +1,6 @@
+expect:
+  covers: oneOf:#/$defs/routeEntry
+---
+version: CURRENT
+routes:
+  - nope: true

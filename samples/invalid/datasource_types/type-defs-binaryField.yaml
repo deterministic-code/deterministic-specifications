@@ -1,0 +1,8 @@
+expect:
+  covers: type:#/$defs/binaryField
+---
+version: CURRENT
+types:
+  - user:
+      fields:
+        - n: []

@@ -1,0 +1,13 @@
+expect:
+  covers: maxItems:#/$defs/decimalField/properties/size
+---
+version: CURRENT
+types:
+  - user:
+      fields:
+        - n:
+            type: decimal
+            size:
+              - 1
+              - 2
+              - 3

@@ -1,0 +1,8 @@
+expect:
+  covers: maxProperties:#/$defs/combinedRouteEntry
+---
+version: CURRENT
+routes: []
+combined_routes:
+  - a: {}
+    b: {}

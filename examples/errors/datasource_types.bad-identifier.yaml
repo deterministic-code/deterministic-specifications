@@ -1,0 +1,10 @@
+expect:
+  includes: "must match pattern"
+---
+version: CURRENT
+types:
+  - User:
+      fields:
+        - email:
+            type: string
+            size: 256

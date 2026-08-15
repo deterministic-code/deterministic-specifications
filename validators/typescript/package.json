@@ -13,7 +13,8 @@
   "scripts": {
     "typecheck": "tsc --noEmit",
     "test": "vitest run --coverage",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "generate:invalid-samples": "node --experimental-strip-types test/generate-invalid.ts"
   },
   "dependencies": {
     "ajv": "^8.18.0",

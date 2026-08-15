@@ -1,0 +1,8 @@
+expect:
+  covers: type:#/$defs/decimalField
+---
+version: CURRENT
+types:
+  - user:
+      fields:
+        - n: []

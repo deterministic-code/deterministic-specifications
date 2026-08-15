@@ -1,0 +1,8 @@
+expect:
+  covers: minimum:#/$defs/userNameInclude/properties/user_id
+---
+version: CURRENT
+routes: []
+includes:
+  - user_id: -1
+    name: app

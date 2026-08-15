@@ -1,0 +1,7 @@
+expect:
+  covers: enum:#/$defs/middlewareOptions/properties/type
+---
+version: CURRENT
+middleware:
+  - cors:
+      type: nope

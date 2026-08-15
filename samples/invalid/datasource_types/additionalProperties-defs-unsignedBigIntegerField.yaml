@@ -1,0 +1,10 @@
+expect:
+  covers: additionalProperties:#/$defs/unsignedBigIntegerField
+---
+version: CURRENT
+types:
+  - user:
+      fields:
+        - n:
+            type: unsignedbiginteger
+            extra: true

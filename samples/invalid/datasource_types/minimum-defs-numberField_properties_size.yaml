@@ -1,0 +1,10 @@
+expect:
+  covers: minimum:#/$defs/numberField/properties/size
+---
+version: CURRENT
+types:
+  - user:
+      fields:
+        - n:
+            type: number
+            size: -1

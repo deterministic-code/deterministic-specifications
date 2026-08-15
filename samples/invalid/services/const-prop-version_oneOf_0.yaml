@@ -1,0 +1,5 @@
+expect:
+  covers: const:#/properties/version/oneOf/0
+---
+version: nope
+services: []

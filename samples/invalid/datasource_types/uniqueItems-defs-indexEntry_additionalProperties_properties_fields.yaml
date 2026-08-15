@@ -1,0 +1,15 @@
+expect:
+  covers: uniqueItems:#/$defs/indexEntry/additionalProperties/properties/fields
+---
+version: CURRENT
+types:
+  - user:
+      fields:
+        - n:
+            type: integer
+      indexes:
+        - idx:
+            fields:
+              - n
+              - n
+            is_unique: false

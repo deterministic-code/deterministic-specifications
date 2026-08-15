@@ -1,0 +1,5 @@
+expect:
+  covers: type:#/properties/types
+---
+version: CURRENT
+types: {}

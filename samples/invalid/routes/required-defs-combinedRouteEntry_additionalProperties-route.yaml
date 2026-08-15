@@ -1,0 +1,13 @@
+expect:
+  covers: required:#/$defs/combinedRouteEntry/additionalProperties:route
+---
+version: CURRENT
+routes: []
+combined_routes:
+  - people:
+      combined_types:
+        - Person
+        - reports:
+            via: manager
+            target: person
+            route: /r

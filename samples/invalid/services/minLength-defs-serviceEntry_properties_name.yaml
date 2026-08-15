@@ -1,0 +1,8 @@
+expect:
+  covers: minLength:#/$defs/serviceEntry/properties/name
+---
+version: CURRENT
+services:
+  - name: ""
+    description: x
+    module: ./x

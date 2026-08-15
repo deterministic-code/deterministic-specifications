@@ -1,0 +1,98 @@
+version: CURRENT
+includes:
+  - view_type_routes:
+      filter: type == "person" || inherits == datasource_types
+      eager_path:
+        - person.reports
+        - user.posts.tags
+      eager_read_member_only:
+        - person.reports
+      eager_write_path:
+        - person.reports
+  - file: shared/routes.yaml
+    combine_options:
+      source:
+        remove_routes: [OldRoute]
+      destination:
+        remove_routes: [ScratchRoute]
+  - id: saved_routes
+    combine_options:
+      source:
+        remove_routes: [LegacyRoute]
+  - id: 4
+    combine_options:
+      destination:
+        remove_routes: [TmpRoute]
+  - uuid: 33333333-3333-3333-3333-333333333333
+    combine_options:
+      source:
+        remove_routes: [UuidRoute]
+  - user_id: 3
+    name: demo_routes
+    combine_options:
+      destination:
+        remove_routes: [NamedRoute]
+combined_routes:
+  - people:
+      route: /api/people
+      combined_types:
+        - Person
+        - org-unit
+        - reports:
+            via: manager
+            target: person
+            route: /api/people/:id/reports
+routes:
+  - get_users_by_email
+  - users_by_email:
+  - by_email:
+      entity: user
+      byField: email
+      methods: [GET, PUT, DELETE]
+      description: Lookup a user by email
+  - custom_get:
+      path: /api/health
+      method: GET
+      description: Liveness
+      response: health
+      authentication: none
+      errors: [200]
+  - custom_post:
+      path: /api/people
+      method: POST
+      request: person
+      response: person
+      service: PersonService
+      serviceMethod: create
+      aliases: [/api/v1/people]
+      authentication: signinSession
+      scopes: [people.write]
+      errors: [100, 599]
+      x-implementation: stub
+  - custom_put:
+      path: /api/people/:id
+      method: PUT
+      request: person
+      response: redirect
+      services: [PersonService, AuditService]
+      authentication: request
+  - custom_patch:
+      path: /api/people/:id
+      method: PATCH
+      routeClass: PatchPersonRoute
+      module: ./routes/patch-person
+      args:
+        - kind: repo
+          name: person
+        - kind: service
+          name: PersonService
+        - kind: config
+          key: app.origin
+        - kind: undefined
+        - kind: literal
+          value: 42
+  - custom_delete:
+      path: /api/people/:id
+      method: DELETE
+      service: PersonService
+      serviceMethod: remove

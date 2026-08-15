@@ -1,0 +1,8 @@
+expect:
+  covers: pattern:#/$defs/middlewareOptions/properties/apply_routes/items
+---
+version: CURRENT
+middleware:
+  - auth:
+      apply_routes:
+        - NOT VALID

@@ -1,0 +1,9 @@
+expect:
+  covers: maxProperties:#/$defs/fieldEntry
+---
+version: CURRENT
+types:
+  - user:
+      fields:
+        - a: {}
+          b: {}

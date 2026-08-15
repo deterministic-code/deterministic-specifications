@@ -1,0 +1,10 @@
+expect:
+  includes: "must match exactly one"
+---
+version: CURRENT
+types:
+  - user:
+      fields:
+        - email:
+            type: varchar
+            size: 256

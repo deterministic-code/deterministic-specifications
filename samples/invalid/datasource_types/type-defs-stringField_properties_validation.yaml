@@ -1,0 +1,10 @@
+expect:
+  covers: type:#/$defs/stringField/properties/validation
+---
+version: CURRENT
+types:
+  - user:
+      fields:
+        - n:
+            type: string
+            validation: {}

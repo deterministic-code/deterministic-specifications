@@ -1,0 +1,10 @@
+expect:
+  covers: pattern:#/$defs/customRouteShape/properties/aliases/items
+---
+version: CURRENT
+routes:
+  - ping:
+      path: /ping
+      method: GET
+      aliases:
+        - NOT VALID

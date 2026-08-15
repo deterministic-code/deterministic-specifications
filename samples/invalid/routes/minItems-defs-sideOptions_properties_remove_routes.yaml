@@ -1,0 +1,10 @@
+expect:
+  covers: minItems:#/$defs/sideOptions/properties/remove_routes
+---
+version: CURRENT
+routes: []
+includes:
+  - file: x.yaml
+    combine_options:
+      source:
+        remove_routes: []

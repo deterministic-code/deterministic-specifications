@@ -1,0 +1,11 @@
+expect:
+  covers: additionalProperties:#/$defs/characterField
+---
+version: CURRENT
+types:
+  - user:
+      fields:
+        - n:
+            type: character
+            size: 1
+            extra: true

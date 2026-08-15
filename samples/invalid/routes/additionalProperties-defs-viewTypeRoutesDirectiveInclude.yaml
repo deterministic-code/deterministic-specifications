@@ -1,0 +1,15 @@
+expect:
+  covers: additionalProperties:#/$defs/viewTypeRoutesDirectiveInclude
+---
+version: CURRENT
+routes: []
+includes:
+  - view_type_routes:
+      filter: type == "person"
+      eager_path:
+        - person.reports
+      eager_read_member_only:
+        - person.reports
+      eager_write_path:
+        - person.reports
+    extra: true

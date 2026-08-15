@@ -1,0 +1,10 @@
+expect:
+  covers: pattern:#/$defs/shapedView/properties/omit/items
+---
+version: CURRENT
+types:
+  - person:
+      inherits: datasource_types.user
+      omit:
+        - NOT VALID
+      fields: []

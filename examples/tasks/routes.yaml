@@ -1,0 +1,10 @@
+version: CURRENT
+includes:
+  - view_type_routes:
+      filter: inherits == datasource_types
+routes:
+  - health:
+      path: /api/health
+      method: GET
+      description: Liveness
+      response: health

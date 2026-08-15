@@ -1,0 +1,8 @@
+expect:
+  covers: type:#/$defs/uuidField
+---
+version: CURRENT
+types:
+  - user:
+      fields:
+        - n: []

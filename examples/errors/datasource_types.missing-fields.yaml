@@ -1,0 +1,7 @@
+expect:
+  includes: "missing: fields"
+---
+version: CURRENT
+types:
+  - user:
+      target: None

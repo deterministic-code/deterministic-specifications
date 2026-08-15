@@ -1,0 +1,6 @@
+expect:
+  covers: type:#/$defs/datasourceDef
+---
+version: CURRENT
+datasources:
+  - core: []

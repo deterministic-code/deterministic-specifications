@@ -1,0 +1,11 @@
+expect:
+  covers: minLength:#/$defs/datasourceDef/properties/schema
+---
+version: CURRENT
+datasources:
+  - core:
+      type: REST
+      schema_type: OpenAPI
+      schema: ""
+      clients:
+        - fetch

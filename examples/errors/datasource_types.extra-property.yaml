@@ -1,0 +1,12 @@
+expect:
+  includes: "property: owner"
+---
+version: CURRENT
+types:
+  - user:
+      fields:
+        - email:
+            type: string
+            size: 256
+            is_unique: true
+      owner: true

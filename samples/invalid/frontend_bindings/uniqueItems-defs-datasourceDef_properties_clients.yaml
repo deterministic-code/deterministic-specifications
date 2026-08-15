@@ -1,0 +1,12 @@
+expect:
+  covers: uniqueItems:#/$defs/datasourceDef/properties/clients
+---
+version: CURRENT
+datasources:
+  - core:
+      type: REST
+      schema_type: OpenAPI
+      schema: https://example.com/o.json
+      clients:
+        - fetch
+        - fetch

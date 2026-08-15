@@ -1,0 +1,8 @@
+expect:
+  covers: type:#/$defs/bigIntegerField
+---
+version: CURRENT
+types:
+  - user:
+      fields:
+        - n: []

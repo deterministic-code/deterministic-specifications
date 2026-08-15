@@ -1,0 +1,10 @@
+expect:
+  covers: oneOf:#/properties/version
+---
+version:
+  nope: true
+types:
+  - user:
+      fields:
+        - n:
+            type: integer

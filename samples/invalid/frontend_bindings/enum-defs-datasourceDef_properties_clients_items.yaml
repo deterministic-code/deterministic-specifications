@@ -1,0 +1,11 @@
+expect:
+  covers: enum:#/$defs/datasourceDef/properties/clients/items
+---
+version: CURRENT
+datasources:
+  - core:
+      type: REST
+      schema_type: OpenAPI
+      schema: https://example.com/o.json
+      clients:
+        - nope

@@ -1,0 +1,11 @@
+expect:
+  covers: uniqueItems:#/$defs/customRouteShape/properties/aliases
+---
+version: CURRENT
+routes:
+  - ping:
+      path: /ping
+      method: GET
+      aliases:
+        - /x
+        - /x

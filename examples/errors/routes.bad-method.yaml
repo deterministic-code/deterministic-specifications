@@ -1,0 +1,8 @@
+expect:
+  includes: "allowed: GET, POST, PUT, PATCH, DELETE"
+---
+version: CURRENT
+routes:
+  - health:
+      path: /api/health
+      method: GETT

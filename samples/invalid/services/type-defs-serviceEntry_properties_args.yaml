@@ -1,0 +1,8 @@
+expect:
+  covers: type:#/$defs/serviceEntry/properties/args
+---
+version: CURRENT
+services:
+  - name: PersonService
+    description: x
+    args: {}

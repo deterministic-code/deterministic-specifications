@@ -1,0 +1,13 @@
+expect:
+  covers: minItems:#/$defs/viewTypeRoutesDirective/properties/eager_read_member_only
+---
+version: CURRENT
+routes: []
+includes:
+  - view_type_routes:
+      filter: type == "person"
+      eager_path:
+        - person.reports
+      eager_read_member_only: []
+      eager_write_path:
+        - person.reports

@@ -13,6 +13,12 @@ The canonical YAML contract for the [deterministic](https://github.com/rmcfadden
 | [`backend/app.spec.yaml`](backend/app.spec.yaml) | `backend-app.yaml` | Express app bootstrap — middleware, statics, tail handlers. |
 | [`frontend/bindings.spec.yaml`](frontend/bindings.spec.yaml) | `frontend_bindings.yaml` | External datasources a frontend binds to (REST/GraphQL). |
 
+## Samples
+
+Kitchen-sink documents under [`samples/valid/`](samples/valid) exercise every property, enum, const, oneOf branch, and pattern in the live specs. [`samples/invalid/`](samples/invalid) holds one document per independently observable schema constraint; together they must fail `validate()`. Both suites live in `validators/typescript/test/samples.integration.test.ts`.
+
+Readable apps live under [`examples/`](examples): [`examples/minimal/`](examples/minimal) (required keys only) and [`examples/tasks/`](examples/tasks) (a small user/project/task contract). [`examples/errors/`](examples/errors) is a human-curated gallery of typical authoring mistakes — one per file — not the exhaustive mutant dump.
+
 ## Conventions
 
 - Every authored document must declare `version: CURRENT` or a published semver. Unknown keys are rejected (`additionalProperties: false`) so typos fail loudly rather than being silently ignored.

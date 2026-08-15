@@ -1,0 +1,7 @@
+expect:
+  covers: required:#/$defs/customRouteShape:method
+---
+version: CURRENT
+routes:
+  - ping:
+      path: /ping

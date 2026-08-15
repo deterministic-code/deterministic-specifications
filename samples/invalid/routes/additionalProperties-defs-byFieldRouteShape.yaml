@@ -1,0 +1,9 @@
+expect:
+  covers: additionalProperties:#/$defs/byFieldRouteShape
+---
+version: CURRENT
+routes:
+  - by_email:
+      entity: user
+      byField: email
+      extra: true

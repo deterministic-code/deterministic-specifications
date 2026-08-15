@@ -1,0 +1,11 @@
+expect:
+  covers: type:#/$defs/seedEntry
+---
+version: CURRENT
+types:
+  - user:
+      fields:
+        - n:
+            type: integer
+      seeds:
+        - []

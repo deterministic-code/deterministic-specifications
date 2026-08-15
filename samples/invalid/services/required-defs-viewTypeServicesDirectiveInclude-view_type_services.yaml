@@ -1,0 +1,7 @@
+expect:
+  covers: required:#/$defs/viewTypeServicesDirectiveInclude:view_type_services
+---
+version: CURRENT
+services: []
+includes:
+  - {}

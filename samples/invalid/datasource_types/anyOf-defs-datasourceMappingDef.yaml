@@ -1,0 +1,12 @@
+expect:
+  covers: anyOf:#/$defs/datasourceMappingDef
+---
+version: CURRENT
+types:
+  - user:
+      fields:
+        - n:
+            type: integer
+datasource_mappings:
+  - user:
+      nope: true

@@ -1,0 +1,5 @@
+expect:
+  covers: minProperties:#/$defs/handlerItem/oneOf/1
+---
+version: CURRENT
+handlers: {}

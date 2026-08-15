@@ -1,0 +1,9 @@
+version: CURRENT
+name: tasks
+middleware:
+  - securityHeaders
+  - cors
+  - jsonBody
+handlers:
+  - NotFoundMiddlewareService
+  - ErrorHandlerMiddlewareService

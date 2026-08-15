@@ -1,0 +1,11 @@
+expect:
+  covers: minProperties:#/$defs/indexEntry
+---
+version: CURRENT
+types:
+  - user:
+      fields:
+        - n:
+            type: integer
+      indexes:
+        - {}

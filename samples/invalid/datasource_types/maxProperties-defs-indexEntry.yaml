@@ -1,0 +1,12 @@
+expect:
+  covers: maxProperties:#/$defs/indexEntry
+---
+version: CURRENT
+types:
+  - user:
+      fields:
+        - n:
+            type: integer
+      indexes:
+        - a: {}
+          b: {}

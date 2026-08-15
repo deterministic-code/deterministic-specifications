@@ -1,0 +1,13 @@
+expect:
+  covers: anyOf:#/$defs/seedEntry/additionalProperties/additionalProperties
+---
+version: CURRENT
+types:
+  - user:
+      fields:
+        - n:
+            type: integer
+      seeds:
+        - id1:
+            n:
+              nope: true

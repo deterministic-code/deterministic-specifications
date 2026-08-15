@@ -1,0 +1,8 @@
+expect:
+  covers: additionalProperties:#/$defs/includeEntry
+---
+version: CURRENT
+types: []
+includes:
+  - file: x.yaml
+    extra: true

@@ -1,0 +1,17 @@
+expect:
+  covers: const:#/$defs/argSpec/oneOf/0/properties/kind
+---
+version: CURRENT
+services:
+  - name: PersonService
+    description: x
+    args:
+      - kind: nope
+        name: person
+      - kind: service
+        name: Audit
+      - kind: config
+        key: a.b
+      - kind: undefined
+      - kind: literal
+        value: 1

@@ -1,0 +1,7 @@
+expect:
+  covers: type:#/$defs/fileInclude
+---
+version: CURRENT
+types: []
+includes:
+  - []

@@ -1,0 +1,9 @@
+expect:
+  covers: additionalProperties:#/$defs/userNameInclude
+---
+version: CURRENT
+services: []
+includes:
+  - user_id: 1
+    name: app
+    extra: true

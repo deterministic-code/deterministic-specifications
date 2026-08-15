@@ -1,0 +1,8 @@
+expect:
+  covers: required:#/$defs/fieldDef:type
+---
+version: CURRENT
+types:
+  - person:
+      fields:
+        - Name: {}

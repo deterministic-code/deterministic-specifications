@@ -1,0 +1,18 @@
+expect:
+  covers: const:#/$defs/routeArgSpec/oneOf/2/properties/kind
+---
+version: CURRENT
+routes:
+  - ping:
+      path: /ping
+      method: GET
+      args:
+        - kind: repo
+          name: person
+        - kind: service
+          name: Svc
+        - kind: nope
+          key: a.b
+        - kind: undefined
+        - kind: literal
+          value: 1

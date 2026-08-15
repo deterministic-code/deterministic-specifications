@@ -1,0 +1,8 @@
+expect:
+  covers: additionalProperties:#/$defs/idInclude
+---
+version: CURRENT
+services: []
+includes:
+  - id: saved
+    extra: true

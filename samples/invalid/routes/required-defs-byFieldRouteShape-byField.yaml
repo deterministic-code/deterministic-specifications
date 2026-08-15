@@ -1,0 +1,7 @@
+expect:
+  covers: required:#/$defs/byFieldRouteShape:byField
+---
+version: CURRENT
+routes:
+  - by_email:
+      entity: user

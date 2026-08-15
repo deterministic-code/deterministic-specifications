@@ -1,0 +1,10 @@
+expect:
+  covers: minimum:#/$defs/smallIntegerField/properties/size
+---
+version: CURRENT
+types:
+  - user:
+      fields:
+        - n:
+            type: smallinteger
+            size: -1

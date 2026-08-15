@@ -1,0 +1,24 @@
+version: CURRENT
+name: demo-app
+middleware:
+  - securityHeaders
+  - cors:
+      type: app
+      enabled: true
+  - auth:
+      type: route
+      enabled: true
+      apply_routes: [/api/people]
+  - metrics:
+      type: service
+      deny_routes: [/api/health]
+  - tenant:
+      type: datasource
+      enabled: false
+statics:
+  - path: /public
+    dir: ./public
+handlers:
+  - NotFoundMiddlewareService
+  - ErrorHandlerMiddlewareService:
+      enabled: true

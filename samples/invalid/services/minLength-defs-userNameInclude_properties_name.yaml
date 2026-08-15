@@ -1,0 +1,8 @@
+expect:
+  covers: minLength:#/$defs/userNameInclude/properties/name
+---
+version: CURRENT
+services: []
+includes:
+  - user_id: 1
+    name: ""

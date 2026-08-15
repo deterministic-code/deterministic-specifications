@@ -1,0 +1,47 @@
+version: CURRENT
+includes:
+  - view_type_services:
+      filter: type is datasource_type || type inherits datasource_types
+  - file: shared/services.yaml
+    combine_options:
+      source:
+        remove_services: [LegacyService]
+      destination:
+        remove_services: [ScratchService]
+  - id: saved_services
+    combine_options:
+      source:
+        remove_services: [LegacyService]
+  - id: 5
+    combine_options:
+      destination:
+        remove_services: [TmpService]
+  - uuid: 44444444-4444-4444-4444-444444444444
+    combine_options:
+      source:
+        remove_services: [UuidService]
+  - user_id: 4
+    name: demo_services
+    combine_options:
+      destination:
+        remove_services: [NamedService]
+services:
+  - name: PersonService
+    description: Person CRUD and nested writes
+    module: ./services/person-service
+    args:
+      - kind: repo
+        name: person
+      - kind: service
+        name: AuditService
+      - kind: config
+        key: app.origin
+      - kind: undefined
+      - kind: literal
+        value:
+          retry: true
+  - name: AuditService
+    description: Writes an audit trail
+    module: deterministic/audit
+  - name: HealthService
+    description: Liveness checks

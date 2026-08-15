@@ -1,0 +1,7 @@
+expect:
+  covers: oneOf:#/$defs/combinedTypeItem
+---
+version: CURRENT
+routes: []
+combined_routes:
+  - nope: true

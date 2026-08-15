@@ -1,0 +1,10 @@
+expect:
+  covers: minimum:#/$defs/binaryField/properties/size/anyOf/0
+---
+version: CURRENT
+types:
+  - user:
+      fields:
+        - n:
+            type: binary
+            size: -1

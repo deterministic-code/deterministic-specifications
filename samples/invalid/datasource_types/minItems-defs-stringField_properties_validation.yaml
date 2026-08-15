@@ -1,0 +1,10 @@
+expect:
+  covers: minItems:#/$defs/stringField/properties/validation
+---
+version: CURRENT
+types:
+  - user:
+      fields:
+        - n:
+            type: string
+            validation: []

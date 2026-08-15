@@ -1,0 +1,10 @@
+expect:
+  covers: minimum:#/$defs/customRouteShape/properties/errors/items
+---
+version: CURRENT
+routes:
+  - ping:
+      path: /ping
+      method: GET
+      errors:
+        - -1

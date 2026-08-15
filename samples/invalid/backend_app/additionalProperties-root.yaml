@@ -1,0 +1,5 @@
+expect:
+  covers: additionalProperties:#
+---
+version: CURRENT
+extra: true

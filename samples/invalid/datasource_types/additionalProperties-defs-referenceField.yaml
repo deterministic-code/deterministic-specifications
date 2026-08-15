@@ -1,0 +1,10 @@
+expect:
+  covers: additionalProperties:#/$defs/referenceField
+---
+version: CURRENT
+types:
+  - user:
+      fields:
+        - n:
+            references: user.id
+            extra: true

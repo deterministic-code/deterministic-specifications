@@ -1,0 +1,5 @@
+expect:
+  covers: minProperties:#/$defs/middlewareItem/oneOf/1
+---
+version: CURRENT
+middleware: {}

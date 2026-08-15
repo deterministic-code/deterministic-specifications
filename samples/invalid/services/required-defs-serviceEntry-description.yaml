@@ -1,0 +1,7 @@
+expect:
+  covers: required:#/$defs/serviceEntry:description
+---
+version: CURRENT
+services:
+  - name: PersonService
+    module: ./x

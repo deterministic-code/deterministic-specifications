@@ -1,0 +1,11 @@
+expect:
+  covers: uniqueItems:#/$defs/shapedView/properties/omit
+---
+version: CURRENT
+types:
+  - person:
+      inherits: datasource_types.user
+      omit:
+        - bio
+        - bio
+      fields: []

@@ -1,0 +1,13 @@
+expect:
+  covers: type:#/$defs/viewTypeRoutesDirective/properties/eager_path
+---
+version: CURRENT
+routes: []
+includes:
+  - view_type_routes:
+      filter: type == "person"
+      eager_path: {}
+      eager_read_member_only:
+        - person.reports
+      eager_write_path:
+        - person.reports

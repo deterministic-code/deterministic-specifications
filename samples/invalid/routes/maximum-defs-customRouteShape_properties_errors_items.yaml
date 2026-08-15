@@ -1,0 +1,9 @@
+expect:
+  covers: maximum:#/$defs/customRouteShape/properties/errors/items
+---
+version: CURRENT
+routes:
+  - ping:
+      path: /ping
+      method: GET
+      errors: 9999

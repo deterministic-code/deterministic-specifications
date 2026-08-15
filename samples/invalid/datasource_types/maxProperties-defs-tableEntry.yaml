@@ -1,0 +1,7 @@
+expect:
+  covers: maxProperties:#/$defs/tableEntry
+---
+version: CURRENT
+types:
+  - a: {}
+    b: {}

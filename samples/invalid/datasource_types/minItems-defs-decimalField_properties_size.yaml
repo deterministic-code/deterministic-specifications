@@ -1,0 +1,10 @@
+expect:
+  covers: minItems:#/$defs/decimalField/properties/size
+---
+version: CURRENT
+types:
+  - user:
+      fields:
+        - n:
+            type: decimal
+            size: []

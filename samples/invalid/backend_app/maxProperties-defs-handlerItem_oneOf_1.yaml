@@ -1,0 +1,7 @@
+expect:
+  covers: maxProperties:#/$defs/handlerItem/oneOf/1
+---
+version: CURRENT
+handlers:
+  a: {}
+  b: {}

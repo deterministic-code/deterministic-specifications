@@ -1,0 +1,7 @@
+expect:
+  covers: minLength:#/$defs/fileInclude/properties/file
+---
+version: CURRENT
+types: []
+includes:
+  - ""

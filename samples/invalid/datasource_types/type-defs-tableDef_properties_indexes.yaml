@@ -1,0 +1,10 @@
+expect:
+  covers: type:#/$defs/tableDef/properties/indexes
+---
+version: CURRENT
+types:
+  - user:
+      fields:
+        - n:
+            type: integer
+      indexes: {}

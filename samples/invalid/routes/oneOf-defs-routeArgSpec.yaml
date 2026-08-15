@@ -1,0 +1,17 @@
+expect:
+  covers: oneOf:#/$defs/routeArgSpec
+---
+version: CURRENT
+routes:
+  - ping:
+      path: /ping
+      method: GET
+      args:
+        - kind: repo
+          name: person
+        - kind: service
+          name: Svc
+        - kind: config
+          key: a.b
+        - kind: undefined
+        - nope: true

@@ -1,0 +1,6 @@
+expect:
+  covers: type:#/$defs/customRouteShape
+---
+version: CURRENT
+routes:
+  - ping: []

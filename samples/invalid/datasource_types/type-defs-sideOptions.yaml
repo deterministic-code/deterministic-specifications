@@ -1,0 +1,9 @@
+expect:
+  covers: type:#/$defs/sideOptions
+---
+version: CURRENT
+types: []
+includes:
+  - file: x.yaml
+    combine_options:
+      source: []

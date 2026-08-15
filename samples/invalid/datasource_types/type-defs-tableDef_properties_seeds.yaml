@@ -1,0 +1,10 @@
+expect:
+  covers: type:#/$defs/tableDef/properties/seeds
+---
+version: CURRENT
+types:
+  - user:
+      fields:
+        - n:
+            type: integer
+      seeds: {}

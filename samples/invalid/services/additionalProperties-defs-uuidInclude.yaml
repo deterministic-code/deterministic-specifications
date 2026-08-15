@@ -1,0 +1,8 @@
+expect:
+  covers: additionalProperties:#/$defs/uuidInclude
+---
+version: CURRENT
+services: []
+includes:
+  - uuid: abc
+    extra: true

@@ -1,0 +1,10 @@
+expect:
+  covers: minLength:#/$defs/customRouteShape/properties/scopes/items
+---
+version: CURRENT
+routes:
+  - ping:
+      path: /ping
+      method: GET
+      scopes:
+        - ""

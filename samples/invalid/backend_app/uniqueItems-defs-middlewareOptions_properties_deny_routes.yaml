@@ -1,0 +1,9 @@
+expect:
+  covers: uniqueItems:#/$defs/middlewareOptions/properties/deny_routes
+---
+version: CURRENT
+middleware:
+  - auth:
+      deny_routes:
+        - /api
+        - /api

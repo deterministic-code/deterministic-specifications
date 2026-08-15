@@ -1,0 +1,17 @@
+expect:
+  covers: pattern:#/$defs/customRouteShape/properties/request
+---
+version: CURRENT
+routes:
+  - ping:
+      path: /ping
+      method: GET
+      description: x
+      request: NOT VALID
+      response: person
+      service: PersonService
+      serviceMethod: run
+      routeClass: PingRoute
+      module: ./x
+      authentication: none
+      x-implementation: stub

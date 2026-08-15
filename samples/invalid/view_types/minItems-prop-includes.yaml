@@ -1,0 +1,6 @@
+expect:
+  covers: minItems:#/properties/includes
+---
+version: CURRENT
+types: []
+includes: []

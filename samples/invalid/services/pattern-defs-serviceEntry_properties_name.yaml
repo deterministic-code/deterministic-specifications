@@ -1,0 +1,8 @@
+expect:
+  covers: pattern:#/$defs/serviceEntry/properties/name
+---
+version: CURRENT
+services:
+  - name: NOT VALID
+    description: x
+    module: ./x

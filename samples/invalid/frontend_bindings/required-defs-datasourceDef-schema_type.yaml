@@ -1,0 +1,10 @@
+expect:
+  covers: required:#/$defs/datasourceDef:schema_type
+---
+version: CURRENT
+datasources:
+  - core:
+      type: REST
+      schema: https://example.com/o.json
+      clients:
+        - fetch

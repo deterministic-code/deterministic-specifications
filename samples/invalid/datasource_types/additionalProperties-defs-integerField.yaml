@@ -1,0 +1,10 @@
+expect:
+  covers: additionalProperties:#/$defs/integerField
+---
+version: CURRENT
+types:
+  - user:
+      fields:
+        - n:
+            type: integer
+            extra: true

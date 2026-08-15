@@ -1,0 +1,10 @@
+expect:
+  covers: enum:#/$defs/tableDef/properties/target
+---
+version: CURRENT
+types:
+  - user:
+      fields:
+        - n:
+            type: integer
+      target: nope

@@ -1,0 +1,10 @@
+expect:
+  covers: minItems:#/$defs/tableDef/properties/seeds
+---
+version: CURRENT
+types:
+  - user:
+      fields:
+        - n:
+            type: integer
+      seeds: []

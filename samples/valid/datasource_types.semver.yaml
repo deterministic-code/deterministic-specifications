@@ -1,0 +1,7 @@
+version: 1.0.0
+types:
+  - sample:
+      fields:
+        - name:
+            type: string
+            size: 64

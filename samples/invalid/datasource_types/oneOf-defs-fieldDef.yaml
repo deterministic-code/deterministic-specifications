@@ -1,0 +1,9 @@
+expect:
+  covers: oneOf:#/$defs/fieldDef
+---
+version: CURRENT
+types:
+  - user:
+      fields:
+        - n:
+            nope: true

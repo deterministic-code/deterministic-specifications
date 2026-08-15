@@ -1,0 +1,9 @@
+expect:
+  covers: additionalProperties:#/$defs/datasourceDirectiveInclude/properties/datasource_types
+---
+version: CURRENT
+types: []
+includes:
+  - datasource_types:
+      include: "*"
+      extra: true

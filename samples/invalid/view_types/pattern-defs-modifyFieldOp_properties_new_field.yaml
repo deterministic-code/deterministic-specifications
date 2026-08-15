@@ -1,0 +1,24 @@
+expect:
+  covers: pattern:#/$defs/modifyFieldOp/properties/new_field
+---
+version: CURRENT
+types: []
+includes:
+  - file: x.yaml
+    combine_options:
+      source:
+        remove_types:
+          - old
+        remove_fields:
+          - old.Name
+        modify_types:
+          - type: old
+            new_type: person
+        modify_fields:
+          - field: old.Name
+            new_field: NOT VALID
+        add_fields:
+          - type: old
+            add_field:
+              Extra:
+                type: string

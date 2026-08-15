@@ -1,0 +1,8 @@
+expect:
+  covers: uniqueItems:#/$defs/unionView/properties/one_of
+---
+version: CURRENT
+types:
+  - result:
+      - x
+      - x

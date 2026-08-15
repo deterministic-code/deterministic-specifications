@@ -1,0 +1,11 @@
+expect:
+  covers: pattern:#/$defs/indexEntry/propertyNames
+---
+version: CURRENT
+types:
+  - user:
+      fields:
+        - n:
+            type: integer
+      indexes:
+        - NOT VALID

@@ -25,6 +25,13 @@ vice versa.
 Live tests under `src/validators/validator.test.ts` load every archived engine
 by version. That is the proof that a published snapshot is still supported.
 
+Integration samples live at repo-root [`samples/`](../../samples). Valid
+kitchen-sink documents must exercise every spec property, enum, const, oneOf
+branch, and pattern. Invalid documents (regenerated with
+`npm run generate:invalid-samples`) must fail `validate()` and together hit
+every independently observable schema constraint. Readable apps and a small
+error gallery live under [`examples/`](../../examples).
+
 ## Validators
 
 | Class                       | Contract file                  |

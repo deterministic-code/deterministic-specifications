@@ -1,0 +1,14 @@
+expect:
+  covers: pattern:#/$defs/viewTypeRoutesDirective/properties/eager_write_path/items
+---
+version: CURRENT
+routes: []
+includes:
+  - view_type_routes:
+      filter: type == "person"
+      eager_path:
+        - person.reports
+      eager_read_member_only:
+        - person.reports
+      eager_write_path:
+        - NOT VALID

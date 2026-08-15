@@ -1,0 +1,10 @@
+expect:
+  covers: minimum:#/$defs/characterField/properties/size
+---
+version: CURRENT
+types:
+  - user:
+      fields:
+        - n:
+            type: character
+            size: -1

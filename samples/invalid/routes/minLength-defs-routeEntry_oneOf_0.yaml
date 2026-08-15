@@ -1,0 +1,6 @@
+expect:
+  covers: minLength:#/$defs/routeEntry/oneOf/0
+---
+version: CURRENT
+routes:
+  - ""

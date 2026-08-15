@@ -1,0 +1,7 @@
+expect:
+  covers: oneOf:#/$defs/viewDef
+---
+version: CURRENT
+types:
+  - person:
+      nope: true

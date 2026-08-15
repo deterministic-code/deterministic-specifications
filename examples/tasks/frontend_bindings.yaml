@@ -1,0 +1,7 @@
+version: CURRENT
+datasources:
+  - tasks:
+      type: REST
+      schema_type: OpenAPI
+      schema: https://example.com/openapi.json
+      clients: [fetch]

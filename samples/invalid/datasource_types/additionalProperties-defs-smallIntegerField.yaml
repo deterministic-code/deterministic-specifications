@@ -1,0 +1,10 @@
+expect:
+  covers: additionalProperties:#/$defs/smallIntegerField
+---
+version: CURRENT
+types:
+  - user:
+      fields:
+        - n:
+            type: smallinteger
+            extra: true
