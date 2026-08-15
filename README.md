@@ -1,17 +1,17 @@
 # deterministic-specifications
 
-The canonical YAML contract for the [deterministic](https://github.com/rmcfadden/deterministic) code generator. Each file in [`spec/`](./spec) is a strict [JSON Schema](https://json-schema.org/) (draft 2020-12, authored in YAML) that defines the shape of one authored `deterministic/*.yaml` file — the source of truth consumers author against and emitters read.
+The canonical YAML contract for the [deterministic](https://github.com/rmcfadden/deterministic) code generator. Each file under [`backend/`](./backend) and [`frontend/`](./frontend) is a strict [JSON Schema](https://json-schema.org/) (draft 2020-12, authored in YAML) that defines the shape of one authored `deterministic/*.yaml` file — the source of truth consumers author against and emitters read.
 
 ## The specs
 
 | Spec | Governs | Purpose |
 | --- | --- | --- |
-| [`datasource-types.spec.yaml`](spec/datasource-types.spec.yaml) | `datasource_types.yaml` | The physical data model — tables, fields, indexes, seeds, FKs. |
-| [`view-types.spec.yaml`](spec/view-types.spec.yaml) | `view_types.yaml` | View shapes composed from datasource tables and other views. |
-| [`routes.spec.yaml`](spec/routes.spec.yaml) | `routes.yaml` | The HTTP route surface. |
-| [`services.spec.yaml`](spec/services.spec.yaml) | `services.yaml` | Service classes resolved via DI at app bootstrap. |
-| [`backend-app.spec.yaml`](spec/backend-app.spec.yaml) | `backend-app.yaml` | Express app bootstrap — middleware, statics, tail handlers. |
-| [`frontend-bindings.spec.yaml`](spec/frontend-bindings.spec.yaml) | `frontend_bindings.yaml` | External datasources a frontend binds to (REST/GraphQL). |
+| [`backend/datasource-types.spec.yaml`](backend/datasource-types.spec.yaml) | `datasource_types.yaml` | The physical data model — tables, fields, indexes, seeds, FKs. |
+| [`backend/view-types.spec.yaml`](backend/view-types.spec.yaml) | `view_types.yaml` | View shapes composed from datasource tables and other views. |
+| [`backend/routes.spec.yaml`](backend/routes.spec.yaml) | `routes.yaml` | The HTTP route surface. |
+| [`backend/services.spec.yaml`](backend/services.spec.yaml) | `services.yaml` | Service classes resolved via DI at app bootstrap. |
+| [`backend/app.spec.yaml`](backend/app.spec.yaml) | `backend-app.yaml` | Express app bootstrap — middleware, statics, tail handlers. |
+| [`frontend/bindings.spec.yaml`](frontend/bindings.spec.yaml) | `frontend_bindings.yaml` | External datasources a frontend binds to (REST/GraphQL). |
 
 ## Conventions
 

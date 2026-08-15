@@ -1,5 +1,5 @@
 $schema: https://json-schema.org/draft/2020-12/schema
-$id: https://cali-services.local/schemas/deterministic/backend-app.spec.yaml
+$id: https://cali-services.local/schemas/deterministic/backend/app.spec.yaml
 title: backend-app.yaml
 description: >
   Strict schema for deterministic/backend-app.yaml. Drives the Express app
