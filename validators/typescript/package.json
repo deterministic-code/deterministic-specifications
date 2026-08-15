@@ -8,14 +8,9 @@
     ".": "./src/index.ts"
   },
   "files": [
-    "src",
-    "backend",
-    "frontend",
-    "versions"
+    "src"
   ],
   "scripts": {
-    "sync-specs": "node scripts/sync-specs.mjs",
-    "prepack": "npm run sync-specs",
     "typecheck": "tsc --noEmit",
     "test": "vitest run --coverage",
     "test:watch": "vitest"

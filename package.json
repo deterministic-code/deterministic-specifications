@@ -10,8 +10,7 @@
     "versions"
   ],
   "scripts": {
-    "bump-version": "node scripts/bump-version.mjs",
-    "cut-version": "node scripts/cut-version.mjs"
+    "bump-version": "node scripts/bump-version.mjs"
   },
   "publishConfig": {
     "access": "public"

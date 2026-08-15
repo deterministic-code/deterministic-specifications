@@ -36,7 +36,7 @@ export function yamlErrorOffset(
   return pos ? pos[0] : 0;
 }
 
-export function yamlParseErrors(
+function yamlParseErrors(
   doc: YamlDoc,
   lineCounter: YamlLines,
 ): SpecValidationError[] {
@@ -46,7 +46,7 @@ export function yamlParseErrors(
   });
 }
 
-export function specError(
+function specError(
   doc: YamlDoc,
   lineCounter: YamlLines,
   instancePath: string,
@@ -67,7 +67,7 @@ export function versionFail(
   };
 }
 
-export function readYaml(text: string): ParsedYaml & {
+function readYaml(text: string): ParsedYaml & {
   errors: SpecValidationError[];
 } {
   const { doc, lineCounter } = parseYamlWithPositions(text);
