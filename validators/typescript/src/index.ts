@@ -4,7 +4,7 @@ export { ViewTypesValidator } from "./validators/ViewTypesValidator.ts";
 export { RoutesValidator } from "./validators/RoutesValidator.ts";
 export { ServicesValidator } from "./validators/ServicesValidator.ts";
 export { FrontendBindingsValidator } from "./validators/FrontendBindingsValidator.ts";
-export { resolveSpecPath } from "./resolve-spec-path.ts";
+export { resolveSpecPath, findSpecPath } from "./resolve-spec-path.ts";
 export {
   parseYamlWithPositions,
   positionFor,
