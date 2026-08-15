@@ -1,0 +1,472 @@
+$schema: https://json-schema.org/draft/2020-12/schema
+$id: https://cali-services.local/schemas/deterministic/routes.spec.yaml
+title: routes.yaml
+description: >
+  Strict schema for deterministic/routes.yaml. Declares the REST route
+  surface (method, path, request/response view types, aliases) plus the
+  combined_routes composition metadata consumed by the OpenAPI generator and
+  the Express route loader in src/app.ts.
+
+type: object
+additionalProperties: false
+
+properties:
+  includes:
+    type: array
+    minItems: 1
+    description: >
+      Optional. Composes this routes config. The single `view_type_routes`
+      directive entry auto-generates CRUD routes for the datasource + expanded
+      view_types candidates its `filter` selects, plus eager child projections
+      (`eager_path`) and nested-write reconciliation (`eager_write_path`) — it was
+      the top-level `view_type_routes:` block. `file:`/`id:` entries pull in other
+      routes configs and merge their `routes:` arrays via the combine module (each
+      included config's routes prepended, this config's own routes last). An `id:`
+      entry also folds the referenced deterministic's datasource. The `file:`/`id:`
+      entries are resolved and stripped before emit; the `view_type_routes`
+      directive is consumed at route-expansion time.
+    items:
+      $ref: "#/$defs/includeEntry"
+
+  combined_routes:
+    type: array
+    minItems: 1
+    items:
+      $ref: "#/$defs/combinedRouteEntry"
+
+  routes:
+    type: array
+    minItems: 0
+    items:
+      $ref: "#/$defs/routeEntry"
+
+$defs:
+  includeEntry:
+    oneOf:
+      - $ref: "#/$defs/viewTypeRoutesDirectiveInclude"
+      - $ref: "#/$defs/fileInclude"
+      - $ref: "#/$defs/idInclude"
+      - $ref: "#/$defs/uuidInclude"
+      - $ref: "#/$defs/userNameInclude"
+
+  viewTypeRoutesDirectiveInclude:
+    type: object
+    additionalProperties: false
+    required: [view_type_routes]
+    properties:
+      view_type_routes:
+        $ref: "#/$defs/viewTypeRoutesDirective"
+
+  fileInclude:
+    type: object
+    additionalProperties: false
+    required: [file]
+    properties:
+      file:
+        type: string
+        minLength: 1
+        description: Path to another routes.yaml, relative to this file's dir.
+      combine_options:
+        $ref: "#/$defs/combineOptions"
+
+  idInclude:
+    type: object
+    additionalProperties: false
+    required: [id]
+    properties:
+      id:
+        description: Deterministic id (number) or name (string) of a saved backend.
+        anyOf:
+          - type: string
+            minLength: 1
+          - type: integer
+            minimum: 1
+      combine_options:
+        $ref: "#/$defs/combineOptions"
+
+  uuidInclude:
+    type: object
+    additionalProperties: false
+    required: [uuid]
+    properties:
+      uuid:
+        type: string
+        minLength: 1
+        description: Stable uuid of a saved deterministic; portable across server instances.
+      combine_options:
+        $ref: "#/$defs/combineOptions"
+
+  userNameInclude:
+    type: object
+    additionalProperties: false
+    required: [user_id, name]
+    properties:
+      user_id:
+        type: integer
+        minimum: 1
+        description: Owner user id; pair with `name` to reference a saved deterministic.
+      name:
+        type: string
+        minLength: 1
+        description: Deterministic name (unique per user); pair with `user_id`.
+      combine_options:
+        $ref: "#/$defs/combineOptions"
+
+  combineOptions:
+    type: object
+    additionalProperties: false
+    description: >
+      Per-side transforms applied before merging. `source` transforms the
+      included routes config; `destination` transforms this config. Routes are
+      flat entries (string shorthand or a single-key object), so the only
+      supported op is dropping a whole route by name.
+    properties:
+      source:
+        $ref: "#/$defs/sideOptions"
+      destination:
+        $ref: "#/$defs/sideOptions"
+
+  sideOptions:
+    type: object
+    additionalProperties: false
+    properties:
+      remove_routes:
+        type: array
+        minItems: 1
+        items:
+          $ref: "#/$defs/routeName"
+
+  routeName:
+    type: string
+    minLength: 1
+    pattern: "^[A-Za-z_][A-Za-z0-9_]*$"
+    description: >
+      Route name to drop from the side before merge — the string-shorthand entry
+      itself, or the single key of an object-form route entry.
+
+  viewTypeRoutesDirective:
+    type: object
+    additionalProperties: false
+    properties:
+      filter:
+        type: string
+        minLength: 1
+        description: >
+          Inclusion predicate evaluated per view type. The predicate is KEPT when TRUE.
+          Grammar: `||` and `&&` logical operators, `==` / `!=` comparisons, parentheses
+          for grouping. Accessors are bare identifiers:
+            - `type`              — the view-type name (e.g. `type == "application"`).
+            - `inherits`          — the inheritance namespace; `"datasource_types"` when
+                                    the view inherits from a datasource type, empty otherwise.
+            - `datasource_types`  — bare-identifier sentinel equal to the literal string
+                                    `"datasource_types"` (so `inherits != datasource_types`
+                                    means "not a datasource-type pass-through").
+          String literals must be double-quoted. Any other identifier in the expression is
+          a parse error.
+      eager_path:
+        description: |
+          Auto-attach array+reference children declared in view_types.yaml,
+          selected by dotted path. Each entry walks from a root view type
+          through one or more nested array+reference fields:
+
+            - "todo.tasks"            attach todo.tasks (depth 1)
+            - "user.posts.tags"       attach user.posts and post.tags (depth 2)
+            - "user.tags"             attach user.tags (M2M is supported via
+                                       a junction table declared on the field)
+
+          Each segment must match `^[a-z_][a-z0-9_]*$`. The first segment is
+          the root view type name; every later segment is the name of an
+          array+reference field on the *previous* segment's element type.
+
+          Catalog vs. projection: view_types.yaml declares the *available*
+          relations on a view type (the catalog). routes.yaml selects which of
+          those relations are *projected* into the parent response via
+          eager_path. Relations declared on the view type but not selected
+          here are reachable only via their combined_routes sub-route — they
+          are NOT inlined and NOT emitted as empty arrays in the parent
+          response. Emitting [] would mislead clients into reading length=0
+          as "no children" when it really means "not fetched."
+        type: array
+        minItems: 1
+        uniqueItems: true
+        items:
+          type: string
+          minLength: 1
+          pattern: "^[a-z_][a-z0-9_]*(\\.[a-z_][a-z0-9_]*)+$"
+      eager_read_member_only:
+        description: |
+          A subset of `eager_path`. Relations listed here are attached only on
+          member responses — `GET /:id` and the POST/PUT/PATCH result bodies —
+          and are NOT embedded in the collection list (`GET /`). Use it for
+          heavy or unbounded-text children (e.g. a file's `contents`) that would
+          bloat a list of N parents into an N×(child sizes) payload while the
+          list UI only needs parent metadata.
+
+          Every entry MUST also appear in `eager_path` (this key narrows where an
+          already-declared eager relation is projected; it does not declare a new
+          one). Depth-1 only (`<view>.<arrayField>`) — the collection-vs-member
+          distinction is meaningful only at the top-level entity whose list route
+          this governs.
+
+            - "project.files"   embed files on GET /api/projects/:id, omit on the list
+        type: array
+        minItems: 1
+        uniqueItems: true
+        items:
+          type: string
+          minLength: 1
+          pattern: "^[a-z_][a-z0-9_]*(\\.[a-z_][a-z0-9_]*)+$"
+      eager_write_path:
+        description: |
+          Declare which array+reference children accept write reconciliation
+          on POST/PUT/PATCH, selected by dotted path. Each entry names a
+          direct-FK array field reachable from a root view type:
+
+            - "contact.addresses"     allow nested address writes on contact endpoints
+            - "contact.phones"        allow nested phone writes on contact endpoints
+            - "todo.tasks"            allow nested task writes on todo endpoints
+
+          v1: depth-1 only (`<view>.<arrayField>`); direct-FK only
+          (M2M not supported in v1).
+
+          Each segment must match `^[a-z_][a-z0-9_]*$`. The first segment is
+          the root view type name; the second segment is the name of an
+          array+reference field on that view type. The field's type must be
+          `datasource_types.<entity>[]` with `reference: datasource_types.<table>.<column>`,
+          and the reference table must equal the array element type (direct-FK;
+          M2M via junction tables is not supported in v1).
+        type: array
+        minItems: 1
+        uniqueItems: true
+        items:
+          type: string
+          minLength: 1
+          pattern: "^[a-z_][a-z0-9_]*(\\.[a-z_][a-z0-9_]*)+$"
+
+  routeArgSpec:
+    oneOf:
+      - type: object
+        additionalProperties: false
+        required: [kind, name]
+        properties:
+          kind: { const: repo }
+          name: { type: string, minLength: 1 }
+      - type: object
+        additionalProperties: false
+        required: [kind, name]
+        properties:
+          kind: { const: service }
+          name: { type: string, minLength: 1 }
+      - type: object
+        additionalProperties: false
+        required: [kind, key]
+        properties:
+          kind: { const: config }
+          key: { type: string, minLength: 1 }
+      - type: object
+        additionalProperties: false
+        required: [kind]
+        properties:
+          kind: { const: undefined }
+      - type: object
+        additionalProperties: false
+        required: [kind, value]
+        properties:
+          kind: { const: literal }
+          value: {}
+
+  combinedRouteEntry:
+    type: object
+    minProperties: 1
+    maxProperties: 1
+    additionalProperties:
+      type: object
+      additionalProperties: false
+      required: [route, combined_types]
+      properties:
+        route:
+          type: string
+          pattern: "^/"
+        combined_types:
+          type: array
+          minItems: 1
+          items:
+            $ref: "#/$defs/combinedTypeItem"
+
+  combinedTypeItem:
+    oneOf:
+      - type: string
+        minLength: 1
+        pattern: "^[A-Za-z_][A-Za-z0-9_-]*$"
+      - type: object
+        minProperties: 1
+        maxProperties: 1
+        additionalProperties:
+          type: object
+          additionalProperties: false
+          properties:
+            via: { type: string, minLength: 1, pattern: "^[a-z_][a-z0-9_]*$" }
+            target:
+              { type: string, minLength: 1, pattern: "^[a-z_][a-z0-9_]*$" }
+            route: { type: string, pattern: "^/" }
+          required: [route]
+
+  routeEntry:
+    oneOf:
+      - type: string
+        minLength: 1
+        pattern: "^[a-z_][a-zA-Z0-9_]*$"
+        description: >
+          Shorthand byField route entry. Grammar:
+          `(get|put|delete)?_<pluralEntity>_by_<camelField>`. The optional
+          verb prefix maps to methods=[GET], [PUT], or [DELETE]; without it
+          the route emits all three. The pluralEntity's last token is
+          singularized to match an entry in datasource_types.yaml, and the
+          camelField is converted to snake_case to match a column on that
+          entity.
+      - type: object
+        minProperties: 1
+        maxProperties: 1
+        additionalProperties:
+          oneOf:
+            - type: "null"
+              description: >
+                Empty-map shorthand. The map key follows the same grammar as
+                the string shorthand above.
+            - $ref: "#/$defs/customRouteShape"
+            - $ref: "#/$defs/byFieldRouteShape"
+
+  byFieldRouteShape:
+    type: object
+    additionalProperties: false
+    required: [entity, byField]
+    properties:
+      entity:
+        type: string
+        pattern: "^[a-z_][a-z0-9_]*$"
+        description: >
+          View type whose underlying datasource type is the lookup target.
+          The route layer generates /api/<plural>/<byField>/{value} endpoints.
+      byField:
+        type: string
+        pattern: "^[a-z_][a-z0-9_]*$"
+        description: >
+          Column on the entity used as the path parameter. If the column is
+          declared `primary_key: true`, `is_unique: true`, or covered by a
+          single-column unique index, the generated handlers treat the route
+          as a single-resource lookup (200 / 404 / 409); otherwise they
+          return an array on GET and a count on PUT/DELETE.
+      methods:
+        type: array
+        uniqueItems: true
+        minItems: 1
+        items:
+          type: string
+          enum: [GET, PUT, DELETE]
+        description: >
+          Subset of [GET, PUT, DELETE] to emit. Default is all three.
+      description:
+        type: string
+        minLength: 1
+
+  customRouteShape:
+    type: object
+    additionalProperties: false
+    required: [path, method]
+    properties:
+      path:
+        type: string
+        pattern: "^/"
+        minLength: 1
+      method:
+        type: string
+        enum: [GET, POST, PUT, PATCH, DELETE]
+      description:
+        type: string
+        minLength: 1
+      request:
+        type: string
+        minLength: 1
+        pattern: "^[a-z_][a-z0-9_]*$"
+        description: Name of a view type defined in view_types.yaml.
+      response:
+        type: string
+        minLength: 1
+        pattern: "^[a-z_][a-z0-9_]*$"
+        description: >
+          Either the literal `redirect` (HTTP 302 with no body schema) or the
+          name of a view type defined in view_types.yaml.
+      service:
+        type: string
+        minLength: 1
+        pattern: "^[A-Z][A-Za-z0-9]*$"
+        description: Service name declared in services.yaml.
+      services:
+        type: array
+        minItems: 1
+        items:
+          type: string
+          minLength: 1
+          pattern: "^[A-Z][A-Za-z0-9]*$"
+        description: Ordered array of service class names declared in services.yaml.
+      serviceMethod:
+        type: string
+        minLength: 1
+        pattern: "^[a-z][A-Za-z0-9_]*$"
+      aliases:
+        type: array
+        minItems: 1
+        uniqueItems: true
+        items:
+          type: string
+          pattern: "^/"
+      authentication:
+        type: string
+        enum: [none, signinSession, request]
+        description: >
+          Per-route authentication discriminator consumed by
+          deterministic-create-backend-app. Default (when omitted) is `none`.
+      scopes:
+        type: array
+        uniqueItems: true
+        items:
+          type: string
+          minLength: 1
+      errors:
+        type: array
+        items:
+          type: integer
+          minimum: 100
+          maximum: 599
+      routeClass:
+        type: string
+        minLength: 1
+        pattern: "^[A-Z][A-Za-z0-9]*$"
+        description: >
+          Route class name (PascalCase). When set together with `module:`, the
+          framework dynamic-imports the module and instantiates the class to
+          mount this route. Without this pair the route falls back to the
+          service+serviceMethod dispatch.
+      module:
+        type: string
+        minLength: 1
+        description: >
+          Dynamic-import specifier the runtime hands to `import()` to resolve
+          the route class at app bootstrap. Bare specifier or relative path.
+          Requires `routeClass:` to name the exported class.
+      args:
+        type: array
+        description: >
+          Optional constructor args resolved by the DI container, in positional
+          order. Same shape as `services[].args` — each item is one of `repo`,
+          `service`, `config`, `undefined`, or `literal`.
+        items:
+          $ref: "#/$defs/routeArgSpec"
+      x-implementation:
+        type: string
+        enum: [stub]
+        description: >
+          Marks a route whose handler is a 501-returning stub (no hand-written
+          impl in custom/<lang>/). openapi-spec-build propagates this onto the
+          emitted op so stripStubOperations excludes the route from generated
+          OpenAPI e2e test cases.

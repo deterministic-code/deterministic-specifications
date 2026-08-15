@@ -1,0 +1,122 @@
+$schema: https://json-schema.org/draft/2020-12/schema
+$id: https://cali-services.local/schemas/deterministic/backend-app.spec.yaml
+title: backend-app.yaml
+description: >
+  Strict schema for deterministic/backend-app.yaml. Drives the Express app
+  bootstrap:
+    - `name`: optional application name. Surfaced in the server startup and
+      shutdown log lines (`<name> listening on …` / `<name> stopped`) for every
+      emitted backend. Defaults to `generated-app` when omitted.
+    - `middleware`: ordered middleware chain. Each entry is either a bare
+      middleware name (string) or a single-key map whose key is the middleware
+      name and whose value is a `middlewareOptions` object. The four defaults
+      `securityHeaders`, `cors`, `jsonBody`, `formBody` are auto-included by
+      the loader unless declared explicitly with `enabled: false`.
+      Names must be unique across all entries — this is enforced by the loader
+      because JSON Schema cannot apply `uniqueItems` across mixed string/map
+      shapes.
+    - `statics`: ordered list of `{ path, dir }` entries mounted via
+      express.static
+    - `handlers`: ordered tail handlers (404 + error). Each entry is either a
+      bare handler name (string) or a single-key map whose key is the handler
+      name and whose value is a `handlerOptions` object. The two defaults
+      `NotFoundMiddlewareService` and `ErrorHandlerMiddlewareService` are
+      auto-included by the loader unless declared explicitly with
+      `enabled: false`. Names must be unique across all entries — enforced by
+      the loader (same reason as `middleware`).
+
+type: object
+additionalProperties: false
+
+properties:
+  name:
+    type: string
+    minLength: 1
+
+  middleware:
+    type: array
+    minItems: 1
+    items:
+      $ref: "#/$defs/middlewareItem"
+
+  statics:
+    type: array
+    minItems: 1
+    items:
+      $ref: "#/$defs/staticMountEntry"
+
+  handlers:
+    type: array
+    minItems: 1
+    items:
+      $ref: "#/$defs/handlerItem"
+
+$defs:
+  middlewareItem:
+    oneOf:
+      - type: string
+        minLength: 1
+      - type: object
+        minProperties: 1
+        maxProperties: 1
+        additionalProperties:
+          $ref: "#/$defs/middlewareOptions"
+
+  middlewareOptions:
+    type: object
+    additionalProperties: false
+    properties:
+      type:
+        type: string
+        enum: [app, route, service, datasource]
+        default: app
+      enabled:
+        type: boolean
+      apply_routes:
+        type: array
+        minItems: 1
+        uniqueItems: true
+        items:
+          type: string
+          minLength: 1
+          pattern: "^/"
+      deny_routes:
+        type: array
+        minItems: 1
+        uniqueItems: true
+        items:
+          type: string
+          minLength: 1
+          pattern: "^/"
+    not:
+      required: [apply_routes, deny_routes]
+
+  handlerItem:
+    oneOf:
+      - type: string
+        minLength: 1
+      - type: object
+        minProperties: 1
+        maxProperties: 1
+        additionalProperties:
+          $ref: "#/$defs/handlerOptions"
+
+  handlerOptions:
+    type: object
+    additionalProperties: false
+    properties:
+      enabled:
+        type: boolean
+
+  staticMountEntry:
+    type: object
+    additionalProperties: false
+    required: [path, dir]
+    properties:
+      path:
+        type: string
+        minLength: 1
+        pattern: "^/"
+      dir:
+        type: string
+        minLength: 1

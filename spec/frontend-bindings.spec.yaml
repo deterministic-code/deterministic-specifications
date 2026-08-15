@@ -1,0 +1,63 @@
+$schema: https://json-schema.org/draft/2020-12/schema
+$id: https://cali-services.local/schemas/deterministic/frontend-bindings.spec.yaml
+title: frontend_bindings.yaml
+description: >
+  Strict schema for deterministic/frontend_bindings.yaml. Declares the external
+  datasources a frontend binds to — REST or GraphQL APIs described by an OpenAPI
+  or GraphQL schema. One entry per datasource, keyed by name (matching the
+  datasource_types.yaml convention). This is a BETA contract scoped to the
+  `datasources:` section; the `components:` block that wires UI components to
+  CRUD methods is a later addition. The `datasources:` key is required but may be
+  an empty array.
+
+type: object
+additionalProperties: false
+required: [datasources]
+
+properties:
+  datasources:
+    type: array
+    minItems: 0
+    items:
+      $ref: "#/$defs/datasourceEntry"
+
+$defs:
+  datasourceEntry:
+    type: object
+    minProperties: 1
+    maxProperties: 1
+    additionalProperties:
+      $ref: "#/$defs/datasourceDef"
+
+  datasourceDef:
+    type: object
+    additionalProperties: false
+    required: [type, schema_type, schema]
+    properties:
+      type:
+        type: string
+        enum: [REST, GraphQL]
+        description: The API protocol this datasource speaks.
+      schema_type:
+        type: string
+        enum: [OpenAPI, GraphQL]
+        description: The schema format describing the datasource's operations.
+      schema:
+        type: string
+        minLength: 1
+        description: >
+          Location of the schema document. One of three forms: an `https://` API
+          URL, a `file:<path>` local file, or `id:<deterministic id | uuid |
+          name>` referencing another deterministic backend whose OpenAPI doc is
+          generated on demand.
+      clients:
+        type: array
+        uniqueItems: true
+        items:
+          type: string
+          enum: [fetch, axios, tanstack]
+        description: >
+          Which typed client libraries the bindings emitter generates for this
+          datasource — any subset of `fetch` (native-fetch typed functions),
+          `axios` (axios typed functions), and `tanstack` (React Query hooks).
+          Each is emitted independently; omit or leave empty to generate none.

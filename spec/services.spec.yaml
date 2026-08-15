@@ -1,0 +1,246 @@
+$schema: https://json-schema.org/draft/2020-12/schema
+$id: https://cali-services.local/schemas/deterministic/services.spec.yaml
+title: services.yaml
+description: >
+  Strict schema for deterministic/services.yaml. Each entry declares one
+  service class resolved via DI at app bootstrap (see src/services/createServices.ts).
+
+type: object
+additionalProperties: false
+required: [services]
+
+# `services:` is required (key must exist) but may be an empty array. The two
+# default tail handlers (NotFoundMiddlewareService, ErrorHandlerMiddlewareService)
+# are built-in registry entries auto-mounted by parseAppConfig + createBackendApp; a
+# minimal-CRUD-only sample need not declare any service entries at all.
+
+properties:
+  includes:
+    type: array
+    minItems: 1
+    description: >
+      Optional. Composes this services config. The single `view_type_services`
+      directive entry auto-generates CRUD service entries for the datasource +
+      expanded view_types candidates its `filter` selects (was the top-level
+      `view_type_services:` block). `file:`/`id:` entries pull in other services
+      configs and merge them via the combine module (each included config's
+      services prepended, this config's own services last). An `id:` entry also
+      folds the referenced deterministic's datasource so the included services'
+      `repo` args resolve. The `file:`/`id:` entries are resolved and stripped
+      before emit; the `view_type_services` directive is consumed at
+      services-expansion time.
+    items:
+      $ref: "#/$defs/includeEntry"
+
+  services:
+    type: array
+    items:
+      $ref: "#/$defs/serviceEntry"
+
+$defs:
+  includeEntry:
+    oneOf:
+      - $ref: "#/$defs/viewTypeServicesDirectiveInclude"
+      - $ref: "#/$defs/fileInclude"
+      - $ref: "#/$defs/idInclude"
+      - $ref: "#/$defs/uuidInclude"
+      - $ref: "#/$defs/userNameInclude"
+
+  viewTypeServicesDirectiveInclude:
+    type: object
+    additionalProperties: false
+    required: [view_type_services]
+    properties:
+      view_type_services:
+        type: object
+        additionalProperties: false
+        properties:
+          filter:
+            type: string
+            minLength: 1
+            description: >
+              Inclusion predicate evaluated per candidate entity. The candidate is KEPT
+              when TRUE. Candidates are drawn from datasource_types.yaml (as
+              `datasource_type`) and from the expanded view_types.yaml (as
+              `view_type`); when the same name appears in both, the view-type candidate
+              wins. Grammar:
+
+                expr       ::= or
+                or         ::= and ( "||" and )*
+                and        ::= atom ( "&&" atom )*
+                atom       ::= group | isExpr | inheritsExpr | nameCompare
+                group      ::= "(" or ")"
+                isExpr     ::= "type" "is" ["not"] kind
+                inheritsExpr ::= "type" "inherits" ["not"] namespace
+                nameCompare ::= "type" ("==" | "!=") quoted-string
+                kind       ::= "datasource_type" | "view_type" | "service" | "route"
+                namespace  ::= "datasource_types"
+
+              String literals must be double-quoted. Any other identifier is a parse
+              error so typos fail loudly rather than silently selecting everything.
+
+  fileInclude:
+    type: object
+    additionalProperties: false
+    required: [file]
+    properties:
+      file:
+        type: string
+        minLength: 1
+        description: Path to another services.yaml, relative to this file's dir.
+      combine_options:
+        $ref: "#/$defs/combineOptions"
+
+  idInclude:
+    type: object
+    additionalProperties: false
+    required: [id]
+    properties:
+      id:
+        description: Deterministic id (number) or name (string) of a saved backend.
+        anyOf:
+          - type: string
+            minLength: 1
+          - type: integer
+            minimum: 1
+      combine_options:
+        $ref: "#/$defs/combineOptions"
+
+  uuidInclude:
+    type: object
+    additionalProperties: false
+    required: [uuid]
+    properties:
+      uuid:
+        type: string
+        minLength: 1
+        description: Stable uuid of a saved deterministic; portable across server instances.
+      combine_options:
+        $ref: "#/$defs/combineOptions"
+
+  userNameInclude:
+    type: object
+    additionalProperties: false
+    required: [user_id, name]
+    properties:
+      user_id:
+        type: integer
+        minimum: 1
+        description: Owner user id; pair with `name` to reference a saved deterministic.
+      name:
+        type: string
+        minLength: 1
+        description: Deterministic name (unique per user); pair with `user_id`.
+      combine_options:
+        $ref: "#/$defs/combineOptions"
+
+  combineOptions:
+    type: object
+    additionalProperties: false
+    description: >
+      Per-side transforms applied before merging. `source` transforms the
+      included services config; `destination` transforms this config. Services
+      are flat entries with no editable fields, so the only supported op is
+      dropping a whole service by name.
+    properties:
+      source:
+        $ref: "#/$defs/sideOptions"
+      destination:
+        $ref: "#/$defs/sideOptions"
+
+  sideOptions:
+    type: object
+    additionalProperties: false
+    properties:
+      remove_services:
+        type: array
+        minItems: 1
+        items:
+          $ref: "#/$defs/serviceName"
+
+  serviceName:
+    type: string
+    minLength: 1
+    pattern: "^[A-Z][A-Za-z0-9]*$"
+    description: PascalCase service class name to drop from the side before merge.
+
+  serviceEntry:
+    type: object
+    additionalProperties: false
+    required: [name, description]
+    properties:
+      name:
+        type: string
+        minLength: 1
+        pattern: "^[A-Z][A-Za-z0-9]*$"
+        description: PascalCase service class name.
+      module:
+        type: string
+        minLength: 1
+        description: >
+          OPTIONAL dynamic-import specifier the runtime hands to `import()` to
+          resolve the service class at app bootstrap. When omitted, the
+          codegen derives a convention path from the class name (under
+          organize=by-feature: `./features/<deriveCustomEntity(name)>/custom/<file-base>`).
+          Two shapes are accepted when set:
+            - bare specifier (e.g. `deterministic/middleware`) — resolved
+              via the consumer's `node_modules`.
+            - relative path (e.g. `./services/foo-service`) — resolved against the
+              app's `srcRoot` and tried with `.js`, `.mjs`, `.ts` extensions.
+          The legacy `type:` field (introduced before dynamic module loading) is
+          rejected; consumers must migrate to `module:`.
+      description:
+        type: string
+        minLength: 1
+        description: Prose contract for the service. Consumed by OpenAPI docs and cross-language codegen.
+      args:
+        type: array
+        description: >
+          Optional constructor args resolved by the DI container, in positional
+          order. Each item is one of `repo`, `service`, `config`, `undefined`,
+          or `literal`; see the loader in app/loaders/parseServiceSpecs.ts.
+        items:
+          $ref: "#/$defs/argSpec"
+
+  argSpec:
+    oneOf:
+      - type: object
+        additionalProperties: false
+        required: [kind, name]
+        properties:
+          kind:
+            const: repo
+          name:
+            type: string
+            minLength: 1
+      - type: object
+        additionalProperties: false
+        required: [kind, name]
+        properties:
+          kind:
+            const: service
+          name:
+            type: string
+            minLength: 1
+      - type: object
+        additionalProperties: false
+        required: [kind, key]
+        properties:
+          kind:
+            const: config
+          key:
+            type: string
+            minLength: 1
+      - type: object
+        additionalProperties: false
+        required: [kind]
+        properties:
+          kind:
+            const: undefined
+      - type: object
+        additionalProperties: false
+        required: [kind, value]
+        properties:
+          kind:
+            const: literal
+          value: {}
