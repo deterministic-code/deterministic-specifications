@@ -102,6 +102,36 @@ describe("DatasourceTypesValidator.validate", () => {
     ).toBe(true);
   });
 
+  test("accepts unsigned integer-family field types", async () => {
+    const result = await datasource.validate(`types:
+  - sample:
+      fields:
+        - count:
+            type: unsignedinteger
+            default_value: 0
+        - big_count:
+            type: unsignedbiginteger
+            default_value: "18446744073709551615"
+        - small_count:
+            type: unsignedsmallinteger
+            min_size: 0
+`);
+    expect(result.valid).toBe(true);
+    expect(result.errors).toEqual([]);
+  });
+
+  test("rejects a negative default_value on unsignedinteger", async () => {
+    const result = await datasource.validate(`types:
+  - sample:
+      fields:
+        - count:
+            type: unsignedinteger
+            default_value: -1
+`);
+    expect(result.valid).toBe(false);
+    expect(result.errors.length).toBeGreaterThan(0);
+  });
+
   test("reports a positioned error for a field-shape mismatch", async () => {
     const result = await datasource.validate(
       "types:\n  - user:\n      fields:\n        - id:\n            bogus_field_key: true\n",

@@ -235,8 +235,11 @@ $defs:
       - $ref: "#/$defs/characterField"
       - $ref: "#/$defs/numberField"
       - $ref: "#/$defs/integerField"
+      - $ref: "#/$defs/unsignedIntegerField"
       - $ref: "#/$defs/bigIntegerField"
+      - $ref: "#/$defs/unsignedBigIntegerField"
       - $ref: "#/$defs/smallIntegerField"
+      - $ref: "#/$defs/unsignedSmallIntegerField"
       - $ref: "#/$defs/floatField"
       - $ref: "#/$defs/decimalField"
       - $ref: "#/$defs/booleanField"
@@ -247,9 +250,10 @@ $defs:
     description: >
       Foreign keys are declared inline on numeric fields via the optional
       `references: <table>.<column>` property — see numberField, integerField,
-      bigIntegerField, smallIntegerField, floatField. A foreign key may also
-      omit `type` entirely (referenceField); the column then inherits the
-      referenced parent primary key's type. The standalone
+      unsignedIntegerField, bigIntegerField, unsignedBigIntegerField,
+      smallIntegerField, unsignedSmallIntegerField, floatField. A foreign key
+      may also omit `type` entirely (referenceField); the column then inherits
+      the referenced parent primary key's type. The standalone
       `{type: reference, references: ...}` form has been removed.
 
   referenceField:
@@ -339,12 +343,54 @@ $defs:
       references:
         $ref: "#/$defs/tableColumnRef"
 
+  unsignedIntegerField:
+    type: object
+    additionalProperties: false
+    required: [type]
+    description: >
+      Unsigned 32-bit integer. Maps to UNSIGNED INT (MySQL) or a non-negative
+      integer column elsewhere. `default_value` and `min_size` must be >= 0.
+    properties:
+      type: { const: unsignedinteger }
+      primary_key: { type: boolean }
+      size:
+        type: integer
+        minimum: 0
+      min_size:
+        type: integer
+        minimum: 0
+      is_nullable: { type: boolean }
+      is_unique: { type: boolean }
+      default_value:
+        type: integer
+        minimum: 0
+      references:
+        $ref: "#/$defs/tableColumnRef"
+
   bigIntegerField:
     type: object
     additionalProperties: false
     required: [type]
     properties:
       type: { const: biginteger }
+      primary_key: { type: boolean }
+      is_nullable: { type: boolean }
+      is_unique: { type: boolean }
+      default_value:
+        type: string
+      references:
+        $ref: "#/$defs/tableColumnRef"
+
+  unsignedBigIntegerField:
+    type: object
+    additionalProperties: false
+    required: [type]
+    description: >
+      Unsigned 64-bit integer. Maps to UNSIGNED BIGINT (MySQL) or a
+      non-negative 64-bit integer column elsewhere. `default_value` is a
+      string so values above Number.MAX_SAFE_INTEGER stay exact.
+    properties:
+      type: { const: unsignedbiginteger }
       primary_key: { type: boolean }
       is_nullable: { type: boolean }
       is_unique: { type: boolean }
@@ -369,6 +415,31 @@ $defs:
       is_unique: { type: boolean }
       default_value:
         type: integer
+      references:
+        $ref: "#/$defs/tableColumnRef"
+
+  unsignedSmallIntegerField:
+    type: object
+    additionalProperties: false
+    required: [type]
+    description: >
+      Unsigned 16-bit integer. Maps to UNSIGNED SMALLINT (MySQL) or a
+      non-negative small integer column elsewhere. `default_value` and
+      `min_size` must be >= 0.
+    properties:
+      type: { const: unsignedsmallinteger }
+      primary_key: { type: boolean }
+      size:
+        type: integer
+        minimum: 0
+      min_size:
+        type: integer
+        minimum: 0
+      is_nullable: { type: boolean }
+      is_unique: { type: boolean }
+      default_value:
+        type: integer
+        minimum: 0
       references:
         $ref: "#/$defs/tableColumnRef"
 
