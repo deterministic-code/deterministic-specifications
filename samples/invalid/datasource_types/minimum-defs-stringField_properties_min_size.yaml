@@ -8,4 +8,4 @@ types:
         - n:
             type: string
             size: 8
-            min_size: -1
+            min_size: -9999999999999

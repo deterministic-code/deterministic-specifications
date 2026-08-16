@@ -8,4 +8,5 @@ types:
         - n:
             type: binary
             size: 4
+            default_value: Hex('')
             extra: true

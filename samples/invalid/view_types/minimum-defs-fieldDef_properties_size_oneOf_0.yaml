@@ -7,4 +7,4 @@ types:
       fields:
         - Name:
             type: string
-            size: -1
+            size: -9999999999999

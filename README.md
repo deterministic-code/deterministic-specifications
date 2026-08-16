@@ -1,12 +1,13 @@
 # deterministic-specifications
 
-The canonical YAML contract for the [deterministic](https://github.com/rmcfadden/deterministic) code generator. Each file under [`backend/`](./backend) and [`frontend/`](./frontend) is a strict [JSON Schema](https://json-schema.org/) (draft 2020-12, authored in YAML) that defines the shape of one authored `deterministic/*.yaml` file — the source of truth consumers author against and emitters read.
+The canonical YAML contract for the [deterministic](https://github.com/rmcfadden/deterministic) code generator. Files under [`backend/`](./backend) and [`frontend/`](./frontend) named `*.spec.yaml` are strict [JSON Schema](https://json-schema.org/) (draft 2020-12, authored in YAML) that define the shape of one authored `deterministic/*.yaml` file. [`backend/types.yaml`](backend/types.yaml) is the language-agnostic field-type catalog (default-value tokens and numeric ranges), not a schema.
 
 ## The specs
 
 | Spec | Governs | Purpose |
 | --- | --- | --- |
 | [`backend/datasource-types.spec.yaml`](backend/datasource-types.spec.yaml) | `datasource_types.yaml` | The physical data model — tables, fields, indexes, FKs. |
+| [`backend/types.yaml`](backend/types.yaml) | field `default_value` tokens and ranges | Language-agnostic field-type catalog. Shape locked by [`backend/types.spec.yaml`](backend/types.spec.yaml). |
 | [`backend/datasource-seeds.spec.yaml`](backend/datasource-seeds.spec.yaml) | `datasource_seeds.yaml` | Seed rows for datasource tables. Validated against `datasource_types.yaml`. |
 | [`backend/view-types.spec.yaml`](backend/view-types.spec.yaml) | `view_types.yaml` | View shapes composed from datasource tables and other views. |
 | [`backend/routes.spec.yaml`](backend/routes.spec.yaml) | `routes.yaml` | The HTTP route surface. |

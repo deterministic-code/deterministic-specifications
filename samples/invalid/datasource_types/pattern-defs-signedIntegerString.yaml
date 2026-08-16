@@ -1,0 +1,10 @@
+expect:
+  covers: pattern:#/$defs/signedIntegerString
+---
+version: CURRENT
+types:
+  - user:
+      fields:
+        - n:
+            type: biginteger
+            default_value: NOT VALID

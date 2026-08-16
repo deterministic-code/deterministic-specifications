@@ -58,7 +58,7 @@ async function stampSpecs(dir, semver) {
     const specDir = join(dir, subdir);
     if (!(await exists(specDir))) continue;
     for (const entry of await readdir(specDir)) {
-      if (!entry.endsWith(".spec.yaml")) continue;
+      if (!entry.endsWith(".spec.yaml") && entry !== "types.yaml") continue;
       const path = join(specDir, entry);
       await writeFile(path, stampSpecText(await readFile(path, "utf8"), semver));
     }

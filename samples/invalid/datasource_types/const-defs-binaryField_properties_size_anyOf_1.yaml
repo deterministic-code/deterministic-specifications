@@ -8,3 +8,4 @@ types:
         - n:
             type: binary
             size: nope
+            default_value: Hex('')

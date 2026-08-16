@@ -1,0 +1,10 @@
+expect:
+  covers: const:#/$defs/datetimeDefault/oneOf/1
+---
+version: CURRENT
+types:
+  - user:
+      fields:
+        - n:
+            type: datetime
+            default_value: nope

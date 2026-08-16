@@ -7,4 +7,5 @@ types:
       fields:
         - n:
             type: character
-            size: -1
+            size: -9999999999999
+            default_value: X

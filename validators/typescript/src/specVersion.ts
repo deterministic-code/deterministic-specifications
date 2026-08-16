@@ -31,6 +31,7 @@ export function mapEngines<T>(fn: (engine: EngineDef) => T): Record<EngineName, 
 export const SPEC_FILES = [
   ...VALIDATOR_ENGINES.map(([, subdir, name]) => ({ subdir, name })),
   { subdir: "backend", name: "app.spec.yaml" },
+  { subdir: "backend", name: "types.spec.yaml" },
 ];
 
 export const VALIDATOR_ENGINE_FILE = "engines.ts";

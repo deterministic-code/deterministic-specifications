@@ -7,3 +7,4 @@ types:
       fields:
         - n:
             type: binary
+            default_value: Hex('')

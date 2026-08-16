@@ -6,4 +6,4 @@ routes:
   - ping:
       path: /ping
       method: GET
-      errors: 9999
+      errors: 9999999999999

@@ -7,4 +7,5 @@ types:
       fields:
         - n:
             type: integer
+            default_value: 0
             extra: true
