@@ -1,7 +1,7 @@
 expect:
   includes: "must match exactly one"
 ---
-version: CURRENT
+version: 1.0.0
 types:
   - result:
       one_of: [user, task]

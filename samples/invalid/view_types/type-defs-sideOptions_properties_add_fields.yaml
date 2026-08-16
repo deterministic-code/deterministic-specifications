@@ -1,7 +1,7 @@
 expect:
   covers: type:#/$defs/sideOptions/properties/add_fields
 ---
-version: CURRENT
+version: 1.0.0
 types: []
 includes:
   - file: x.yaml

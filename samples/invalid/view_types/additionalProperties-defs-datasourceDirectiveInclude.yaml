@@ -1,7 +1,7 @@
 expect:
   covers: additionalProperties:#/$defs/datasourceDirectiveInclude
 ---
-version: CURRENT
+version: 1.0.0
 types: []
 includes:
   - datasource_types:

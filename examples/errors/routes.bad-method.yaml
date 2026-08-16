@@ -1,7 +1,7 @@
 expect:
   includes: "allowed: GET, POST, PUT, PATCH, DELETE"
 ---
-version: CURRENT
+version: 1.0.0
 routes:
   - health:
       path: /api/health

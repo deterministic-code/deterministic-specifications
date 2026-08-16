@@ -1,7 +1,7 @@
 expect:
   covers: not:#/$defs/middlewareOptions
 ---
-version: CURRENT
+version: 1.0.0
 middleware:
   - cors:
       apply_routes:

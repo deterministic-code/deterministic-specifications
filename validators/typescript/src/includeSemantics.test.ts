@@ -14,7 +14,7 @@ function parsed(text: string): ParsedYaml {
   return { doc, lineCounter, data: doc.toJS() };
 }
 
-const LEAF = `version: CURRENT
+const LEAF = `version: 1.0.0
 types:
   - user:
       fields:
@@ -57,7 +57,7 @@ describe("withIncludeFilePath", () => {
 
 describe("checkIncludeCycles", () => {
   test("no-ops without a filesystem context", async () => {
-    const doc = parsed(`version: CURRENT
+    const doc = parsed(`version: 1.0.0
 includes:
   - file: missing.yaml
 types: []
@@ -72,7 +72,7 @@ types: []
   test("accepts a document with no file includes", async () => {
     await withDir(async (dir) => {
       const path = join(dir, "datasource_types.yaml");
-      const doc = parsed(`version: CURRENT
+      const doc = parsed(`version: 1.0.0
 includes:
   - id: saved_backend
 types: []
@@ -86,7 +86,7 @@ types: []
   test("skips include entries that are not a file path", async () => {
     await withDir(async (dir) => {
       const path = join(dir, "child.yaml");
-      const doc = parsed(`version: CURRENT
+      const doc = parsed(`version: 1.0.0
 includes:
   - []
   - file: 1
@@ -104,7 +104,7 @@ types: []
     await withDir(async (dir) => {
       await writeFile(join(dir, "identity.yaml"), LEAF);
       const path = join(dir, "child.yaml");
-      const doc = parsed(`version: CURRENT
+      const doc = parsed(`version: 1.0.0
 includes:
   - file: identity.yaml
 types: []
@@ -120,7 +120,7 @@ types: []
       await writeFile(join(dir, "a.yaml"), LEAF);
       await writeFile(
         join(dir, "b.yaml"),
-        `version: CURRENT
+        `version: 1.0.0
 includes:
   - file: a.yaml
 types: []
@@ -128,7 +128,7 @@ types: []
       );
       await writeFile(
         join(dir, "billing.yaml"),
-        `version: CURRENT
+        `version: 1.0.0
 types:
   - account:
       fields:
@@ -138,7 +138,7 @@ types:
 `,
       );
       const path = join(dir, "child.yaml");
-      const doc = parsed(`version: CURRENT
+      const doc = parsed(`version: 1.0.0
 includes:
   - file: b.yaml
   - file: billing.yaml
@@ -155,7 +155,7 @@ types: []
       await writeFile(join(dir, "d.yaml"), LEAF);
       await writeFile(
         join(dir, "b.yaml"),
-        `version: CURRENT
+        `version: 1.0.0
 includes:
   - file: d.yaml
 types: []
@@ -163,14 +163,14 @@ types: []
       );
       await writeFile(
         join(dir, "c.yaml"),
-        `version: CURRENT
+        `version: 1.0.0
 includes:
   - file: d.yaml
 types: []
 `,
       );
       const path = join(dir, "a.yaml");
-      const doc = parsed(`version: CURRENT
+      const doc = parsed(`version: 1.0.0
 includes:
   - file: b.yaml
   - file: c.yaml
@@ -186,7 +186,7 @@ types: []
     await withDir(async (dir) => {
       await writeFile(join(dir, "identity.yaml"), LEAF);
       const path = join(dir, "child.yaml");
-      const doc = parsed(`version: CURRENT
+      const doc = parsed(`version: 1.0.0
 includes:
   - file: identity.yaml
   - file: ./identity.yaml
@@ -201,7 +201,7 @@ types: []
   test("resolves includes from includeBasePath when includeFilePath is omitted", async () => {
     await withDir(async (dir) => {
       await writeFile(join(dir, "identity.yaml"), LEAF);
-      const doc = parsed(`version: CURRENT
+      const doc = parsed(`version: 1.0.0
 includes:
   - file: identity.yaml
 types: []
@@ -215,7 +215,7 @@ types: []
   test("rejects a self-include", async () => {
     await withDir(async (dir) => {
       const path = join(dir, "self.yaml");
-      const doc = parsed(`version: CURRENT
+      const doc = parsed(`version: 1.0.0
 includes:
   - file: self.yaml
 types: []
@@ -233,14 +233,14 @@ types: []
     await withDir(async (dir) => {
       await writeFile(
         join(dir, "parent.yaml"),
-        `version: CURRENT
+        `version: 1.0.0
 includes:
   - file: child.yaml
 types: []
 `,
       );
       const path = join(dir, "child.yaml");
-      const doc = parsed(`version: CURRENT
+      const doc = parsed(`version: 1.0.0
 includes:
   - file: parent.yaml
 types: []
@@ -257,7 +257,7 @@ types: []
     await withDir(async (dir) => {
       await writeFile(
         join(dir, "b.yaml"),
-        `version: CURRENT
+        `version: 1.0.0
 includes:
   - file: c.yaml
 types: []
@@ -265,14 +265,14 @@ types: []
       );
       await writeFile(
         join(dir, "c.yaml"),
-        `version: CURRENT
+        `version: 1.0.0
 includes:
   - file: a.yaml
 types: []
 `,
       );
       const path = join(dir, "a.yaml");
-      const doc = parsed(`version: CURRENT
+      const doc = parsed(`version: 1.0.0
 includes:
   - id: skip-me
   - file: b.yaml
@@ -292,7 +292,7 @@ types: []
   test("rejects a missing include file", async () => {
     await withDir(async (dir) => {
       const path = join(dir, "child.yaml");
-      const doc = parsed(`version: CURRENT
+      const doc = parsed(`version: 1.0.0
 includes:
   - file: nope.yaml
 types: []
@@ -310,7 +310,7 @@ types: []
     await withDir(async (dir) => {
       await mkdir(join(dir, "nested"));
       const path = join(dir, "child.yaml");
-      const doc = parsed(`version: CURRENT
+      const doc = parsed(`version: 1.0.0
 includes:
   - file: nested
 types: []
@@ -325,7 +325,7 @@ types: []
     await withDir(async (dir) => {
       await writeFile(join(dir, "bad.yaml"), "foo: [unterminated\n");
       const path = join(dir, "child.yaml");
-      const doc = parsed(`version: CURRENT
+      const doc = parsed(`version: 1.0.0
 includes:
   - file: bad.yaml
 types: []
@@ -341,7 +341,7 @@ types: []
       await writeFile(join(dir, "list.yaml"), "- just a list\n");
       await writeFile(join(dir, "scalar.yaml"), "42\n");
       const path = join(dir, "child.yaml");
-      const doc = parsed(`version: CURRENT
+      const doc = parsed(`version: 1.0.0
 includes:
   - file: list.yaml
   - file: scalar.yaml
@@ -362,14 +362,14 @@ types: []
     await withDir(async (dir) => {
       await writeFile(
         join(dir, "mid.yaml"),
-        `version: CURRENT
+        `version: 1.0.0
 includes:
   - file: missing.yaml
 types: []
 `,
       );
       const path = join(dir, "child.yaml");
-      const doc = parsed(`version: CURRENT
+      const doc = parsed(`version: 1.0.0
 includes:
   - file: mid.yaml
 types: []
@@ -384,7 +384,7 @@ types: []
   });
 
   test("falls back when the includeFilePath directory does not exist", async () => {
-    const doc = parsed(`version: CURRENT
+    const doc = parsed(`version: 1.0.0
 includes:
   - file: nope.yaml
 types: []
@@ -400,7 +400,7 @@ types: []
     await withDir(async (dir) => {
       const path = join(dir, "child.yaml");
       expect(
-        await checkIncludeCycles(parsed("version: CURRENT\ntypes: []\n"), {
+        await checkIncludeCycles(parsed("version: 1.0.0\ntypes: []\n"), {
           includeFilePath: path,
         }),
       ).toEqual({ valid: true, errors: [] });

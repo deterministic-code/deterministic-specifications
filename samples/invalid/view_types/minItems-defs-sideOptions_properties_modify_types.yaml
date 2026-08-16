@@ -1,7 +1,7 @@
 expect:
   covers: minItems:#/$defs/sideOptions/properties/modify_types
 ---
-version: CURRENT
+version: 1.0.0
 types: []
 includes:
   - file: x.yaml

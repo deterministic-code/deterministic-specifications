@@ -1,6 +1,6 @@
 expect:
   covers: minLength:#/$defs/handlerItem/oneOf/0
 ---
-version: CURRENT
+version: 1.0.0
 handlers:
   - ""

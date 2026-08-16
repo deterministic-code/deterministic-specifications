@@ -1,10 +1,11 @@
 import { asRecord, positionFor } from "./yamlPositions.ts";
-import type { ParsedYaml } from "./SpecValidator.ts";
+import { versionFail, type ParsedYaml } from "./SpecValidator.ts";
 import type { SpecValidationError, SpecValidationResult } from "./types.ts";
 import {
   loadFieldTypeCatalog,
   type FieldType,
 } from "./fieldTypeCatalog.ts";
+import { parseSpecVersion } from "./specVersion.ts";
 
 function err(
   parsed: ParsedYaml,
@@ -136,5 +137,12 @@ export function checkFieldDefaults(
 export async function checkFieldDefaultSemantics(
   parsed: ParsedYaml,
 ): Promise<SpecValidationResult> {
-  return checkFieldDefaults(parsed, await loadFieldTypeCatalog());
+  const version = parseSpecVersion(parsed.data);
+  if (!version.ok) {
+    return versionFail(parsed.doc, parsed.lineCounter, version.message);
+  }
+  return checkFieldDefaults(
+    parsed,
+    await loadFieldTypeCatalog(version.version),
+  );
 }

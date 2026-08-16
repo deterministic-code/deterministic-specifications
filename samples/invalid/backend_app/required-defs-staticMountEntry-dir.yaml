@@ -1,6 +1,6 @@
 expect:
   covers: required:#/$defs/staticMountEntry:dir
 ---
-version: CURRENT
+version: 1.0.0
 statics:
   - path: /public

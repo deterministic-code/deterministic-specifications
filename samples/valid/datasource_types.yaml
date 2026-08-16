@@ -1,4 +1,4 @@
-version: CURRENT
+version: 1.0.0
 includes:
   - file: shared/base.yaml
     combine_options:

@@ -1,7 +1,7 @@
 expect:
   covers: uniqueItems:#/$defs/datasourceDef/properties/clients
 ---
-version: CURRENT
+version: 1.0.0
 datasources:
   - core:
       type: REST

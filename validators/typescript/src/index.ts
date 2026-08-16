@@ -20,10 +20,11 @@ export {
   resolveEngineDir,
 } from "./resolveSpecPath.ts";
 export {
-  CURRENT_VERSION,
+  LIVE_VERSION,
   SPEC_FILES,
   VALIDATOR_ENGINES,
   VALIDATOR_ENGINE_FILE,
+  isLiveVersion,
   isPublishedVersion,
   isSpecRef,
   isSpecVersion,

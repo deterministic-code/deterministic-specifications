@@ -1,7 +1,7 @@
 expect:
   covers: maxProperties:#/$defs/middlewareItem/oneOf/1
 ---
-version: CURRENT
+version: 1.0.0
 middleware:
   a: {}
   b: {}

@@ -1,5 +1,5 @@
 expect:
   covers: minLength:#/properties/name
 ---
-version: CURRENT
+version: 1.0.0
 name: ""

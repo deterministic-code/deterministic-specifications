@@ -1,7 +1,7 @@
 expect:
   covers: additionalProperties:#/$defs/idInclude
 ---
-version: CURRENT
+version: 1.0.0
 routes: []
 includes:
   - id: saved

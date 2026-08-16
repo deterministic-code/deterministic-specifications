@@ -1,4 +1,4 @@
-version: CURRENT
+version: 1.0.0
 includes:
   - view_type_services:
       filter: type is datasource_type || type inherits datasource_types

@@ -1,6 +1,6 @@
 expect:
   covers: type:#/properties/combined_routes
 ---
-version: CURRENT
+version: 1.0.0
 routes: []
 combined_routes: {}

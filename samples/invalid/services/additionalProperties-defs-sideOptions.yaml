@@ -1,7 +1,7 @@
 expect:
   covers: additionalProperties:#/$defs/sideOptions
 ---
-version: CURRENT
+version: 1.0.0
 services: []
 includes:
   - file: x.yaml

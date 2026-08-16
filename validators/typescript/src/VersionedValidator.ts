@@ -47,9 +47,10 @@ async function loadEngine(exportName: string, version: string): Promise<Engine> 
 }
 
 /**
- * Public facade: read `version` from the document, load that archive's
- * engine (`src/validators/` for CURRENT, or `versions/<semver>/validators/`),
- * and delegate. Unknown versions fail before an engine is constructed.
+ * Public facade: read `version` from the document (required semver), load
+ * that version's engine (`src/validators/` for the live version, or
+ * `versions/<semver>/validators/`), and delegate. Missing or unknown
+ * versions fail before an engine is constructed.
  */
 export class VersionedValidator extends FileValidator {
   readonly #exportName: string;

@@ -1,7 +1,7 @@
 expect:
   covers: required:#/$defs/addFieldOp:add_field
 ---
-version: CURRENT
+version: 1.0.0
 types: []
 includes:
   - file: x.yaml

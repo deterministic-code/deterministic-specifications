@@ -1,7 +1,7 @@
 expect:
   covers: additionalProperties:#/$defs/middlewareOptions
 ---
-version: CURRENT
+version: 1.0.0
 middleware:
   - cors:
       type: app

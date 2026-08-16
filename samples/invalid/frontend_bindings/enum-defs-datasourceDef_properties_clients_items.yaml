@@ -1,7 +1,7 @@
 expect:
   covers: enum:#/$defs/datasourceDef/properties/clients/items
 ---
-version: CURRENT
+version: 1.0.0
 datasources:
   - core:
       type: REST

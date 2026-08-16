@@ -1,7 +1,7 @@
 expect:
   covers: type:#/$defs/indexEntry/additionalProperties/properties/fields
 ---
-version: CURRENT
+version: 1.0.0
 types:
   - user:
       fields:

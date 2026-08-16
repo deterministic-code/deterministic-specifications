@@ -1,5 +1,5 @@
 expect:
-  covers: pattern:#/properties/version/oneOf/1
+  covers: pattern:#/properties/version
 ---
 version: NOT VALID
 datasources: []

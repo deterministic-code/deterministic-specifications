@@ -2,7 +2,8 @@ import { access, readdir } from "node:fs/promises";
 import { dirname, join, parse } from "node:path";
 import { fileURLToPath } from "node:url";
 import {
-  CURRENT_VERSION,
+  LIVE_VERSION,
+  isLiveVersion,
   isPublishedVersion,
   VALIDATOR_ENGINE_FILE,
 } from "./specVersion.ts";
@@ -35,26 +36,39 @@ export async function findAncestorPath(
 export function specRelPath(
   subdir: string,
   name: string,
-  version: string = CURRENT_VERSION,
+  version: string,
 ): string {
-  return version === CURRENT_VERSION
+  return isLiveVersion(version)
     ? join(subdir, name)
     : join("versions", version, subdir, name);
 }
 
+function archiveSpecRelPath(
+  subdir: string,
+  name: string,
+  version: string,
+): string {
+  return join("versions", version, subdir, name);
+}
+
 /**
  * Locate a bundled spec YAML by walking ancestor directories of THIS module
- * for the first match. CURRENT resolves to the live root
- * `<ancestor>/<subdir>/<name>`; a published semver resolves to
+ * for the first match. The live version resolves to the root
+ * `<ancestor>/<subdir>/<name>` (falling back to `versions/<semver>/` if the
+ * live tree is gone). Any other semver resolves to
  * `<ancestor>/versions/<semver>/<subdir>/<name>`.
  */
 export async function findSpecPath(
   subdir: string,
   name: string,
-  version: string = CURRENT_VERSION,
+  version: string,
   start?: string,
 ): Promise<string | null> {
-  return findAncestorPath(specRelPath(subdir, name, version), start);
+  if (isLiveVersion(version)) {
+    const live = await findAncestorPath(join(subdir, name), start);
+    if (live !== null) return live;
+  }
+  return findAncestorPath(archiveSpecRelPath(subdir, name, version), start);
 }
 
 export async function listPublishedVersions(
@@ -70,7 +84,8 @@ export async function listPublishedVersions(
 }
 
 export async function listSpecVersions(start?: string): Promise<string[]> {
-  return [CURRENT_VERSION, ...(await listPublishedVersions(start))];
+  const published = await listPublishedVersions(start);
+  return [LIVE_VERSION, ...published.filter((v) => v !== LIVE_VERSION)];
 }
 
 /** {@link findSpecPath}, but throws when the spec cannot be located rather than returning a path that later fails to read. */
@@ -78,7 +93,7 @@ async function assertKnownVersion(
   version: string,
   start?: string,
 ): Promise<void> {
-  if (version === CURRENT_VERSION) return;
+  if (isLiveVersion(version)) return;
   const published = await listPublishedVersions(start);
   if (published.includes(version)) return;
   const hint = published.length ? published.join(", ") : "none";
@@ -99,7 +114,7 @@ async function resolveExisting(
 export async function resolveSpecPath(
   subdir: string,
   name: string,
-  version: string = CURRENT_VERSION,
+  version: string,
   start?: string,
 ): Promise<string> {
   return resolveExisting(
@@ -111,26 +126,26 @@ export async function resolveSpecPath(
 }
 
 export function engineRelPath(version: string): string {
-  return version === CURRENT_VERSION
+  return isLiveVersion(version)
     ? join("validators", "typescript", "src", "validators")
     : join("versions", version, "validators");
 }
 
-const CURRENT_ENGINE_FILE = join("validators", VALIDATOR_ENGINE_FILE);
+const LIVE_ENGINE_FILE = join("validators", VALIDATOR_ENGINE_FILE);
 
 export async function findEngineDir(
-  version: string = CURRENT_VERSION,
+  version: string,
   start?: string,
 ): Promise<string | null> {
-  if (version === CURRENT_VERSION) {
-    const engineFile = await findAncestorPath(CURRENT_ENGINE_FILE, start);
+  if (isLiveVersion(version)) {
+    const engineFile = await findAncestorPath(LIVE_ENGINE_FILE, start);
     if (engineFile !== null) return dirname(engineFile);
   }
-  return findAncestorPath(engineRelPath(version), start);
+  return findAncestorPath(join("versions", version, "validators"), start);
 }
 
 export async function resolveEngineDir(
-  version: string = CURRENT_VERSION,
+  version: string,
   start?: string,
 ): Promise<string> {
   return resolveExisting(

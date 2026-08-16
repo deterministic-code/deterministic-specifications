@@ -1,7 +1,7 @@
 expect:
   covers: minimum:#/$defs/binaryField/properties/size/anyOf/0
 ---
-version: CURRENT
+version: 1.0.0
 types:
   - user:
       fields:

@@ -1,6 +1,6 @@
 expect:
   covers: minItems:#/properties/includes
 ---
-version: CURRENT
+version: 1.0.0
 services: []
 includes: []

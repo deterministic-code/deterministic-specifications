@@ -1,7 +1,7 @@
 expect:
   covers: oneOf:#/$defs/fieldDef/properties/size
 ---
-version: CURRENT
+version: 1.0.0
 types:
   - person:
       fields:

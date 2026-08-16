@@ -1,7 +1,7 @@
 expect:
   covers: minimum:#/$defs/userNameInclude/properties/user_id
 ---
-version: CURRENT
+version: 1.0.0
 services: []
 includes:
   - user_id: -9999999999999

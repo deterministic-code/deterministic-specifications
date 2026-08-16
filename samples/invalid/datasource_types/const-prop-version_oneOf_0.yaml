@@ -1,9 +1,0 @@
-expect:
-  covers: const:#/properties/version/oneOf/0
----
-version: nope
-types:
-  - user:
-      fields:
-        - n:
-            type: integer

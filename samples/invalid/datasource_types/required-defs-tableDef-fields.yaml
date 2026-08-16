@@ -1,6 +1,6 @@
 expect:
   covers: required:#/$defs/tableDef:fields
 ---
-version: CURRENT
+version: 1.0.0
 types:
   - user: {}

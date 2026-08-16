@@ -1,7 +1,6 @@
 import { readFile } from "node:fs/promises";
 import { parseDocument } from "yaml";
 import { findSpecPath } from "./resolveSpecPath.ts";
-import { CURRENT_VERSION } from "./specVersion.ts";
 import { asRecord } from "./yamlPositions.ts";
 
 export interface DefaultToken {
@@ -83,7 +82,7 @@ export function parseFieldTypeCatalog(text: string): Map<string, FieldType> {
 const cache = new Map<string, Promise<Map<string, FieldType>>>();
 
 export async function loadFieldTypeCatalog(
-  version: string = CURRENT_VERSION,
+  version: string,
 ): Promise<Map<string, FieldType>> {
   const hit = cache.get(version);
   if (hit) return hit;

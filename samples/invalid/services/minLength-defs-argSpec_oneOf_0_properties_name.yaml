@@ -1,7 +1,7 @@
 expect:
   covers: minLength:#/$defs/argSpec/oneOf/0/properties/name
 ---
-version: CURRENT
+version: 1.0.0
 services:
   - name: PersonService
     description: x

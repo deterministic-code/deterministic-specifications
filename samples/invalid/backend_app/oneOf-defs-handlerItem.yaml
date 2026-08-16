@@ -1,6 +1,6 @@
 expect:
   covers: oneOf:#/$defs/handlerItem
 ---
-version: CURRENT
+version: 1.0.0
 handlers:
   nope: true

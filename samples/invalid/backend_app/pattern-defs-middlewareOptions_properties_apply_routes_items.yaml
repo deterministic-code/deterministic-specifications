@@ -1,7 +1,7 @@
 expect:
   covers: pattern:#/$defs/middlewareOptions/properties/apply_routes/items
 ---
-version: CURRENT
+version: 1.0.0
 middleware:
   - auth:
       apply_routes:

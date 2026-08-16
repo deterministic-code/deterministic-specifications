@@ -1,7 +1,7 @@
 expect:
   covers: type:#/$defs/argSpec/oneOf/3
 ---
-version: CURRENT
+version: 1.0.0
 services:
   - name: PersonService
     description: x

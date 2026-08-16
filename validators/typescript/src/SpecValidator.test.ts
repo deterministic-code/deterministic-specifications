@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { SpecValidator, resolveSpecPath } from "./index.ts";
+import { LIVE_VERSION, SpecValidator, resolveSpecPath } from "./index.ts";
 import {
   errorFromUnknown,
   formatAjvError,
@@ -7,7 +7,7 @@ import {
   yamlErrorOffset,
 } from "./SpecValidator.ts";
 
-const VALID = `version: CURRENT
+const VALID = `version: 1.0.0
 types:
   - user:
       fields:
@@ -103,6 +103,7 @@ describe("SpecValidator constructed with an absolute spec path", () => {
     const specPath = await resolveSpecPath(
       "backend",
       "datasource-types.spec.yaml",
+      LIVE_VERSION,
     );
     const validator = new SpecValidator(specPath);
     const first = await validator.validate(VALID);
@@ -115,6 +116,7 @@ describe("SpecValidator constructed with an absolute spec path", () => {
     const specPath = await resolveSpecPath(
       "backend",
       "datasource-types.spec.yaml",
+      LIVE_VERSION,
     );
     const validator = new SpecValidator(async () => specPath);
     expect(await validator.validate(VALID)).toEqual({
@@ -129,18 +131,18 @@ describe("SpecValidator pinned to a version", () => {
     const result = await new SpecValidator({
       subdir: "backend",
       name: "datasource-types.spec.yaml",
-      version: "CURRENT",
-    }).validate(VALID.replace("CURRENT", "1.0.0"));
+      version: LIVE_VERSION,
+    }).validate(VALID.replace("1.0.0", "2.0.0"));
     expect(result.valid).toBe(false);
-    expect(result.errors[0]?.message).toMatch(/pinned to CURRENT/);
+    expect(result.errors[0]?.message).toMatch(/pinned to 1\.0\.0/);
   });
 
   test("surfaces a missing spec file as a version-path error", async () => {
     const result = await new SpecValidator({
       subdir: "backend",
       name: "does-not-exist.spec.yaml",
-      version: "CURRENT",
-    }).validate("version: CURRENT\ntypes: []\n");
+      version: "1.0.0",
+    }).validate("version: 1.0.0\ntypes: []\n");
     expect(result.valid).toBe(false);
     expect(result.errors[0]?.message).toMatch(/spec file not found/);
   });

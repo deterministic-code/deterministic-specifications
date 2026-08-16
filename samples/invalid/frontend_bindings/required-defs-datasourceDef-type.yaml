@@ -1,7 +1,7 @@
 expect:
   covers: required:#/$defs/datasourceDef:type
 ---
-version: CURRENT
+version: 1.0.0
 datasources:
   - core:
       schema_type: OpenAPI

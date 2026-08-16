@@ -1,9 +1,9 @@
 import { SpecValidator } from "../SpecValidator.ts";
-import { CURRENT_VERSION } from "../specVersion.ts";
+import { LIVE_VERSION } from "../specVersion.ts";
 import { DatasourceSeedsValidator } from "./DatasourceSeedsValidator.ts";
 import { DatasourceTypesValidator } from "./DatasourceTypesValidator.ts";
 
-const pinned = SpecValidator.pinnedEngines(CURRENT_VERSION);
+const pinned = SpecValidator.pinnedEngines(LIVE_VERSION);
 
 export { DatasourceTypesValidator };
 export { DatasourceSeedsValidator };

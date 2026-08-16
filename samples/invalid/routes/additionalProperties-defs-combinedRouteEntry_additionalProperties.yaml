@@ -1,7 +1,7 @@
 expect:
   covers: additionalProperties:#/$defs/combinedRouteEntry/additionalProperties
 ---
-version: CURRENT
+version: 1.0.0
 routes: []
 combined_routes:
   - people:

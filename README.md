@@ -23,13 +23,13 @@ Readable apps live under [`examples/`](examples): [`examples/minimal/`](examples
 
 ## Conventions
 
-- Every authored document must declare `version: CURRENT` or a published semver. Unknown keys are rejected (`additionalProperties: false`) so typos fail loudly rather than being silently ignored.
+- Every authored document must declare a `version` semver (today: `1.0.0`). Unknown keys are rejected (`additionalProperties: false`) so typos fail loudly rather than being silently ignored.
 - Shared identifier patterns (`^[a-z_][a-z0-9_]*$`), the `file:`/`id:`/`uuid:`/`user_id+name` include machinery, and the `combine_options` merge transforms recur across several specs.
 - Schema shape is only the first gate; several specs pair with a semantic layer (cross-document reference checks, merged-settings validation) in the consuming generator.
 
 ## Versioning
 
-CURRENT lives at the repo root as three sibling folders:
+The live contract is **1.0.0**. It lives at the repo root as three sibling folders:
 
 ```
 backend/                               # live specs
@@ -37,18 +37,18 @@ frontend/
 validators/typescript/src/validators/  # live engines + tests
 ```
 
-Every authored `deterministic/*.yaml` document must declare a `version`:
+Every authored `deterministic/*.yaml` document must declare an exact semver. There is no floating alias:
 
 ```yaml
-version: CURRENT   # live root specs and engines — may change without notice
-# or
-version: 1.0.0     # frozen archive under versions/1.0.0/
+version: 1.0.0
 ```
 
-- **`CURRENT`** binds to the live specs and the live [`validators/typescript/src/validators/`](./validators/typescript/src/validators) engines. Use this only when you want to track the moving contract (reckless).
-- **A published semver** binds to [`versions/<semver>/`](./versions), which contains `backend/`, `frontend/`, and `validators/engines.ts`. Live tests load that engine by version as proof the snapshot still works.
+- **`1.0.0`** (the live version) binds to the root specs and the live [`validators/typescript/src/validators/`](./validators/typescript/src/validators) engines.
+- **Any other published semver** binds to [`versions/<semver>/`](./versions), which contains `backend/`, `frontend/`, and `validators/engines.ts`. After a bump, `1.0.0` falls back to that archive if the live tree is gone.
 
-Root spec files start with `version: CURRENT`. Each frozen copy is stamped with `version: <semver>` and a versioned `$id`. Each frozen engine is pinned to that semver and rejects documents that declare any other version.
+Validators require `version` and pin to it: a `1.0.0` engine rejects any other value. A missing or non-semver `version` is a validation error before an engine is loaded.
+
+Root spec files start with `version: 1.0.0`. Each frozen copy is stamped with `version: <semver>` and a versioned `$id`. Each frozen engine is pinned to that semver.
 
 Archive a new version by moving the live specs and engine file:
 
@@ -56,8 +56,8 @@ Archive a new version by moving the live specs and engine file:
 npm run bump-version -- 1.1.0
 ```
 
-That relocates `backend/`, `frontend/`, and `validators/typescript/src/validators/engines.ts` into `versions/1.1.0/`, stamps the specs, and rewrites the engine so it stays pinned to `1.1.0`. Live tests stay at repo root and keep covering every archived version. After a bump, the next CURRENT engine is authored again in `src/validators/`. Bumps are infrequent and take an explicit semver — no auto-increment.
+That relocates `backend/`, `frontend/`, and `validators/typescript/src/validators/engines.ts` into `versions/1.1.0/`, stamps the specs, and rewrites the engine so it stays pinned to `1.1.0`. Live tests stay at repo root and keep covering every archived version. After a bump, set `LIVE_VERSION` to the next unpublished semver when re-authoring the live tree. Bumps are infrequent and take an explicit semver — no auto-increment.
 
 The TypeScript validator suite enumerates every folder under `versions/` and fails if any published version is missing specs or `validators/engines.ts`.
 
-These are contract files: adding a field, key, `x-` extension, or op annotation is a deliberate contract change. Freeze a new semver before changing CURRENT so existing documents stay valid against their pinned snapshot.
+These are contract files: adding a field, key, `x-` extension, or op annotation is a deliberate contract change. Freeze a new semver before changing the live specs so existing documents stay valid against their pinned snapshot.

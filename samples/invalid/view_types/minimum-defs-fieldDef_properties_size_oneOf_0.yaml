@@ -1,7 +1,7 @@
 expect:
   covers: minimum:#/$defs/fieldDef/properties/size/oneOf/0
 ---
-version: CURRENT
+version: 1.0.0
 types:
   - person:
       fields:

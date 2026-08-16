@@ -1,7 +1,7 @@
 expect:
   covers: pattern:#/$defs/seedEntry/propertyNames
 ---
-version: CURRENT
+version: 1.0.0
 seeds:
   - user:
       - NOT VALID

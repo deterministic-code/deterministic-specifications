@@ -1,6 +1,6 @@
 expect:
   covers: minProperties:#/$defs/datasourceEntry
 ---
-version: CURRENT
+version: 1.0.0
 datasources:
   - {}

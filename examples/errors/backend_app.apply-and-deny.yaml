@@ -1,7 +1,7 @@
 expect:
   includes: "must NOT be valid"
 ---
-version: CURRENT
+version: 1.0.0
 middleware:
   - auth:
       apply_routes: [/api/tasks]

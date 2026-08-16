@@ -1,7 +1,7 @@
 expect:
   covers: additionalProperties:#/$defs/userNameInclude
 ---
-version: CURRENT
+version: 1.0.0
 types: []
 includes:
   - user_id: 1

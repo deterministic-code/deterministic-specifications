@@ -1,7 +1,7 @@
 expect:
   covers: required:#/$defs/uuidInclude:uuid
 ---
-version: CURRENT
+version: 1.0.0
 routes: []
 includes:
   - {}

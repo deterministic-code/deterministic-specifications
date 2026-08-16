@@ -1,7 +1,7 @@
 expect:
   covers: pattern:#/$defs/staticMountEntry/properties/path
 ---
-version: CURRENT
+version: 1.0.0
 statics:
   - path: NOT VALID
     dir: ./public

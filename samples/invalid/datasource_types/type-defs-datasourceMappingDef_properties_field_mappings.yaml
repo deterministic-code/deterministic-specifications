@@ -1,7 +1,7 @@
 expect:
   covers: type:#/$defs/datasourceMappingDef/properties/field_mappings
 ---
-version: CURRENT
+version: 1.0.0
 types:
   - user:
       fields:

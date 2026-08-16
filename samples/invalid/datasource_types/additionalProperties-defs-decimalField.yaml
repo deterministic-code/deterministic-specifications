@@ -1,7 +1,7 @@
 expect:
   covers: additionalProperties:#/$defs/decimalField
 ---
-version: CURRENT
+version: 1.0.0
 types:
   - user:
       fields:

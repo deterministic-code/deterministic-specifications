@@ -9,6 +9,7 @@ import {
   ServicesValidator,
   SpecValidator,
   ViewTypesValidator,
+  LIVE_VERSION,
   findAncestorPath,
   parseYamlWithPositions,
   resolveSpecPath,
@@ -74,7 +75,7 @@ const SAMPLE_SPECS: SampleSpec[] = [
       new SpecValidator({
         subdir: "backend",
         name: "app.spec.yaml",
-        version: "CURRENT",
+        version: "1.0.0",
       }),
   },
   {
@@ -106,7 +107,11 @@ describe("sample documents", () => {
 
   test("semver version document validates against the live spec via SpecValidator", async () => {
     const root = await samplesRoot();
-    const specPath = await resolveSpecPath("backend", "datasource-types.spec.yaml");
+    const specPath = await resolveSpecPath(
+      "backend",
+      "datasource-types.spec.yaml",
+      LIVE_VERSION,
+    );
     const path = join(root, "valid", "datasource_types.semver.yaml");
     const result = await new SpecValidator(specPath).validateFile(path);
     expect(result).toEqual({ valid: true, errors: [] });
@@ -118,7 +123,7 @@ describe("sample documents", () => {
     for (const sample of SAMPLE_SPECS) {
       const schema = loadSchema(
         await readFile(
-          await resolveSpecPath(sample.spec.subdir, sample.spec.name),
+          await resolveSpecPath(sample.spec.subdir, sample.spec.name, LIVE_VERSION),
           "utf8",
         ),
       );
@@ -145,7 +150,7 @@ describe("sample documents", () => {
     for (const sample of SAMPLE_SPECS) {
       const schema = loadSchema(
         await readFile(
-          await resolveSpecPath(sample.spec.subdir, sample.spec.name),
+          await resolveSpecPath(sample.spec.subdir, sample.spec.name, LIVE_VERSION),
           "utf8",
         ),
       );
@@ -188,13 +193,13 @@ const EXAMPLE_STEM: Record<string, () => Validator> = {
     new SpecValidator({
       subdir: "backend",
       name: "app.spec.yaml",
-      version: "CURRENT",
+      version: "1.0.0",
     }),
   backend_app: () =>
     new SpecValidator({
       subdir: "backend",
       name: "app.spec.yaml",
-      version: "CURRENT",
+      version: "1.0.0",
     }),
   frontend_bindings: () => new FrontendBindingsValidator(),
 };

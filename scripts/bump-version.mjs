@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Archive CURRENT backend/, frontend/, and live engines.ts into versions/<semver>/.
+ * Archive the live backend/, frontend/, and engines.ts into versions/<semver>/.
  *
  *   node scripts/bump-version.mjs 1.1.0
  *

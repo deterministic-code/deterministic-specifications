@@ -1,9 +1,9 @@
 # Language-agnostic field types: names, numeric ranges, and allowed
-# default_value tokens. Shape is locked by types.spec.yaml. The CURRENT
+# default_value tokens. Shape is locked by types.spec.yaml. The live
 # datasource_types validator enforces these tokens and ranges after JSON
 # Schema; the authored field schemas in datasource-types.spec.yaml use the
 # same grammar so the two cannot disagree.
-version: CURRENT
+version: 1.0.0
 types:
   - string:
       supports_size: true

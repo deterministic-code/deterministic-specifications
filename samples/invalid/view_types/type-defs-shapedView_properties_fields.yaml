@@ -1,6 +1,6 @@
 expect:
   covers: type:#/$defs/shapedView/properties/fields
 ---
-version: CURRENT
+version: 1.0.0
 types:
   - person: []

@@ -1,7 +1,7 @@
 expect:
   covers: minimum:#/$defs/stringField/properties/min_size
 ---
-version: CURRENT
+version: 1.0.0
 types:
   - user:
       fields:

@@ -1,7 +1,7 @@
 expect:
   covers: pattern:#/$defs/shapedView/properties/omit/items
 ---
-version: CURRENT
+version: 1.0.0
 types:
   - person:
       inherits: datasource_types.user

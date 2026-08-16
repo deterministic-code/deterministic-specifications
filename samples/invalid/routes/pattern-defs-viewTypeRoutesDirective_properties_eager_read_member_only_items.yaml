@@ -1,7 +1,7 @@
 expect:
   covers: pattern:#/$defs/viewTypeRoutesDirective/properties/eager_read_member_only/items
 ---
-version: CURRENT
+version: 1.0.0
 routes: []
 includes:
   - view_type_routes:

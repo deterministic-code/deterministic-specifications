@@ -1,7 +1,7 @@
 expect:
   covers: enum:#/$defs/customRouteShape/properties/method
 ---
-version: CURRENT
+version: 1.0.0
 routes:
   - ping:
       path: /ping

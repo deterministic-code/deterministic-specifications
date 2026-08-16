@@ -1,7 +1,7 @@
 expect:
   covers: required:#/$defs/fieldDef:type
 ---
-version: CURRENT
+version: 1.0.0
 types:
   - person:
       fields:

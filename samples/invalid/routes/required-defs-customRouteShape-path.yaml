@@ -1,7 +1,7 @@
 expect:
   covers: required:#/$defs/customRouteShape:path
 ---
-version: CURRENT
+version: 1.0.0
 routes:
   - ping:
       method: GET

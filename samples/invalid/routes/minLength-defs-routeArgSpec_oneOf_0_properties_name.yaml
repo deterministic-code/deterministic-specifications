@@ -1,7 +1,7 @@
 expect:
   covers: minLength:#/$defs/routeArgSpec/oneOf/0/properties/name
 ---
-version: CURRENT
+version: 1.0.0
 routes:
   - ping:
       path: /ping

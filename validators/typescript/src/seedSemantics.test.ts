@@ -17,12 +17,12 @@ function parsed(text: string): ParsedYaml {
 
 describe("seedSemantics helpers", () => {
   test("seedsNeedTypes is false for empty or missing seeds", () => {
-    expect(seedsNeedTypes({ version: "CURRENT", seeds: [] })).toBe(false);
-    expect(seedsNeedTypes({ version: "CURRENT" })).toBe(false);
+    expect(seedsNeedTypes({ version: "1.0.0", seeds: [] })).toBe(false);
+    expect(seedsNeedTypes({ version: "1.0.0" })).toBe(false);
     expect(seedsNeedTypes(null)).toBe(false);
     expect(
       seedsNeedTypes({
-        version: "CURRENT",
+        version: "1.0.0",
         seeds: [{ user: [{ id1: { email: "a" } }] }],
       }),
     ).toBe(true);
@@ -32,7 +32,7 @@ describe("seedSemantics helpers", () => {
     const dir = await mkdtemp(join(tmpdir(), "seed-opts-"));
     try {
       const typesPath = join(dir, "t.yaml");
-      await writeFile(typesPath, "version: CURRENT\ntypes: []\n");
+      await writeFile(typesPath, "version: 1.0.0\ntypes: []\n");
       expect(
         await withSiblingDatasourceTypes(join(dir, "seeds.yaml"), {
           datasourceTypes: "inline",
@@ -52,7 +52,7 @@ describe("seedSemantics helpers", () => {
   });
 
   test("checkSeedSemantics skips malformed entries and unknown field types", () => {
-    const seeds = parsed(`version: CURRENT
+    const seeds = parsed(`version: 1.0.0
 seeds:
   - []
   - {}
@@ -80,7 +80,7 @@ seeds:
   });
 
   test("checkSeedSemantics accepts unsigned bigintegers and rejects non-finite numbers", () => {
-    const seeds = parsed(`version: CURRENT
+    const seeds = parsed(`version: 1.0.0
 seeds:
   - sample:
       - id1:
@@ -116,7 +116,7 @@ seeds:
   });
 
   test("checkSeedSemantics resolves a dangling references string as a number", () => {
-    const seeds = parsed(`version: CURRENT
+    const seeds = parsed(`version: 1.0.0
 seeds:
   - user:
       - id1:
@@ -140,7 +140,7 @@ seeds:
   });
 
   test("checkSeedSemantics skips primitive table entries and row wraps", () => {
-    const seeds = parsed(`version: CURRENT
+    const seeds = parsed(`version: 1.0.0
 seeds:
   - user:
       - id1:
@@ -157,13 +157,13 @@ seeds:
   });
 
   test("checkSeedSemantics no-ops when seeds is not an array", () => {
-    expect(checkSeedSemantics(parsed("version: CURRENT\n"), { types: [] })).toEqual(
+    expect(checkSeedSemantics(parsed("version: 1.0.0\n"), { types: [] })).toEqual(
       { valid: true, errors: [] },
     );
   });
 
   test("indexTypes skips non-tables and scalar field defs", () => {
-    const seeds = parsed(`version: CURRENT
+    const seeds = parsed(`version: 1.0.0
 seeds:
   - user:
       - id1:
@@ -198,7 +198,7 @@ seeds:
   });
 
   test("fieldType ignores malformed references and treats id as number", () => {
-    const seeds = parsed(`version: CURRENT
+    const seeds = parsed(`version: 1.0.0
 seeds:
   - user:
       - id1:
@@ -228,7 +228,7 @@ seeds:
   });
 
   test("STRING_OR_NUMBER rejects Infinity and unsigned small integers reject negatives", () => {
-    const seeds = parsed(`version: CURRENT
+    const seeds = parsed(`version: 1.0.0
 seeds:
   - sample:
       - id1:
@@ -262,7 +262,7 @@ seeds:
   });
 
   test("row values that are not mappings are treated as empty", () => {
-    const seeds = parsed(`version: CURRENT
+    const seeds = parsed(`version: 1.0.0
 seeds:
   - user:
       - id1: 1

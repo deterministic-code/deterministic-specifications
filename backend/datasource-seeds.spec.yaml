@@ -1,4 +1,4 @@
-version: CURRENT
+version: 1.0.0
 $schema: https://json-schema.org/draft/2020-12/schema
 $id: https://cali-services.local/schemas/deterministic/backend/datasource-seeds.spec.yaml
 title: datasource_seeds.yaml
@@ -23,13 +23,11 @@ required: [version, seeds]
 properties:
   version:
     description: >
-      Contract version this document targets. CURRENT binds to the live
-      root specs and may change without notice. A published semver
-      (e.g. 1.0.0) binds to the frozen snapshot under versions/<semver>/.
-    oneOf:
-      - const: CURRENT
-      - type: string
-        pattern: '^[0-9]+\.[0-9]+\.[0-9]+$'
+      Contract version this document targets. Must be a semver
+      (e.g. 1.0.0). The document is validated against that version's
+      specs and engine; there is no floating alias.
+    type: string
+    pattern: '^[0-9]+\.[0-9]+\.[0-9]+$'
   seeds:
     type: array
     minItems: 0

@@ -1,7 +1,7 @@
 expect:
   covers: type:#/$defs/datasourceDirectiveInclude
 ---
-version: CURRENT
+version: 1.0.0
 types: []
 includes:
   - []

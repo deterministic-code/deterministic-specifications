@@ -1,4 +1,4 @@
 expect:
   covers: required:#:services
 ---
-version: CURRENT
+version: 1.0.0

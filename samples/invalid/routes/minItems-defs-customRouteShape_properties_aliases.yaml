@@ -1,7 +1,7 @@
 expect:
   covers: minItems:#/$defs/customRouteShape/properties/aliases
 ---
-version: CURRENT
+version: 1.0.0
 routes:
   - ping:
       path: /ping

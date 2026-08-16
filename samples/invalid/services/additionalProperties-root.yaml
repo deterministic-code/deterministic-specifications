@@ -1,6 +1,6 @@
 expect:
   covers: additionalProperties:#
 ---
-version: CURRENT
+version: 1.0.0
 services: []
 extra: true

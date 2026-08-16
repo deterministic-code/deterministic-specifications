@@ -1,7 +1,7 @@
 expect:
   covers: minLength:#/$defs/includeEntry/properties/name
 ---
-version: CURRENT
+version: 1.0.0
 types: []
 includes:
   - user_id: 1

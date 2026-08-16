@@ -1,6 +1,6 @@
 expect:
   covers: oneOf:#/$defs/middlewareItem
 ---
-version: CURRENT
+version: 1.0.0
 middleware:
   nope: true

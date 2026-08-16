@@ -1,6 +1,6 @@
 expect:
   includes: "property: extra"
 ---
-version: CURRENT
+version: 1.0.0
 seeds: []
 extra: true

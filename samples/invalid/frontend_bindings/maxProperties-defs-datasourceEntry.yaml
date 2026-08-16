@@ -1,7 +1,7 @@
 expect:
   covers: maxProperties:#/$defs/datasourceEntry
 ---
-version: CURRENT
+version: 1.0.0
 datasources:
   - a: {}
     b: {}

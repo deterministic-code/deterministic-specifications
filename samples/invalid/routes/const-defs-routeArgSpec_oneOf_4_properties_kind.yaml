@@ -1,7 +1,7 @@
 expect:
   covers: const:#/$defs/routeArgSpec/oneOf/4/properties/kind
 ---
-version: CURRENT
+version: 1.0.0
 routes:
   - ping:
       path: /ping

@@ -13,7 +13,7 @@ import {
   engineConstructor,
 } from "./VersionedValidator.ts";
 
-const VALID = `version: CURRENT
+const VALID = `version: 1.0.0
 types:
   - user:
       fields:
@@ -23,27 +23,19 @@ types:
 `;
 
 const MINIMAL: Record<string, string> = {
-  DatasourceSeedsValidator: "version: CURRENT\nseeds: []\n",
-  ViewTypesValidator: "version: CURRENT\ntypes: []\n",
-  ServicesValidator: "version: CURRENT\nservices: []\n",
-  RoutesValidator: "version: CURRENT\nroutes: []\n",
-  FrontendBindingsValidator: "version: CURRENT\ndatasources: []\n",
+  DatasourceSeedsValidator: "version: 1.0.0\nseeds: []\n",
+  ViewTypesValidator: "version: 1.0.0\ntypes: []\n",
+  ServicesValidator: "version: 1.0.0\nservices: []\n",
+  RoutesValidator: "version: 1.0.0\nroutes: []\n",
+  FrontendBindingsValidator: "version: 1.0.0\ndatasources: []\n",
 };
 
 describe("VersionedValidator dispatcher", () => {
-  test("CURRENT documents use the live engine", async () => {
+  test("1.0.0 documents use the live engine", async () => {
     expect(await new DatasourceTypesValidator().validate(VALID)).toEqual({
       valid: true,
       errors: [],
     });
-  });
-
-  test("1.0.0 documents use the frozen engine", async () => {
-    expect(
-      await new DatasourceTypesValidator().validate(
-        VALID.replace("CURRENT", "1.0.0"),
-      ),
-    ).toEqual({ valid: true, errors: [] });
   });
 
   test("rejects a missing version with a positioned error", async () => {
@@ -82,7 +74,7 @@ describe("VersionedValidator dispatcher", () => {
       "version: latest\ntypes: []\n",
     );
     expect(result.valid).toBe(false);
-    expect(result.errors[0]?.message).toMatch(/CURRENT or a semver/);
+    expect(result.errors[0]?.message).toMatch(/must be a semver/);
   });
 
   test("reports YAML syntax errors without loading an engine", async () => {
@@ -133,7 +125,7 @@ describe("VersionedValidator dispatcher", () => {
     expect(result.errors[0]?.message.length).toBeGreaterThan(0);
   });
 
-  test("other facades dispatch CURRENT documents", async () => {
+  test("other facades dispatch 1.0.0 documents", async () => {
     expect(
       (
         await new DatasourceSeedsValidator().validate(

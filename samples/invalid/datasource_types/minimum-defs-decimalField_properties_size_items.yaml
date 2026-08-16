@@ -1,7 +1,7 @@
 expect:
   covers: minimum:#/$defs/decimalField/properties/size/items
 ---
-version: CURRENT
+version: 1.0.0
 types:
   - user:
       fields:

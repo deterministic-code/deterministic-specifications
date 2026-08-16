@@ -1,7 +1,7 @@
 expect:
   includes: "missing required field"
   datasource_types: |
-    version: CURRENT
+    version: 1.0.0
     types:
       - user:
           fields:
@@ -13,7 +13,7 @@ expect:
                 size: 64
                 is_nullable: true
 ---
-version: CURRENT
+version: 1.0.0
 seeds:
   - user:
       - id1:

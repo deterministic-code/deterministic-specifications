@@ -1,7 +1,7 @@
 expect:
   covers: minLength:#/$defs/combinedTypeItem/oneOf/0
 ---
-version: CURRENT
+version: 1.0.0
 routes: []
 combined_routes:
   - people:

@@ -1,4 +1,4 @@
 expect:
   covers: required:#:datasources
 ---
-version: CURRENT
+version: 1.0.0

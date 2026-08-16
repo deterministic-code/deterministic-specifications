@@ -1,7 +1,7 @@
 expect:
   covers: pattern:#/$defs/hexDefault
 ---
-version: CURRENT
+version: 1.0.0
 types:
   - user:
       fields:
