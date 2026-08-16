@@ -1,0 +1,14 @@
+version: CURRENT
+types:
+  - legacy_user:
+      fields:
+        - old_email:
+            type: string
+            size: 128
+        - legacy_flag:
+            type: boolean
+            default_value: false
+        - bio:
+            type: string
+            size: 256
+            is_nullable: true
