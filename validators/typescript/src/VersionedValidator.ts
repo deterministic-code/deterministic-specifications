@@ -14,6 +14,7 @@ import {
 } from "./SpecValidator.ts";
 import type { SpecValidationResult, ValidateOptions } from "./types.ts";
 import { withSiblingDatasourceTypes } from "./seedSemantics.ts";
+import { withIncludeFilePath } from "./includeSemantics.ts";
 
 type Engine = {
   validate(
@@ -84,7 +85,15 @@ const facades = mapEngines(({ className }) =>
   },
 );
 
-export const DatasourceTypesValidator = facades.DatasourceTypesValidator;
+export class DatasourceTypesValidator extends facades.DatasourceTypesValidator {
+  protected async optionsForFile(
+    path: string,
+    options?: ValidateOptions,
+  ): Promise<ValidateOptions | undefined> {
+    return withIncludeFilePath(path, options);
+  }
+}
+
 export const ViewTypesValidator = facades.ViewTypesValidator;
 export const RoutesValidator = facades.RoutesValidator;
 export const ServicesValidator = facades.ServicesValidator;

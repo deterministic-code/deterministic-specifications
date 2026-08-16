@@ -20,6 +20,10 @@ export interface ValidateOptions {
   datasourceTypes?: string;
   /** Path to companion `datasource_types.yaml`. Ignored when `datasourceTypes` is set. */
   datasourceTypesPath?: string;
+  /** Absolute path of the document being validated. Set by `validateFile`. */
+  includeFilePath?: string;
+  /** Directory used to resolve `file:` includes. Set by `validateFile`. */
+  includeBasePath?: string;
 }
 
 export interface AjvError {
