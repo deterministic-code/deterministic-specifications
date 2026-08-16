@@ -1,4 +1,4 @@
-version: CURRENT
+version: 1.0.0
 $schema: https://json-schema.org/draft/2020-12/schema
 $id: https://cali-services.local/schemas/deterministic/backend/datasource-types.spec.yaml
 title: datasource_types.yaml
@@ -6,10 +6,10 @@ description: >
   Strict schema for deterministic/datasource_types.yaml. Defines the
   physical data model: one entry per table, with fields, indexes, and
   optional datasource_type flags (readonly-lookup / many-to-many) that drive
-  migration generation and CRUD-service scaffolding. Seed rows live in
-  datasource_seeds.yaml, not here. The `types:` key is required (must exist)
-  but may be an empty array — a no-data-model app (no entities, no
-  migrations) declares `types: []` and the migration emitter short-circuits
+  migration generation and CRUD-service scaffolding. Seed rows are authored
+  in datasource_seeds.yaml, not on the table. The `types:` key is required
+  (must exist) but may be an empty array — a no-data-model app (no entities,
+  no migrations) declares `types: []` and the migration emitter short-circuits
   accordingly. Allowed field `default_value` tokens and numeric ranges live
   in backend/types.yaml and are enforced after schema validation.
 
@@ -20,13 +20,11 @@ required: [version, types]
 properties:
   version:
     description: >
-      Contract version this document targets. CURRENT binds to the live
-      root specs and may change without notice. A published semver
-      (e.g. 1.0.0) binds to the frozen snapshot under versions/<semver>/.
-    oneOf:
-      - const: CURRENT
-      - type: string
-        pattern: '^[0-9]+\.[0-9]+\.[0-9]+$'
+      Contract version this document targets. Must be a semver
+      (e.g. 1.0.0). The document is validated against that version's
+      specs and engine; there is no floating alias.
+    type: string
+    pattern: '^[0-9]+\.[0-9]+\.[0-9]+$'
   types:
     type: array
     minItems: 0
@@ -252,9 +250,11 @@ $defs:
         enum: [StandardCrud, Crud, None]
         default: StandardCrud
         description: >
-          CRUD code-generation tier. StandardCrud = implicit id + audit columns;
-          Crud = uses the declared `primary_key: true` field; None = emit no
-          routes/services for this type.
+          CRUD code-generation tier. StandardCrud = implicit id + audit columns
+          and must not declare `primary_key: true`; Crud = requires exactly one
+          `primary_key: true` field; None = emit no routes/services for this
+          type. At most one primary_key per table. Enforced after schema
+          validation.
       fields:
         type: array
         minItems: 1
@@ -520,22 +520,34 @@ $defs:
       is_unique: { type: boolean }
       default_value:
         type: string
-        pattern: "^.$"
+        minLength: 1
+        pattern: "^.+$"
+        description: >
+          Literal whose length must equal `size` (default 1). Enforced after
+          schema validation.
 
   decimalField:
     type: object
     additionalProperties: false
     required: [type]
-    description: Fixed-point exact numeric. `size` is an optional `[precision, scale]` pair; sqlserver/oracle require it. Carried as a string in generated code to preserve exactness.
+    description: >
+      Fixed-point exact numeric. `size` is an optional `[precision, scale]`
+      pair; sqlserver/oracle require it. Precision must be >= 1 and scale
+      must be <= precision (scale vs precision is enforced after schema
+      validation). Carried as a string in generated code to preserve exactness.
     properties:
       type: { const: decimal }
       size:
         type: array
         minItems: 2
         maxItems: 2
-        items:
-          type: integer
-          minimum: 0
+        prefixItems:
+          - type: integer
+            minimum: 1
+            description: precision
+          - type: integer
+            minimum: 0
+            description: scale
       is_nullable: { type: boolean }
       is_unique: { type: boolean }
       default_value:

@@ -1,6 +1,7 @@
 import { asRecord } from "./yamlPositions.ts";
 
-export const CURRENT_VERSION = "CURRENT";
+/** Live unpublished contract at the repo root. Documents must pin this exact semver. */
+export const LIVE_VERSION = "1.0.0";
 
 export const VALIDATOR_ENGINES = [
   ["DatasourceTypesValidator", "backend", "datasource-types.spec.yaml"],
@@ -46,14 +47,18 @@ export type ParseSpecVersionResult =
   | { ok: true; version: string }
   | { ok: false; message: string };
 
-const PUBLISHED_VERSION = /^[0-9]+\.[0-9]+\.[0-9]+$/;
+const SEMVER = /^[0-9]+\.[0-9]+\.[0-9]+$/;
 
 export function isPublishedVersion(value: string): boolean {
-  return PUBLISHED_VERSION.test(value);
+  return SEMVER.test(value);
 }
 
 export function isSpecVersion(value: string): boolean {
-  return value === CURRENT_VERSION || isPublishedVersion(value);
+  return isPublishedVersion(value);
+}
+
+export function isLiveVersion(value: string): boolean {
+  return value === LIVE_VERSION;
 }
 
 export function isSpecRef(value: unknown): value is SpecRef {
@@ -77,15 +82,14 @@ export function parseSpecVersion(data: unknown): ParseSpecVersionResult {
   if (!("version" in rec)) {
     return {
       ok: false,
-      message:
-        "missing required property version (set CURRENT to track the live specs, or a published semver such as 1.0.0)",
+      message: "missing required property version (set a semver such as 1.0.0)",
     };
   }
   const version = rec.version;
   if (typeof version !== "string" || !isSpecVersion(version)) {
     return {
       ok: false,
-      message: "version must be CURRENT or a semver (e.g. 1.0.0)",
+      message: "version must be a semver (e.g. 1.0.0)",
     };
   }
   return { ok: true, version };

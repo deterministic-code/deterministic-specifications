@@ -1,0 +1,11 @@
+expect:
+  covers: pattern:#/$defs/datasourceDef/properties/schema/anyOf/2
+---
+version: 1.0.0
+datasources:
+  - core:
+      type: REST
+      schema_type: OpenAPI
+      schema: NOT VALID
+      clients:
+        - fetch

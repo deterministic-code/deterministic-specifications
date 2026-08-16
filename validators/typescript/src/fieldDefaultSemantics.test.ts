@@ -1,7 +1,10 @@
 import { describe, expect, test } from "vitest";
 import { DatasourceTypesValidator } from "./VersionedValidator.ts";
 import { parseYamlWithPositions } from "./yamlPositions.ts";
-import { checkFieldDefaults } from "./fieldDefaultSemantics.ts";
+import {
+  checkFieldDefaultSemantics,
+  checkFieldDefaults,
+} from "./fieldDefaultSemantics.ts";
 import { loadFieldTypeCatalog } from "./fieldTypeCatalog.ts";
 import type { ParsedYaml } from "./SpecValidator.ts";
 
@@ -13,7 +16,7 @@ function parsed(text: string): ParsedYaml {
 }
 
 function fieldDoc(type: string, defaultValue: string, extra = ""): string {
-  return `version: CURRENT
+  return `version: 1.0.0
 types:
   - t:
       fields:
@@ -36,6 +39,7 @@ describe("accepted default_value for every catalog type", () => {
     ["string", '""', "            size: 8\n"],
     ["string", "hello", "            size: 8\n"],
     ["character", "X"],
+    ["character", "ABCD", "            size: 4\n"],
     ["number", "0"],
     ["number", "-3"],
     ["integer", "0"],
@@ -81,7 +85,7 @@ describe("accepted default_value for every catalog type", () => {
   );
 
   test("reference field with no default_value is valid", async () => {
-    const result = await validator().validate(`version: CURRENT
+    const result = await validator().validate(`version: 1.0.0
 types:
   - t:
       fields:
@@ -167,7 +171,7 @@ describe("rejected default_value — out of range", () => {
 
 describe("default_value on include combine_options field defs", () => {
   test("rejects a bad datetime token on modify_fields.def", async () => {
-    const result = await validator().validate(`version: CURRENT
+    const result = await validator().validate(`version: 1.0.0
 includes:
   - file: other.yaml
     combine_options:
@@ -186,7 +190,7 @@ types: []
   });
 
   test("rejects an out-of-range integer on add_fields", async () => {
-    const result = await validator().validate(`version: CURRENT
+    const result = await validator().validate(`version: 1.0.0
 includes:
   - file: other.yaml
     combine_options:
@@ -206,11 +210,20 @@ types: []
   });
 });
 
+describe("checkFieldDefaultSemantics", () => {
+  test("requires a semver version before loading the catalog", async () => {
+    const result = await checkFieldDefaultSemantics(parsed("types: []\n"));
+    expect(result.valid).toBe(false);
+    expect(result.errors[0]?.instancePath).toBe("/version");
+    expect(result.errors[0]?.message).toMatch(/missing required property version/);
+  });
+});
+
 describe("checkFieldDefaults", () => {
   test("reports allowed token names when a string default matches no regex", async () => {
-    const catalog = await loadFieldTypeCatalog();
+    const catalog = await loadFieldTypeCatalog("1.0.0");
     const result = checkFieldDefaults(
-      parsed(`version: CURRENT
+      parsed(`version: 1.0.0
 types:
   - t:
       fields:
@@ -227,9 +240,9 @@ types:
   });
 
   test("skips fields without default_value or type", async () => {
-    const catalog = await loadFieldTypeCatalog();
+    const catalog = await loadFieldTypeCatalog("1.0.0");
     const result = checkFieldDefaults(
-      parsed(`version: CURRENT
+      parsed(`version: 1.0.0
 types:
   - t:
       fields:
@@ -244,12 +257,12 @@ types:
   });
 
   test("ignores malformed types/includes and unknown field types", async () => {
-    const catalog = await loadFieldTypeCatalog();
+    const catalog = await loadFieldTypeCatalog("1.0.0");
     expect(
       checkFieldDefaults(parsed("[]"), catalog),
     ).toEqual({ valid: true, errors: [] });
     const result = checkFieldDefaults(
-      parsed(`version: CURRENT
+      parsed(`version: 1.0.0
 types:
   - null
   - {}
@@ -326,7 +339,7 @@ includes:
         },
       ],
     ]);
-    const doc = parsed(`version: CURRENT
+    const doc = parsed(`version: 1.0.0
 types:
   - t:
       fields:

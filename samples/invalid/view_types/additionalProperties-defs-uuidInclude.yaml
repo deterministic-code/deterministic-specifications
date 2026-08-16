@@ -1,7 +1,7 @@
 expect:
   covers: additionalProperties:#/$defs/uuidInclude
 ---
-version: CURRENT
+version: 1.0.0
 types: []
 includes:
   - uuid: abc

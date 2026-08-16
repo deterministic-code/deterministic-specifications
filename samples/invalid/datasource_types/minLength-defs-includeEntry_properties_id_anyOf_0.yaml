@@ -1,7 +1,7 @@
 expect:
   covers: minLength:#/$defs/includeEntry/properties/id/anyOf/0
 ---
-version: CURRENT
+version: 1.0.0
 types: []
 includes:
   - id: ""

@@ -10,7 +10,7 @@ import {
   loadSchema,
   type Schema,
 } from "./schemaCoverage.ts";
-import { findAncestorPath, resolveSpecPath } from "../src/index.ts";
+import { LIVE_VERSION, findAncestorPath, resolveSpecPath } from "../src/index.ts";
 import { readFile } from "node:fs/promises";
 
 type Host = Record<string, unknown>;
@@ -76,16 +76,16 @@ function del(obj: Host, path: Array<string | number>): Host {
 }
 
 const DS_INT: Host = {
-  version: "CURRENT",
+  version: "1.0.0",
   types: [{ user: { fields: [{ n: { type: "integer" } }] } }],
 };
 
 function dsField(field: Host): Host {
-  return { version: "CURRENT", types: [{ user: { fields: [{ n: field }] } }] };
+  return { version: "1.0.0", types: [{ user: { fields: [{ n: field }] } }] };
 }
 
 function dsInclude(include: Host): Host {
-  return { version: "CURRENT", types: [], includes: [include] };
+  return { version: "1.0.0", types: [], includes: [include] };
 }
 
 function dsSide(side: Host): Host {
@@ -95,12 +95,12 @@ function dsSide(side: Host): Host {
   });
 }
 
-const VIEW_MIN: Host = { version: "CURRENT", types: [] };
-const SEEDS_MIN: Host = { version: "CURRENT", seeds: [] };
-const ROUTES_MIN: Host = { version: "CURRENT", routes: [] };
-const SERVICES_MIN: Host = { version: "CURRENT", services: [] };
-const APP_MIN: Host = { version: "CURRENT" };
-const BIND_MIN: Host = { version: "CURRENT", datasources: [] };
+const VIEW_MIN: Host = { version: "1.0.0", types: [] };
+const SEEDS_MIN: Host = { version: "1.0.0", seeds: [] };
+const ROUTES_MIN: Host = { version: "1.0.0", routes: [] };
+const SERVICES_MIN: Host = { version: "1.0.0", services: [] };
+const APP_MIN: Host = { version: "1.0.0" };
+const BIND_MIN: Host = { version: "1.0.0", datasources: [] };
 
 type Mut = { loc: Array<string | number>; host: Host };
 
@@ -401,7 +401,7 @@ function dsLoc(path: string): Mut | null {
 }
 
 const SEEDS_ONE: Host = {
-  version: "CURRENT",
+  version: "1.0.0",
   seeds: [{ user: [{ id1: { n: 1 } }] }],
 };
 
@@ -431,11 +431,11 @@ function seedsLoc(path: string): Mut | null {
 
 function viewLoc(path: string): Mut | null {
   const shaped: Host = {
-    version: "CURRENT",
-    types: [{ person: { fields: [{ Name: { type: "string" } }] } }],
+    version: "1.0.0",
+    types: [{ person: { fields: [{ name: { type: "string" } }] } }],
   };
   const union: Host = {
-    version: "CURRENT",
+    version: "1.0.0",
     types: [{ result: { one_of: ["person", "other"] } }],
   };
   if (path === "#") return { host: VIEW_MIN, loc: [] };
@@ -451,7 +451,7 @@ function viewLoc(path: string): Mut | null {
   if (path.includes("shapedView/properties/omit"))
     return {
       host: {
-        version: "CURRENT",
+        version: "1.0.0",
         types: [
           {
             person: {
@@ -467,7 +467,7 @@ function viewLoc(path: string): Mut | null {
   if (path.includes("shapedView/properties/inherits"))
     return {
       host: {
-        version: "CURRENT",
+        version: "1.0.0",
         types: [
           { person: { inherits: "datasource_types.user", fields: [] } },
         ],
@@ -481,43 +481,43 @@ function viewLoc(path: string): Mut | null {
   if (path.includes("fieldEntry/propertyNames") || path.includes("fieldEntry"))
     return { host: shaped, loc: ["types", 0, "person", "fields", 0] };
   if (path.includes("fieldDef/properties/type"))
-    return { host: shaped, loc: ["types", 0, "person", "fields", 0, "Name", "type"] };
+    return { host: shaped, loc: ["types", 0, "person", "fields", 0, "name", "type"] };
   if (path.includes("fieldDef/properties/size"))
     return {
       host: {
-        version: "CURRENT",
-        types: [{ person: { fields: [{ Name: { type: "string", size: 8 } }] } }],
+        version: "1.0.0",
+        types: [{ person: { fields: [{ name: { type: "string", size: 8 } }] } }],
       },
-      loc: ["types", 0, "person", "fields", 0, "Name", "size"],
+      loc: ["types", 0, "person", "fields", 0, "name", "size"],
     };
   if (path.includes("fieldDef/properties/min_size"))
     return {
       host: {
-        version: "CURRENT",
-        types: [{ person: { fields: [{ Name: { type: "string", min_size: 0 } }] } }],
+        version: "1.0.0",
+        types: [{ person: { fields: [{ name: { type: "string", min_size: 0 } }] } }],
       },
-      loc: ["types", 0, "person", "fields", 0, "Name", "min_size"],
+      loc: ["types", 0, "person", "fields", 0, "name", "min_size"],
     };
   if (path.includes("fieldDef/properties/default_value"))
     return {
       host: {
-        version: "CURRENT",
+        version: "1.0.0",
         types: [
-          { person: { fields: [{ Name: { type: "string", default_value: "" } }] } },
+          { person: { fields: [{ name: { type: "string", default_value: "" } }] } },
         ],
       },
-      loc: ["types", 0, "person", "fields", 0, "Name", "default_value"],
+      loc: ["types", 0, "person", "fields", 0, "name", "default_value"],
     };
   if (path.includes("fieldDef/properties/references"))
     return {
       host: {
-        version: "CURRENT",
+        version: "1.0.0",
         types: [
           {
             person: {
               fields: [
                 {
-                  Role: {
+                  role: {
                     type: "datasource_types.role",
                     references: "datasource_types.role.id",
                   },
@@ -527,10 +527,10 @@ function viewLoc(path: string): Mut | null {
           },
         ],
       },
-      loc: ["types", 0, "person", "fields", 0, "Role", "references"],
+      loc: ["types", 0, "person", "fields", 0, "role", "references"],
     };
   if (path.includes("fieldDef"))
-    return { host: shaped, loc: ["types", 0, "person", "fields", 0, "Name"] };
+    return { host: shaped, loc: ["types", 0, "person", "fields", 0, "name"] };
   if (path.includes("includeEntry") || path.includes("fileInclude"))
     return {
       host: { ...VIEW_MIN, includes: [{ file: "x.yaml" }] },
@@ -587,10 +587,10 @@ function viewLoc(path: string): Mut | null {
           combine_options: {
             source: {
               remove_types: ["old"],
-              remove_fields: ["old.Name"],
+              remove_fields: ["old.name"],
               modify_types: [{ type: "old", new_type: "person" }],
-              modify_fields: [{ field: "old.Name", new_field: "Display" }],
-              add_fields: [{ type: "old", add_field: { Extra: { type: "string" } } }],
+              modify_fields: [{ field: "old.name", new_field: "display" }],
+              add_fields: [{ type: "old", add_field: { extra: { type: "string" } } }],
             },
           },
         },
@@ -630,11 +630,11 @@ function viewLoc(path: string): Mut | null {
 
 function routesLoc(path: string): Mut | null {
   const custom: Host = {
-    version: "CURRENT",
+    version: "1.0.0",
     routes: [{ ping: { path: "/ping", method: "GET" } }],
   };
   const byField: Host = {
-    version: "CURRENT",
+    version: "1.0.0",
     routes: [{ by_email: { entity: "user", byField: "email" } }],
   };
   if (path === "#") return { host: ROUTES_MIN, loc: [] };
@@ -652,7 +652,7 @@ function routesLoc(path: string): Mut | null {
   if (path.includes("customRouteShape/properties/aliases"))
     return {
       host: {
-        version: "CURRENT",
+        version: "1.0.0",
         routes: [{ ping: { path: "/ping", method: "GET", aliases: ["/x"] } }],
       },
       loc: ["routes", 0, "ping", "aliases"],
@@ -660,7 +660,7 @@ function routesLoc(path: string): Mut | null {
   if (path.includes("customRouteShape/properties/args"))
     return {
       host: {
-        version: "CURRENT",
+        version: "1.0.0",
         routes: [
           {
             ping: {
@@ -676,7 +676,7 @@ function routesLoc(path: string): Mut | null {
   if (path.includes("customRouteShape/properties/errors"))
     return {
       host: {
-        version: "CURRENT",
+        version: "1.0.0",
         routes: [{ ping: { path: "/ping", method: "GET", errors: [400] } }],
       },
       loc: ["routes", 0, "ping", "errors"],
@@ -684,7 +684,7 @@ function routesLoc(path: string): Mut | null {
   if (path.includes("customRouteShape/properties/scopes"))
     return {
       host: {
-        version: "CURRENT",
+        version: "1.0.0",
         routes: [{ ping: { path: "/ping", method: "GET", scopes: ["a"] } }],
       },
       loc: ["routes", 0, "ping", "scopes"],
@@ -692,15 +692,21 @@ function routesLoc(path: string): Mut | null {
   if (path.includes("customRouteShape/properties/services"))
     return {
       host: {
-        version: "CURRENT",
+        version: "1.0.0",
         routes: [{ ping: { path: "/ping", method: "GET", services: ["Svc"] } }],
       },
       loc: ["routes", 0, "ping", "services"],
     };
   if (path.includes("customRouteShape/properties/")) {
     const key = path.split("/properties/")[1]!.split("/")[0]!;
+    const dispatch =
+      key === "routeClass" || key === "module"
+        ? { routeClass: "PingRoute", module: "./x" }
+        : key === "services"
+          ? { services: ["PersonService"] }
+          : { service: "PersonService", serviceMethod: "run" };
     const host: Host = {
-      version: "CURRENT",
+      version: "1.0.0",
       routes: [
         {
           ping: {
@@ -709,12 +715,9 @@ function routesLoc(path: string): Mut | null {
             description: "x",
             request: "person",
             response: "person",
-            service: "PersonService",
-            serviceMethod: "run",
-            routeClass: "PingRoute",
-            module: "./x",
             authentication: "none",
             "x-implementation": "stub",
+            ...dispatch,
           },
         },
       ],
@@ -726,7 +729,7 @@ function routesLoc(path: string): Mut | null {
   if (path.includes("byFieldRouteShape/properties/methods"))
     return {
       host: {
-        version: "CURRENT",
+        version: "1.0.0",
         routes: [
           { by_email: { entity: "user", byField: "email", methods: ["GET"] } },
         ],
@@ -736,12 +739,12 @@ function routesLoc(path: string): Mut | null {
   if (path.includes("byFieldRouteShape"))
     return { host: byField, loc: ["routes", 0, "by_email"] };
   if (path.includes("routeEntry/oneOf/0"))
-    return { host: { version: "CURRENT", routes: ["get_users_by_email"] }, loc: ["routes", 0] };
+    return { host: { version: "1.0.0", routes: ["get_users_by_email"] }, loc: ["routes", 0] };
   if (path.includes("routeEntry"))
     return { host: custom, loc: ["routes", 0] };
   if (path.includes("routeArgSpec")) {
     const host: Host = {
-      version: "CURRENT",
+      version: "1.0.0",
       routes: [
         {
           ping: {
@@ -901,7 +904,7 @@ function routesLoc(path: string): Mut | null {
 
 function servicesLoc(path: string): Mut | null {
   const svc: Host = {
-    version: "CURRENT",
+    version: "1.0.0",
     services: [{ name: "PersonService", description: "x" }],
   };
   if (path === "#") return { host: SERVICES_MIN, loc: [] };
@@ -913,7 +916,7 @@ function servicesLoc(path: string): Mut | null {
     };
   if (path.includes("serviceEntry/properties/args") || path.includes("argSpec")) {
     const host: Host = {
-      version: "CURRENT",
+      version: "1.0.0",
       services: [
         {
           name: "PersonService",
@@ -954,7 +957,7 @@ function servicesLoc(path: string): Mut | null {
   if (path.includes("serviceEntry"))
     return {
       host: {
-        version: "CURRENT",
+        version: "1.0.0",
         services: [{ name: "PersonService", description: "x", module: "./x" }],
       },
       loc: path.includes("properties/description")
@@ -1097,7 +1100,7 @@ function appLoc(path: string): Mut | null {
 
 function bindLoc(path: string): Mut | null {
   const ds: Host = {
-    version: "CURRENT",
+    version: "1.0.0",
     datasources: [
       {
         core: {
@@ -1163,6 +1166,9 @@ function mutate(
     if (Array.isArray(current)) {
       return { data: set(host, loc, ["NOT VALID"]), includes: "pattern" };
     }
+    if (path.includes("characterField") && path.includes("default_value")) {
+      return { data: set(host, loc, ""), includes: "pattern" };
+    }
     return { data: loc.length === 0 ? host : set(host, loc, "NOT VALID"), includes: "pattern" };
   }
   if (keyword === "minLength") {
@@ -1201,6 +1207,9 @@ function mutate(
     return { data: set(host, loc, "nope"), includes: "allowed" };
   }
   if (keyword === "const") {
+    if (path.includes("customRouteShape/properties/response")) {
+      return { data: set(host, loc, 1), includes: "equal to" };
+    }
     return { data: set(host, loc, "nope"), includes: "equal to" };
   }
   if (keyword === "oneOf" || keyword === "anyOf") {
@@ -1243,7 +1252,7 @@ const samplesRoot = dirname((await findAncestorPath("samples/valid"))!);
 
 for (const spec of SPECS) {
   const schema = loadSchema(
-    await readFile(await resolveSpecPath(spec.subdir, spec.name), "utf8"),
+    await readFile(await resolveSpecPath(spec.subdir, spec.name, LIVE_VERSION), "utf8"),
   ) as Schema;
   const points = [...collectErrorPoints(schema)].sort();
   const outDir = join(samplesRoot, "invalid", spec.dir);

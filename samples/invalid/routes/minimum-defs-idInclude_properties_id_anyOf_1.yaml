@@ -1,7 +1,7 @@
 expect:
   covers: minimum:#/$defs/idInclude/properties/id/anyOf/1
 ---
-version: CURRENT
+version: 1.0.0
 routes: []
 includes:
   - id: -9999999999999

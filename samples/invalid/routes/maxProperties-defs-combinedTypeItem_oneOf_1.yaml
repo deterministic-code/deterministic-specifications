@@ -1,7 +1,7 @@
 expect:
   covers: maxProperties:#/$defs/combinedTypeItem/oneOf/1
 ---
-version: CURRENT
+version: 1.0.0
 routes: []
 combined_routes:
   - people:

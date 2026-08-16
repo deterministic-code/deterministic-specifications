@@ -1,0 +1,15 @@
+expect:
+  covers: const:#/$defs/customRouteShape/properties/response/oneOf/0
+---
+version: 1.0.0
+routes:
+  - ping:
+      path: /ping
+      method: GET
+      description: x
+      request: person
+      response: 1
+      authentication: none
+      x-implementation: stub
+      service: PersonService
+      serviceMethod: run

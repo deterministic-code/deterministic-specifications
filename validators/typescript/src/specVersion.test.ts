@@ -1,7 +1,8 @@
 import {
-  CURRENT_VERSION,
+  LIVE_VERSION,
   VALIDATOR_ENGINE_FILE,
   VALIDATOR_ENGINES,
+  isLiveVersion,
   isPublishedVersion,
   isSpecRef,
   isSpecVersion,
@@ -23,28 +24,31 @@ describe("catalog", () => {
   });
 });
 
-describe("isPublishedVersion / isSpecVersion", () => {
-  test("accepts X.Y.Z and CURRENT", () => {
+describe("isPublishedVersion / isSpecVersion / isLiveVersion", () => {
+  test("accepts X.Y.Z only", () => {
     expect(isPublishedVersion("1.0.0")).toBe(true);
     expect(isPublishedVersion("0.3.0")).toBe(true);
     expect(isPublishedVersion("CURRENT")).toBe(false);
     expect(isPublishedVersion("1.0")).toBe(false);
     expect(isPublishedVersion("v1.0.0")).toBe(false);
     expect(isSpecVersion("1.0.0")).toBe(true);
-    expect(isSpecVersion(CURRENT_VERSION)).toBe(true);
+    expect(isSpecVersion(LIVE_VERSION)).toBe(true);
     expect(isSpecVersion("latest")).toBe(false);
+    expect(isSpecVersion("CURRENT")).toBe(false);
+    expect(isLiveVersion(LIVE_VERSION)).toBe(true);
+    expect(isLiveVersion("2.0.0")).toBe(false);
   });
 });
 
 describe("isSpecRef", () => {
   test("requires string subdir, name, and version", () => {
     expect(
-      isSpecRef({ subdir: "backend", name: "x.spec.yaml", version: "CURRENT" }),
+      isSpecRef({ subdir: "backend", name: "x.spec.yaml", version: "1.0.0" }),
     ).toBe(true);
     expect(isSpecRef(null)).toBe(false);
     expect(isSpecRef("backend")).toBe(false);
-    expect(isSpecRef({ subdir: 1, name: "x", version: "CURRENT" })).toBe(false);
-    expect(isSpecRef({ subdir: "backend", name: 1, version: "CURRENT" })).toBe(
+    expect(isSpecRef({ subdir: 1, name: "x", version: "1.0.0" })).toBe(false);
+    expect(isSpecRef({ subdir: "backend", name: 1, version: "1.0.0" })).toBe(
       false,
     );
     expect(isSpecRef({ subdir: "backend", name: "x.spec.yaml" })).toBe(false);
@@ -52,14 +56,14 @@ describe("isSpecRef", () => {
 });
 
 describe("parseSpecVersion", () => {
-  test("reads CURRENT and a semver from a mapping", () => {
-    expect(parseSpecVersion({ version: "CURRENT", types: [] })).toEqual({
-      ok: true,
-      version: "CURRENT",
-    });
-    expect(parseSpecVersion({ version: "1.0.0" })).toEqual({
+  test("reads a semver from a mapping", () => {
+    expect(parseSpecVersion({ version: "1.0.0", types: [] })).toEqual({
       ok: true,
       version: "1.0.0",
+    });
+    expect(parseSpecVersion({ version: "2.1.0" })).toEqual({
+      ok: true,
+      version: "2.1.0",
     });
   });
 
@@ -72,11 +76,15 @@ describe("parseSpecVersion", () => {
     });
     expect(parseSpecVersion({ version: 1 })).toMatchObject({
       ok: false,
-      message: expect.stringMatching(/CURRENT or a semver/),
+      message: expect.stringMatching(/must be a semver/),
     });
     expect(parseSpecVersion({ version: "1.0" })).toMatchObject({
       ok: false,
-      message: expect.stringMatching(/CURRENT or a semver/),
+      message: expect.stringMatching(/must be a semver/),
+    });
+    expect(parseSpecVersion({ version: "CURRENT" })).toMatchObject({
+      ok: false,
+      message: expect.stringMatching(/must be a semver/),
     });
   });
 });

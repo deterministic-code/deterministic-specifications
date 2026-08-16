@@ -1,11 +1,11 @@
 expect:
   covers: pattern:#/$defs/characterField/properties/default_value
 ---
-version: CURRENT
+version: 1.0.0
 types:
   - user:
       fields:
         - n:
             type: character
             size: 1
-            default_value: NOT VALID
+            default_value: ""

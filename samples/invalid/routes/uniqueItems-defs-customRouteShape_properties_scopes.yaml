@@ -1,7 +1,7 @@
 expect:
   covers: uniqueItems:#/$defs/customRouteShape/properties/scopes
 ---
-version: CURRENT
+version: 1.0.0
 routes:
   - ping:
       path: /ping

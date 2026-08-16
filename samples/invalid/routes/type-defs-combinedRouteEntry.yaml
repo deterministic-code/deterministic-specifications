@@ -1,7 +1,7 @@
 expect:
   covers: type:#/$defs/combinedRouteEntry
 ---
-version: CURRENT
+version: 1.0.0
 routes: []
 combined_routes:
   - []

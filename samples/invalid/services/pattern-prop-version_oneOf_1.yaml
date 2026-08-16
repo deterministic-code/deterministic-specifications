@@ -1,5 +1,0 @@
-expect:
-  covers: pattern:#/properties/version/oneOf/1
----
-version: NOT VALID
-services: []

@@ -1,5 +1,5 @@
 import { SpecValidator, type ParsedYaml } from "../SpecValidator.ts";
-import { CURRENT_VERSION } from "../specVersion.ts";
+import { LIVE_VERSION } from "../specVersion.ts";
 import type { SpecValidationResult, ValidateOptions } from "../types.ts";
 import { parseYamlWithPositions } from "../yamlPositions.ts";
 import {
@@ -13,15 +13,16 @@ const MISSING_TYPES =
   "datasource_types is required to validate seeds (pass datasourceTypes, or place datasource_types.yaml next to the seeds file)";
 
 /**
- * CURRENT engine for `datasource_seeds.yaml`: JSON Schema first, then
+ * Live engine for `datasource_seeds.yaml`: JSON Schema first, then
  * semantic checks against the companion `datasource_types.yaml`.
+ * Pinned to {@link LIVE_VERSION}.
  */
 export class DatasourceSeedsValidator extends SpecValidator {
   constructor() {
     super({
       subdir: "backend",
       name: "datasource-seeds.spec.yaml",
-      version: CURRENT_VERSION,
+      version: LIVE_VERSION,
     });
   }
 
@@ -49,7 +50,7 @@ export class DatasourceSeedsValidator extends SpecValidator {
     const typesValidator = new SpecValidator({
       subdir: "backend",
       name: "datasource-types.spec.yaml",
-      version: CURRENT_VERSION,
+      version: LIVE_VERSION,
     });
     const typesResult = await typesValidator.validate(typesText);
     if (!typesResult.valid) {

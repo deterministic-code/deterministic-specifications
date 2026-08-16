@@ -1,4 +1,4 @@
-version: CURRENT
+version: 1.0.0
 includes:
   - datasource_types:
       include: "*"
@@ -8,40 +8,40 @@ includes:
     combine_options:
       source:
         remove_types: [old_view]
-        remove_fields: [old_view.OldField]
+        remove_fields: [old_view.old_field]
         modify_types:
           - type: old_view
             new_type: person
         modify_fields:
-          - field: old_view.OldField
-            new_field: DisplayName
-          - field: old_view.Flag
+          - field: old_view.old_field
+            new_field: display_name
+          - field: old_view.flag
             def:
               type: boolean
               is_nullable: true
         add_fields:
           - type: old_view
             add_field:
-              Extra:
+              extra:
                 type: string
                 size: 32
       destination:
         remove_types: [scratch_view]
-        remove_fields: [scratch_view.Tmp]
+        remove_fields: [scratch_view.tmp]
         modify_types:
           - type: scratch_view
             new_type: summary
         modify_fields:
-          - field: scratch_view.Tmp
-            new_field: Body
-          - field: scratch_view.N
+          - field: scratch_view.tmp
+            new_field: body
+          - field: scratch_view.n
             def:
               type: integer
               min_size: 0
         add_fields:
           - type: scratch_view
             add_field:
-              Tag:
+              tag:
                 type: string
   - id: saved_views
     combine_options:
@@ -54,87 +54,87 @@ includes:
   - uuid: 22222222-2222-2222-2222-222222222222
     combine_options:
       source:
-        remove_fields: [person.Bio]
+        remove_fields: [person.bio]
   - user_id: 2
     name: demo_views
     combine_options:
       destination:
-        remove_fields: [person.Score]
+        remove_fields: [person.score]
 types:
   - person:
       inherits: datasource_types.user
       omit: [bio, payload]
       fields:
-        - DisplayName:
+        - display_name:
             type: string
             size: 128
             min_size: 0
             is_nullable: false
             is_unique: true
             default_value: ""
-        - Score:
+        - score:
             type: number
             size: unlimited
             default_value: 0
-        - Count:
+        - count:
             type: integer
             default_value: 0
-        - Visits:
+        - visits:
             type: unsignedinteger
-        - BigCount:
+        - big_count:
             type: biginteger
-        - HugeCount:
+        - huge_count:
             type: unsignedbiginteger
-        - SmallCount:
+        - small_count:
             type: smallinteger
-        - TinyCount:
+        - tiny_count:
             type: unsignedsmallinteger
-        - Ratio:
+        - ratio:
             type: float
-        - Active:
+        - active:
             type: boolean
             default_value: true
-        - CreatedOn:
+        - created_on:
             type: datetime
-        - Avatar:
+        - avatar:
             type: binary
-        - Uid:
+        - uid:
             type: uuid
-        - Labels:
+        - labels:
             type: "string[]"
-        - Scores:
+        - scores:
             type: "number[]"
-        - Counts:
+        - counts:
             type: "integer[]"
-        - VisitList:
+        - visit_list:
             type: "unsignedinteger[]"
-        - BigList:
+        - big_list:
             type: "biginteger[]"
-        - HugeList:
+        - huge_list:
             type: "unsignedbiginteger[]"
-        - SmallList:
+        - small_list:
             type: "smallinteger[]"
-        - TinyList:
+        - tiny_list:
             type: "unsignedsmallinteger[]"
-        - RatioList:
+        - ratio_list:
             type: "float[]"
-        - Flags:
+        - flags:
             type: "boolean[]"
-        - Dates:
+        - dates:
             type: "datetime[]"
-        - Blobs:
+        - blobs:
             type: "binary[]"
-        - Ids:
+        - ids:
             type: "uuid[]"
-        - Role:
+        - role:
             type: datasource_types.role
             references: datasource_types.role.id
-        - Roles:
+        - roles:
             type: datasource_types.role[]
             references: datasource_types.user.role_id
-        - Manager:
+        - manager:
             type: person
-        - Reports:
+        - reports:
             type: person[]
             references: view_types.person.parent_id
   - empty_shape:

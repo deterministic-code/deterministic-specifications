@@ -1,6 +1,6 @@
 expect:
   covers: type:#/$defs/serviceEntry
 ---
-version: CURRENT
+version: 1.0.0
 services:
   - []

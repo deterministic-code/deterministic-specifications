@@ -1,7 +1,7 @@
 expect:
   covers: minLength:#/$defs/includeEntry/properties/file
 ---
-version: CURRENT
+version: 1.0.0
 types: []
 includes:
   - file: ""

@@ -6,7 +6,7 @@ import { beforeAll, describe, expect, test } from "vitest";
 import { resolveEngineDir, listSpecVersions } from "../resolveSpecPath.ts";
 import type { SpecValidator } from "../SpecValidator.ts";
 import {
-  CURRENT_VERSION,
+  LIVE_VERSION,
   VALIDATOR_ENGINE_FILE,
   VALIDATOR_ENGINES,
 } from "../specVersion.ts";
@@ -43,7 +43,7 @@ const versions = await listSpecVersions();
 describe.each(versions)("%s engines", (version) => {
   let engines: Engines;
   let datasource: SpecValidator;
-  const other = version === CURRENT_VERSION ? "1.0.0" : CURRENT_VERSION;
+  const other = version === LIVE_VERSION ? "2.0.0" : LIVE_VERSION;
 
   beforeAll(async () => {
     engines = await loadEngines(version);

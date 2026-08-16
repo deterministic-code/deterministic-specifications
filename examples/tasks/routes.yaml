@@ -1,4 +1,4 @@
-version: CURRENT
+version: 1.0.0
 includes:
   - view_type_routes:
       filter: inherits == datasource_types

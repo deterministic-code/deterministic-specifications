@@ -1,7 +1,7 @@
 expect:
   covers: maxItems:#/$defs/decimalField/properties/size
 ---
-version: CURRENT
+version: 1.0.0
 types:
   - user:
       fields:

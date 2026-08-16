@@ -1,0 +1,5 @@
+expect:
+  covers: pattern:#/properties/version
+---
+version: NOT VALID
+routes: []

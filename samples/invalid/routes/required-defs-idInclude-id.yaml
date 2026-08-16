@@ -1,7 +1,7 @@
 expect:
   covers: required:#/$defs/idInclude:id
 ---
-version: CURRENT
+version: 1.0.0
 routes: []
 includes:
   - {}

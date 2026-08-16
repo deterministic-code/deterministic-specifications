@@ -1,10 +1,10 @@
 expect:
   covers: minimum:#/$defs/fieldDef/properties/min_size
 ---
-version: CURRENT
+version: 1.0.0
 types:
   - person:
       fields:
-        - Name:
+        - name:
             type: string
             min_size: -9999999999999

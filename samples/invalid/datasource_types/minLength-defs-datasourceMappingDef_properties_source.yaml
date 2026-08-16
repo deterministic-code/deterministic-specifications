@@ -1,7 +1,7 @@
 expect:
   covers: minLength:#/$defs/datasourceMappingDef/properties/source
 ---
-version: CURRENT
+version: 1.0.0
 types:
   - user:
       fields:

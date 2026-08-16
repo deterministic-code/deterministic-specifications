@@ -1,10 +1,11 @@
 import { asRecord, positionFor } from "./yamlPositions.ts";
-import type { ParsedYaml } from "./SpecValidator.ts";
+import { versionFail, type ParsedYaml } from "./SpecValidator.ts";
 import type { SpecValidationError, SpecValidationResult } from "./types.ts";
 import {
   loadFieldTypeCatalog,
   type FieldType,
 } from "./fieldTypeCatalog.ts";
+import { parseSpecVersion } from "./specVersion.ts";
 
 function err(
   parsed: ParsedYaml,
@@ -125,6 +126,18 @@ export function checkFieldDefaults(
       const token = tokenError(field, value);
       if (token) errors.push(err(parsed, path, token));
     }
+    if (typeName === "character" && typeof value === "string") {
+      const size = typeof def.size === "number" ? def.size : 1;
+      if (value.length !== size) {
+        errors.push(
+          err(
+            parsed,
+            path,
+            `character default_value length must equal size (${size})`,
+          ),
+        );
+      }
+    }
     const range = rangeError(field, value);
     if (range) errors.push(err(parsed, path, range));
   });
@@ -136,5 +149,12 @@ export function checkFieldDefaults(
 export async function checkFieldDefaultSemantics(
   parsed: ParsedYaml,
 ): Promise<SpecValidationResult> {
-  return checkFieldDefaults(parsed, await loadFieldTypeCatalog());
+  const version = parseSpecVersion(parsed.data);
+  if (!version.ok) {
+    return versionFail(parsed.doc, parsed.lineCounter, version.message);
+  }
+  return checkFieldDefaults(
+    parsed,
+    await loadFieldTypeCatalog(version.version),
+  );
 }

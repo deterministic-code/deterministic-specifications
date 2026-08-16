@@ -1,7 +1,7 @@
 expect:
   includes: "allowed: REST, GraphQL"
 ---
-version: CURRENT
+version: 1.0.0
 datasources:
   - tasks:
       type: grpc

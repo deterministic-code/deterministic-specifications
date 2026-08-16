@@ -1,7 +1,7 @@
 expect:
   covers: type:#/$defs/customRouteShape/properties/args
 ---
-version: CURRENT
+version: 1.0.0
 routes:
   - ping:
       path: /ping

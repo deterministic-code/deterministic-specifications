@@ -1,7 +1,7 @@
 expect:
   covers: const:#/$defs/argSpec/oneOf/1/properties/kind
 ---
-version: CURRENT
+version: 1.0.0
 services:
   - name: PersonService
     description: x

@@ -1,6 +1,6 @@
 expect:
   covers: minProperties:#/$defs/tableSeedsEntry
 ---
-version: CURRENT
+version: 1.0.0
 seeds:
   - {}

@@ -1,7 +1,7 @@
 expect:
   covers: minItems:#/$defs/combinedRouteEntry/additionalProperties/properties/combined_types
 ---
-version: CURRENT
+version: 1.0.0
 routes: []
 combined_routes:
   - people:

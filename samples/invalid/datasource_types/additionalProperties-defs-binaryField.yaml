@@ -1,7 +1,7 @@
 expect:
   covers: additionalProperties:#/$defs/binaryField
 ---
-version: CURRENT
+version: 1.0.0
 types:
   - user:
       fields:

@@ -1,9 +1,9 @@
 expect:
   covers: pattern:#/$defs/fieldDef/properties/type/anyOf/2
 ---
-version: CURRENT
+version: 1.0.0
 types:
   - person:
       fields:
-        - Name:
+        - name:
             type: NOT VALID

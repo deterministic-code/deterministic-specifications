@@ -1,7 +1,7 @@
 expect:
   covers: maxProperties:#/$defs/routeEntry/oneOf/1
 ---
-version: CURRENT
+version: 1.0.0
 routes:
   - a: {}
     b: {}

@@ -1,6 +1,6 @@
 expect:
   covers: minProperties:#/$defs/tableEntry
 ---
-version: CURRENT
+version: 1.0.0
 types:
   - {}

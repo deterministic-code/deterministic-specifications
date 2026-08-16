@@ -1,7 +1,7 @@
 expect:
   covers: minLength:#/$defs/serviceEntry/properties/description
 ---
-version: CURRENT
+version: 1.0.0
 services:
   - name: PersonService
     description: ""

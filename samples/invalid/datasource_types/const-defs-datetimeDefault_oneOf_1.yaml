@@ -1,7 +1,7 @@
 expect:
   covers: const:#/$defs/datetimeDefault/oneOf/1
 ---
-version: CURRENT
+version: 1.0.0
 types:
   - user:
       fields:

@@ -1,7 +1,7 @@
 expect:
   covers: maxProperties:#/$defs/tableSeedsEntry
 ---
-version: CURRENT
+version: 1.0.0
 seeds:
   - a: {}
     b: {}

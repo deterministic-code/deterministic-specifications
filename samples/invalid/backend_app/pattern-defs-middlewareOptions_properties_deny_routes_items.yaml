@@ -1,7 +1,7 @@
 expect:
   covers: pattern:#/$defs/middlewareOptions/properties/deny_routes/items
 ---
-version: CURRENT
+version: 1.0.0
 middleware:
   - auth:
       deny_routes:

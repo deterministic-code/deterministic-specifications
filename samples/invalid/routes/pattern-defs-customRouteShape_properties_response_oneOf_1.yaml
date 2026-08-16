@@ -1,7 +1,7 @@
 expect:
-  covers: pattern:#/$defs/customRouteShape/properties/response
+  covers: pattern:#/$defs/customRouteShape/properties/response/oneOf/1
 ---
-version: CURRENT
+version: 1.0.0
 routes:
   - ping:
       path: /ping
@@ -9,9 +9,7 @@ routes:
       description: x
       request: person
       response: NOT VALID
-      service: PersonService
-      serviceMethod: run
-      routeClass: PingRoute
-      module: ./x
       authentication: none
       x-implementation: stub
+      service: PersonService
+      serviceMethod: run

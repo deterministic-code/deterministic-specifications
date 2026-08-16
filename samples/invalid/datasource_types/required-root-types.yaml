@@ -1,4 +1,4 @@
 expect:
   covers: required:#:types
 ---
-version: CURRENT
+version: 1.0.0

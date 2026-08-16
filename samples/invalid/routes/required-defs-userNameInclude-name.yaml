@@ -1,7 +1,7 @@
 expect:
   covers: required:#/$defs/userNameInclude:name
 ---
-version: CURRENT
+version: 1.0.0
 routes: []
 includes:
   - user_id: 1

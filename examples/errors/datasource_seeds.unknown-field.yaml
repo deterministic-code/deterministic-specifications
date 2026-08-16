@@ -1,7 +1,7 @@
 expect:
   includes: "unknown field"
   datasource_types: |
-    version: CURRENT
+    version: 1.0.0
     types:
       - user:
           fields:
@@ -9,7 +9,7 @@ expect:
                 type: string
                 size: 256
 ---
-version: CURRENT
+version: 1.0.0
 seeds:
   - user:
       - id1:

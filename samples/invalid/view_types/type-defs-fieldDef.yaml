@@ -1,8 +1,8 @@
 expect:
   covers: type:#/$defs/fieldDef
 ---
-version: CURRENT
+version: 1.0.0
 types:
   - person:
       fields:
-        - Name: []
+        - name: []

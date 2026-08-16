@@ -1,10 +1,10 @@
 expect:
   covers: anyOf:#/$defs/fieldDef/properties/type
 ---
-version: CURRENT
+version: 1.0.0
 types:
   - person:
       fields:
-        - Name:
+        - name:
             type:
               nope: true

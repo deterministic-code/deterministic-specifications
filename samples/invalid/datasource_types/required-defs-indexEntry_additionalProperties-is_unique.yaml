@@ -1,7 +1,7 @@
 expect:
   covers: required:#/$defs/indexEntry/additionalProperties:is_unique
 ---
-version: CURRENT
+version: 1.0.0
 types:
   - user:
       fields:

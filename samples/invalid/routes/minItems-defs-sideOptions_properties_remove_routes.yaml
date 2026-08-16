@@ -1,7 +1,7 @@
 expect:
   covers: minItems:#/$defs/sideOptions/properties/remove_routes
 ---
-version: CURRENT
+version: 1.0.0
 routes: []
 includes:
   - file: x.yaml

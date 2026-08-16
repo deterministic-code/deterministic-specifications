@@ -1,7 +1,7 @@
 expect:
   covers: minItems:#/$defs/sideOptions/properties/remove_fields
 ---
-version: CURRENT
+version: 1.0.0
 types: []
 includes:
   - file: x.yaml
@@ -14,10 +14,10 @@ includes:
           - type: old
             new_type: person
         modify_fields:
-          - field: old.Name
-            new_field: Display
+          - field: old.name
+            new_field: display
         add_fields:
           - type: old
             add_field:
-              Extra:
+              extra:
                 type: string

@@ -1,7 +1,7 @@
 expect:
   covers: enum:#/$defs/tableDef/properties/datasource_type
 ---
-version: CURRENT
+version: 1.0.0
 types:
   - user:
       fields:

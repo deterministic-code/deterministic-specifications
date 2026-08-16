@@ -1,6 +1,6 @@
 expect:
   covers: pattern:#/$defs/identifier
 ---
-version: CURRENT
+version: 1.0.0
 types:
   - NOT VALID

@@ -1,4 +1,4 @@
-version: CURRENT
+version: 1.0.0
 $schema: https://json-schema.org/draft/2020-12/schema
 $id: https://cali-services.local/schemas/deterministic/backend/routes.spec.yaml
 title: routes.yaml
@@ -15,13 +15,11 @@ required: [version]
 properties:
   version:
     description: >
-      Contract version this document targets. CURRENT binds to the live
-      root specs and may change without notice. A published semver
-      (e.g. 1.0.0) binds to the frozen snapshot under versions/<semver>/.
-    oneOf:
-      - const: CURRENT
-      - type: string
-        pattern: '^[0-9]+\.[0-9]+\.[0-9]+$'
+      Contract version this document targets. Must be a semver
+      (e.g. 1.0.0). The document is validated against that version's
+      specs and engine; there is no floating alias.
+    type: string
+    pattern: '^[0-9]+\.[0-9]+\.[0-9]+$'
   includes:
     type: array
     minItems: 1
@@ -163,17 +161,24 @@ $defs:
         type: string
         minLength: 1
         description: >
-          Inclusion predicate evaluated per view type. The predicate is KEPT when TRUE.
-          Grammar: `||` and `&&` logical operators, `==` / `!=` comparisons, parentheses
-          for grouping. Accessors are bare identifiers:
-            - `type`              — the view-type name (e.g. `type == "application"`).
-            - `inherits`          — the inheritance namespace; `"datasource_types"` when
-                                    the view inherits from a datasource type, empty otherwise.
-            - `datasource_types`  — bare-identifier sentinel equal to the literal string
-                                    `"datasource_types"` (so `inherits != datasource_types`
-                                    means "not a datasource-type pass-through").
-          String literals must be double-quoted. Any other identifier in the expression is
-          a parse error.
+          Inclusion predicate. The candidate is KEPT when TRUE. view_types,
+          routes, and services share this grammar:
+
+            expr     ::= or
+            or       ::= and ( "||" and )*
+            and      ::= atom ( "&&" atom )*
+            atom     ::= "(" expr ")" | isExpr | compare
+            isExpr   ::= "type" "is" ["not"] kind
+            compare  ::= accessor ("==" | "!=") value
+            accessor ::= "type" | "inherits"
+            kind     ::= "datasource_type" | "view_type"
+            value    ::= quoted-string | "datasource_types"
+
+          `type` is the candidate name (`type == "person"`) or, with `is`, the
+          candidate kind (`type is datasource_type`). `inherits` is the
+          inheritance namespace; use the bare sentinel `datasource_types`
+          (`inherits == datasource_types`). String literals must be
+          double-quoted. Any other identifier is a parse error.
       eager_path:
         description: |
           Auto-attach array+reference children declared in view_types.yaml,
@@ -401,17 +406,22 @@ $defs:
         pattern: "^[a-z_][a-z0-9_]*$"
         description: Name of a view type defined in view_types.yaml.
       response:
-        type: string
-        minLength: 1
-        pattern: "^[a-z_][a-z0-9_]*$"
         description: >
           Either the literal `redirect` (HTTP 302 with no body schema) or the
-          name of a view type defined in view_types.yaml.
+          name of a view type defined in view_types.yaml. `redirect` is not a
+          view name.
+        oneOf:
+          - const: redirect
+          - type: string
+            minLength: 1
+            pattern: "^(?!redirect$)[a-z_][a-z0-9_]*$"
       service:
         type: string
         minLength: 1
         pattern: "^[A-Z][A-Za-z0-9]*$"
-        description: Service name declared in services.yaml.
+        description: >
+          Service name declared in services.yaml. Mutually exclusive with
+          `services` and with `routeClass`/`module`.
       services:
         type: array
         minItems: 1
@@ -419,7 +429,9 @@ $defs:
           type: string
           minLength: 1
           pattern: "^[A-Z][A-Za-z0-9]*$"
-        description: Ordered array of service class names declared in services.yaml.
+        description: >
+          Ordered array of service class names declared in services.yaml.
+          Mutually exclusive with `service` and with `routeClass`/`module`.
       serviceMethod:
         type: string
         minLength: 1

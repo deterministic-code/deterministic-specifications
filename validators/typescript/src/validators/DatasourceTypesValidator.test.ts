@@ -5,7 +5,7 @@ import { describe, expect, test } from "vitest";
 import { DatasourceTypesValidator } from "../VersionedValidator.ts";
 import { DatasourceTypesValidator as Engine } from "./DatasourceTypesValidator.ts";
 
-const MINIMAL = `version: CURRENT
+const MINIMAL = `version: 1.0.0
 types:
   - user:
       fields:
@@ -27,7 +27,7 @@ async function withDir<T>(fn: (dir: string) => Promise<T>): Promise<T> {
 
 describe("DatasourceTypesValidator include cycles", () => {
   test("validate() does not resolve file includes", async () => {
-    const result = await validator().validate(`version: CURRENT
+    const result = await validator().validate(`version: 1.0.0
 includes:
   - file: missing.yaml
 types: []
@@ -40,7 +40,7 @@ types: []
       await writeFile(join(dir, "identity.yaml"), MINIMAL);
       await writeFile(
         join(dir, "billing.yaml"),
-        `version: CURRENT
+        `version: 1.0.0
 types:
   - account:
       fields:
@@ -52,7 +52,7 @@ types:
       const path = join(dir, "datasource_types.yaml");
       await writeFile(
         path,
-        `version: CURRENT
+        `version: 1.0.0
 includes:
   - file: identity.yaml
   - file: billing.yaml
@@ -71,7 +71,7 @@ types:
     await withDir(async (dir) => {
       await writeFile(
         join(dir, "parent.yaml"),
-        `version: CURRENT
+        `version: 1.0.0
 includes:
   - file: child.yaml
 types: []
@@ -80,7 +80,7 @@ types: []
       const path = join(dir, "child.yaml");
       await writeFile(
         path,
-        `version: CURRENT
+        `version: 1.0.0
 includes:
   - file: parent.yaml
 types: []
@@ -97,7 +97,7 @@ types: []
       const path = join(dir, "datasource_types.yaml");
       await writeFile(
         path,
-        `version: CURRENT
+        `version: 1.0.0
 includes:
   - file: nope.yaml
 types: []
@@ -112,7 +112,7 @@ types: []
   test("schema errors win over include checks", async () => {
     await withDir(async (dir) => {
       const path = join(dir, "datasource_types.yaml");
-      await writeFile(path, "version: CURRENT\ntypes: not-a-list\n");
+      await writeFile(path, "version: 1.0.0\ntypes: not-a-list\n");
       const result = await validator().validateFile(path);
       expect(result.valid).toBe(false);
       expect(result.errors.some((e) => /circular|not found/.test(e.message))).toBe(
@@ -121,12 +121,12 @@ types: []
     });
   });
 
-  test("CURRENT engine validateFile also walks includes", async () => {
+  test("live engine validateFile also walks includes", async () => {
     await withDir(async (dir) => {
       const path = join(dir, "self.yaml");
       await writeFile(
         path,
-        `version: CURRENT
+        `version: 1.0.0
 includes:
   - file: self.yaml
 types: []

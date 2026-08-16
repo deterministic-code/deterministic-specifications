@@ -1,7 +1,7 @@
 expect:
   covers: additionalProperties:#/$defs/viewTypeRoutesDirective
 ---
-version: CURRENT
+version: 1.0.0
 routes: []
 includes:
   - view_type_routes:

@@ -1,7 +1,7 @@
 expect:
   covers: additionalProperties:#/$defs/handlerOptions
 ---
-version: CURRENT
+version: 1.0.0
 handlers:
   - ErrorHandlerMiddlewareService:
       enabled: true

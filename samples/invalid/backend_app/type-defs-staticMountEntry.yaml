@@ -1,6 +1,6 @@
 expect:
   covers: type:#/$defs/staticMountEntry
 ---
-version: CURRENT
+version: 1.0.0
 statics:
   - []

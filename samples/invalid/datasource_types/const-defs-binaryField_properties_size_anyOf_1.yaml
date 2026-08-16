@@ -1,7 +1,7 @@
 expect:
   covers: const:#/$defs/binaryField/properties/size/anyOf/1
 ---
-version: CURRENT
+version: 1.0.0
 types:
   - user:
       fields:

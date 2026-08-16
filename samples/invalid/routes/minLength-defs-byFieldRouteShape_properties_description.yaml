@@ -1,6 +1,6 @@
 expect:
   covers: minLength:#/$defs/byFieldRouteShape/properties/description
 ---
-version: CURRENT
+version: 1.0.0
 routes:
   - by_email: ""

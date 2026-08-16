@@ -1,7 +1,7 @@
 expect:
   covers: minLength:#/$defs/serviceEntry/properties/name
 ---
-version: CURRENT
+version: 1.0.0
 services:
   - name: ""
     description: x

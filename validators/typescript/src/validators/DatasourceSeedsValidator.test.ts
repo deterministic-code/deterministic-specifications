@@ -5,7 +5,7 @@ import { describe, expect, test } from "vitest";
 import { DatasourceSeedsValidator } from "../VersionedValidator.ts";
 import { DatasourceSeedsValidator as Engine } from "./DatasourceSeedsValidator.ts";
 
-const TYPES = `version: CURRENT
+const TYPES = `version: 1.0.0
 types:
   - user:
       fields:
@@ -32,7 +32,7 @@ async function check(seeds: string, types = TYPES) {
 
 describe("DatasourceSeedsValidator semantics", () => {
   test("accepts a row that omits a nullable field", async () => {
-    const result = await check(`version: CURRENT
+    const result = await check(`version: 1.0.0
 seeds:
   - user:
       - id1:
@@ -42,7 +42,7 @@ seeds:
   });
 
   test("accepts a row that omits a field with a default_value", async () => {
-    const result = await check(`version: CURRENT
+    const result = await check(`version: 1.0.0
 seeds:
   - user:
       - id1:
@@ -53,7 +53,7 @@ seeds:
   });
 
   test("accepts null on a nullable field", async () => {
-    const result = await check(`version: CURRENT
+    const result = await check(`version: 1.0.0
 seeds:
   - user:
       - id1:
@@ -65,7 +65,7 @@ seeds:
   });
 
   test("rejects a missing non-nullable field with no default", async () => {
-    const result = await check(`version: CURRENT
+    const result = await check(`version: 1.0.0
 seeds:
   - user:
       - id1:
@@ -78,7 +78,7 @@ seeds:
   });
 
   test("rejects null on a non-nullable field", async () => {
-    const result = await check(`version: CURRENT
+    const result = await check(`version: 1.0.0
 seeds:
   - user:
       - id1:
@@ -89,7 +89,7 @@ seeds:
   });
 
   test("rejects an unknown table", async () => {
-    const result = await check(`version: CURRENT
+    const result = await check(`version: 1.0.0
 seeds:
   - account:
       - id1:
@@ -102,7 +102,7 @@ seeds:
   });
 
   test("rejects an unknown field", async () => {
-    const result = await check(`version: CURRENT
+    const result = await check(`version: 1.0.0
 seeds:
   - user:
       - id1:
@@ -116,7 +116,7 @@ seeds:
   });
 
   test("rejects a value that does not match the field type", async () => {
-    const result = await check(`version: CURRENT
+    const result = await check(`version: 1.0.0
 seeds:
   - user:
       - id1:
@@ -128,7 +128,7 @@ seeds:
   });
 
   test("rejects non-empty seeds when datasource_types is missing", async () => {
-    const result = await validator().validate(`version: CURRENT
+    const result = await validator().validate(`version: 1.0.0
 seeds:
   - user:
       - id1:
@@ -140,7 +140,7 @@ seeds:
 
   test("accepts empty seeds without datasource_types", async () => {
     expect(
-      await validator().validate("version: CURRENT\nseeds: []\n"),
+      await validator().validate("version: 1.0.0\nseeds: []\n"),
     ).toEqual({ valid: true, errors: [] });
   });
 
@@ -151,7 +151,7 @@ seeds:
       const path = join(dir, "datasource_seeds.yaml");
       await writeFile(
         path,
-        `version: CURRENT
+        `version: 1.0.0
 seeds:
   - user:
       - id1:
@@ -172,7 +172,7 @@ seeds:
       const path = join(dir, "datasource_seeds.yaml");
       await writeFile(
         path,
-        `version: CURRENT
+        `version: 1.0.0
 seeds:
   - user:
       - id1:
@@ -194,7 +194,7 @@ seeds:
       const path = join(dir, "datasource_seeds.yaml");
       await writeFile(
         path,
-        `version: CURRENT
+        `version: 1.0.0
 seeds:
   - user:
       - id1:
@@ -211,20 +211,20 @@ seeds:
 
   test("rejects an invalid companion datasource_types document", async () => {
     const result = await check(
-      `version: CURRENT
+      `version: 1.0.0
 seeds:
   - user:
       - id1:
           email: a@b.c
 `,
-      "version: CURRENT\nnot_types: 1\n",
+      "version: 1.0.0\nnot_types: 1\n",
     );
     expect(result.valid).toBe(false);
     expect(result.errors[0]?.message).toMatch(/companion datasource_types.yaml is invalid/);
   });
 
   test("rejects a duplicate table and duplicate seed id", async () => {
-    const result = await check(`version: CURRENT
+    const result = await check(`version: 1.0.0
 seeds:
   - user:
       - id1:
@@ -245,7 +245,7 @@ seeds:
   });
 
   test("rejects auto-injected columns in a seed row", async () => {
-    const result = await check(`version: CURRENT
+    const result = await check(`version: 1.0.0
 seeds:
   - user:
       - id1:
@@ -257,7 +257,7 @@ seeds:
   });
 
   test("type-checks integers, unsigned values, decimals, and reference fields", async () => {
-    const types = `version: CURRENT
+    const types = `version: 1.0.0
 types:
   - user:
       fields:
@@ -284,7 +284,7 @@ types:
             is_nullable: true
 `;
     const ok = await check(
-      `version: CURRENT
+      `version: 1.0.0
 seeds:
   - user:
       - id1:
@@ -301,7 +301,7 @@ seeds:
     expect(ok).toEqual({ valid: true, errors: [] });
 
     const bad = await check(
-      `version: CURRENT
+      `version: 1.0.0
 seeds:
   - user:
       - id1:
@@ -326,7 +326,7 @@ seeds:
       const path = join(dir, "datasource_seeds.yaml");
       await writeFile(
         path,
-        `version: CURRENT
+        `version: 1.0.0
 seeds:
   - user:
       - id1:
@@ -340,7 +340,7 @@ seeds:
   });
 
   test("rejects a float/number typed as a string", async () => {
-    const types = `version: CURRENT
+    const types = `version: 1.0.0
 types:
   - sample:
       fields:
@@ -350,7 +350,7 @@ types:
             type: number
 `;
     const result = await check(
-      `version: CURRENT
+      `version: 1.0.0
 seeds:
   - sample:
       - id1:

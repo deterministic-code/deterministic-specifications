@@ -1,7 +1,7 @@
 expect:
   covers: uniqueItems:#/$defs/viewTypeRoutesDirective/properties/eager_write_path
 ---
-version: CURRENT
+version: 1.0.0
 routes: []
 includes:
   - view_type_routes:

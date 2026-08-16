@@ -1,10 +1,10 @@
 expect:
   covers: const:#/$defs/fieldDef/properties/size/oneOf/1
 ---
-version: CURRENT
+version: 1.0.0
 types:
   - person:
       fields:
-        - Name:
+        - name:
             type: string
             size: nope

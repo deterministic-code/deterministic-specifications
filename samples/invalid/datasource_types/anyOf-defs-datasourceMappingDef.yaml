@@ -1,7 +1,7 @@
 expect:
   covers: anyOf:#/$defs/datasourceMappingDef
 ---
-version: CURRENT
+version: 1.0.0
 types:
   - user:
       fields:

@@ -1,7 +1,7 @@
 expect:
   covers: anyOf:#/$defs/idInclude/properties/id
 ---
-version: CURRENT
+version: 1.0.0
 services: []
 includes:
   - id:

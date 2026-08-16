@@ -1,7 +1,7 @@
 expect:
   covers: minLength:#/$defs/fieldMappingDef/properties/type_converter
 ---
-version: CURRENT
+version: 1.0.0
 types:
   - user:
       fields:
