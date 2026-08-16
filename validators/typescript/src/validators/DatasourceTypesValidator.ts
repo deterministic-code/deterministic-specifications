@@ -1,15 +1,17 @@
 import { SpecValidator, type ParsedYaml } from "../SpecValidator.ts";
 import { CURRENT_VERSION } from "../specVersion.ts";
 import type { SpecValidationResult, ValidateOptions } from "../types.ts";
+import { checkFieldDefaultSemantics } from "../fieldDefaultSemantics.ts";
 import {
   checkIncludeCycles,
   withIncludeFilePath,
 } from "../includeSemantics.ts";
 
 /**
- * CURRENT engine for `datasource_types.yaml`: JSON Schema first, then a
- * walk of `file:` includes that rejects cycles, missing files, and
- * unreadable targets.
+ * CURRENT engine for `datasource_types.yaml`: JSON Schema first, then
+ * default_value tokens/ranges from `backend/types.yaml`, then a walk of
+ * `file:` includes that rejects cycles, missing files, and unreadable
+ * targets.
  */
 export class DatasourceTypesValidator extends SpecValidator {
   constructor() {
@@ -34,6 +36,8 @@ export class DatasourceTypesValidator extends SpecValidator {
   ): Promise<SpecValidationResult> {
     const schema = await super.check(parsed, text, options);
     if (!schema.valid) return schema;
+    const defaults = await checkFieldDefaultSemantics(parsed);
+    if (!defaults.valid) return defaults;
     return checkIncludeCycles(parsed, options);
   }
 }

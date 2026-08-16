@@ -9,3 +9,4 @@ types:
             type: binary
             size:
               nope: true
+            default_value: Hex('')

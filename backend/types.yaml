@@ -1,0 +1,160 @@
+# Language-agnostic field types: names, numeric ranges, and allowed
+# default_value tokens. Shape is locked by types.spec.yaml. The CURRENT
+# datasource_types validator enforces these tokens and ranges after JSON
+# Schema; the authored field schemas in datasource-types.spec.yaml use the
+# same grammar so the two cannot disagree.
+version: CURRENT
+types:
+  - string:
+      supports_size: true
+      implicit_default: null
+      min_value: null
+      max_value: null
+      defaults:
+        - Literal:
+            regex: "^.*$"
+            description: any string literal
+  - character:
+      supports_size: true
+      implicit_default: null
+      min_value: null
+      max_value: null
+      defaults:
+        - Literal:
+            regex: "^.$"
+            description: single character literal
+  - number:
+      supports_size: false
+      implicit_default: 0
+      min_value: null
+      max_value: null
+      defaults:
+        - Literal:
+            regex: "^-?[0-9]+$"
+            description: integer literal
+  - integer:
+      supports_size: false
+      implicit_default: 0
+      min_value: "-2147483648"
+      max_value: "2147483647"
+      defaults:
+        - Literal:
+            regex: "^-?[0-9]+$"
+            description: integer literal
+  - unsignedinteger:
+      supports_size: false
+      implicit_default: 0
+      min_value: "0"
+      max_value: "4294967295"
+      defaults:
+        - Literal:
+            regex: "^[0-9]+$"
+            description: non-negative integer literal
+  - biginteger:
+      supports_size: false
+      implicit_default: 0
+      min_value: "-9223372036854775808"
+      max_value: "9223372036854775807"
+      defaults:
+        - Literal:
+            regex: "^-?[0-9]+$"
+            description: integer literal
+  - unsignedbiginteger:
+      supports_size: false
+      implicit_default: 0
+      min_value: "0"
+      max_value: "18446744073709551615"
+      defaults:
+        - Literal:
+            regex: "^[0-9]+$"
+            description: non-negative integer literal
+  - smallinteger:
+      supports_size: false
+      implicit_default: 0
+      min_value: "-32768"
+      max_value: "32767"
+      defaults:
+        - Literal:
+            regex: "^-?[0-9]+$"
+            description: integer literal
+  - unsignedsmallinteger:
+      supports_size: false
+      implicit_default: 0
+      min_value: "0"
+      max_value: "65535"
+      defaults:
+        - Literal:
+            regex: "^[0-9]+$"
+            description: non-negative integer literal
+  - float:
+      supports_size: false
+      implicit_default: 0
+      min_value: null
+      max_value: null
+      defaults:
+        - Literal:
+            regex: "^-?[0-9]+(\\.[0-9]+)?$"
+            description: floating-point literal
+  - decimal:
+      supports_size: true
+      implicit_default: 0
+      min_value: null
+      max_value: null
+      defaults:
+        - Literal:
+            regex: "^-?[0-9]+(\\.[0-9]+)?$"
+            description: decimal literal
+  - boolean:
+      supports_size: false
+      implicit_default: false
+      min_value: null
+      max_value: null
+      defaults:
+        - Literal:
+            regex: "^(true|false)$"
+            description: true or false
+  - datetime:
+      supports_size: false
+      implicit_default: null
+      min_value: null
+      max_value: null
+      defaults:
+        - Now:
+            regex: "^Now$"
+            description: local-time now at insert
+        - UtcNow:
+            regex: "^UtcNow$"
+            description: UTC now at insert
+        - DateTime:
+            regex: "^DateTime\\('[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(Z|[+-][0-9]{2}:[0-9]{2})'\\)$"
+            description: "explicit timestamp, e.g. DateTime('2026-01-01T00:00:00Z')"
+  - binary:
+      supports_size: true
+      implicit_default: null
+      min_value: null
+      max_value: null
+      defaults:
+        - Hex:
+            regex: "^Hex\\('([0-9a-fA-F]{2})*'\\)$"
+            description: "hex byte literal, e.g. Hex('DEADBEEF')"
+  - uuid:
+      supports_size: false
+      implicit_default: null
+      min_value: null
+      max_value: null
+      defaults:
+        - NewId:
+            regex: "^NewId$"
+            description: generate a new uuid at insert
+        - Empty:
+            regex: "^Empty$"
+            description: the all-zero uuid
+        - Uuid:
+            regex: "^uuid\\('[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}'\\)$"
+            description: explicit uuid literal
+  - reference:
+      supports_size: false
+      implicit_default: null
+      min_value: null
+      max_value: null
+      defaults: []

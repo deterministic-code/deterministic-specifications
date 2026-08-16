@@ -10,4 +10,5 @@ types:
             size:
               - 10
               - 2
+            default_value: "0.00"
             extra: true

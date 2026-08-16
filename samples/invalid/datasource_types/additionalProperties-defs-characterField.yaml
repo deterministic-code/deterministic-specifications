@@ -8,4 +8,5 @@ types:
         - n:
             type: character
             size: 1
+            default_value: X
             extra: true

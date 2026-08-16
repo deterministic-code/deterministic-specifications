@@ -1,0 +1,10 @@
+expect:
+  covers: const:#/$defs/uuidDefault/oneOf/0
+---
+version: CURRENT
+types:
+  - user:
+      fields:
+        - n:
+            type: uuid
+            default_value: nope

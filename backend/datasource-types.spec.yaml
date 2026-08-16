@@ -10,7 +10,8 @@ description: >
   datasource_seeds.yaml, not here. The `types:` key is required (must exist)
   but may be an empty array — a no-data-model app (no entities, no
   migrations) declares `types: []` and the migration emitter short-circuits
-  accordingly.
+  accordingly. Allowed field `default_value` tokens and numeric ranges live
+  in backend/types.yaml and are enforced after schema validation.
 
 type: object
 additionalProperties: false
@@ -69,6 +70,43 @@ $defs:
         minimum: 0
       - type: string
         const: unlimited
+
+  datetimeDefault:
+    description: >
+      Allowed datetime defaults from backend/types.yaml — Now, UtcNow, or
+      DateTime('…') with an ISO-8601 timestamp.
+    oneOf:
+      - const: Now
+      - const: UtcNow
+      - type: string
+        pattern: "^DateTime\\('[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(Z|[+-][0-9]{2}:[0-9]{2})'\\)$"
+
+  uuidDefault:
+    description: >
+      Allowed uuid defaults from backend/types.yaml — NewId, Empty, or
+      uuid('…') with an RFC-4122 value.
+    oneOf:
+      - const: NewId
+      - const: Empty
+      - type: string
+        pattern: "^uuid\\('[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}'\\)$"
+
+  hexDefault:
+    type: string
+    pattern: "^Hex\\('([0-9a-fA-F]{2})*'\\)$"
+    description: "Hex byte literal from backend/types.yaml, e.g. Hex('DEADBEEF')."
+
+  signedIntegerString:
+    type: string
+    pattern: "^-?[0-9]+$"
+
+  unsignedIntegerString:
+    type: string
+    pattern: "^[0-9]+$"
+
+  decimalString:
+    type: string
+    pattern: "^-?[0-9]+(\\.[0-9]+)?$"
 
   includeEntry:
     type: object
@@ -326,7 +364,7 @@ $defs:
       is_nullable: { type: boolean }
       is_unique: { type: boolean }
       default_value:
-        type: number
+        type: integer
       references:
         $ref: "#/$defs/tableColumnRef"
 
@@ -346,6 +384,8 @@ $defs:
       is_unique: { type: boolean }
       default_value:
         type: integer
+        minimum: -2147483648
+        maximum: 2147483647
       references:
         $ref: "#/$defs/tableColumnRef"
 
@@ -370,6 +410,7 @@ $defs:
       default_value:
         type: integer
         minimum: 0
+        maximum: 4294967295
       references:
         $ref: "#/$defs/tableColumnRef"
 
@@ -383,7 +424,7 @@ $defs:
       is_nullable: { type: boolean }
       is_unique: { type: boolean }
       default_value:
-        type: string
+        $ref: "#/$defs/signedIntegerString"
       references:
         $ref: "#/$defs/tableColumnRef"
 
@@ -401,7 +442,7 @@ $defs:
       is_nullable: { type: boolean }
       is_unique: { type: boolean }
       default_value:
-        type: string
+        $ref: "#/$defs/unsignedIntegerString"
       references:
         $ref: "#/$defs/tableColumnRef"
 
@@ -421,6 +462,8 @@ $defs:
       is_unique: { type: boolean }
       default_value:
         type: integer
+        minimum: -32768
+        maximum: 32767
       references:
         $ref: "#/$defs/tableColumnRef"
 
@@ -446,6 +489,7 @@ $defs:
       default_value:
         type: integer
         minimum: 0
+        maximum: 65535
       references:
         $ref: "#/$defs/tableColumnRef"
 
@@ -476,6 +520,7 @@ $defs:
       is_unique: { type: boolean }
       default_value:
         type: string
+        pattern: "^.$"
 
   decimalField:
     type: object
@@ -495,7 +540,7 @@ $defs:
       is_unique: { type: boolean }
       default_value:
         anyOf:
-          - type: string
+          - $ref: "#/$defs/decimalString"
           - type: number
 
   uuidField:
@@ -507,7 +552,7 @@ $defs:
       is_nullable: { type: boolean }
       is_unique: { type: boolean }
       default_value:
-        type: string
+        $ref: "#/$defs/uuidDefault"
       references:
         $ref: "#/$defs/tableColumnRef"
 
@@ -537,7 +582,7 @@ $defs:
       is_nullable: { type: boolean }
       is_unique: { type: boolean }
       default_value:
-        type: string
+        $ref: "#/$defs/hexDefault"
 
   datetimeField:
     type: object
@@ -548,7 +593,7 @@ $defs:
       is_nullable: { type: boolean }
       is_unique: { type: boolean }
       default_value:
-        type: string
+        $ref: "#/$defs/datetimeDefault"
 
   indexEntry:
     type: object

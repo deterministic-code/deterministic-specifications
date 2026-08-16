@@ -7,4 +7,5 @@ types:
       fields:
         - n:
             type: datetime
+            default_value: Now
             extra: true

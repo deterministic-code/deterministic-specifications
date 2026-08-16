@@ -1,0 +1,10 @@
+expect:
+  covers: pattern:#/$defs/datetimeDefault/oneOf/2
+---
+version: CURRENT
+types:
+  - user:
+      fields:
+        - n:
+            type: datetime
+            default_value: NOT VALID

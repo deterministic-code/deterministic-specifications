@@ -7,4 +7,5 @@ types:
       fields:
         - n:
             type: number
-            size: -1
+            default_value: 0
+            size: -9999999999999

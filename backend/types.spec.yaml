@@ -1,0 +1,105 @@
+version: CURRENT
+$schema: https://json-schema.org/draft/2020-12/schema
+$id: https://cali-services.local/schemas/deterministic/backend/types.spec.yaml
+title: types.yaml
+description: >
+  Strict schema for backend/types.yaml — the language-agnostic field-type
+  catalog. Every type declares the same keys; omitted bounds are null, not
+  absent. Token regexes must be the same grammar as the matching
+  default_value constraints in datasource-types.spec.yaml.
+
+type: object
+additionalProperties: false
+required: [version, types]
+
+properties:
+  version:
+    description: >
+      Contract version this document targets. CURRENT binds to the live
+      root specs and may change without notice. A published semver
+      (e.g. 1.0.0) binds to the frozen snapshot under versions/<semver>/.
+    oneOf:
+      - const: CURRENT
+      - type: string
+        pattern: '^[0-9]+\.[0-9]+\.[0-9]+$'
+  types:
+    type: array
+    minItems: 1
+    items:
+      $ref: "#/$defs/typeEntry"
+
+$defs:
+  identifier:
+    type: string
+    enum:
+      - string
+      - character
+      - number
+      - integer
+      - unsignedinteger
+      - biginteger
+      - unsignedbiginteger
+      - smallinteger
+      - unsignedsmallinteger
+      - float
+      - decimal
+      - boolean
+      - datetime
+      - binary
+      - uuid
+      - reference
+
+  integerString:
+    type: string
+    pattern: "^-?[0-9]+$"
+
+  typeEntry:
+    type: object
+    minProperties: 1
+    maxProperties: 1
+    propertyNames:
+      $ref: "#/$defs/identifier"
+    additionalProperties:
+      $ref: "#/$defs/typeDef"
+
+  typeDef:
+    type: object
+    additionalProperties: false
+    required: [supports_size, implicit_default, min_value, max_value, defaults]
+    properties:
+      supports_size:
+        type: boolean
+      implicit_default:
+        oneOf:
+          - type: "null"
+          - type: string
+          - type: integer
+          - type: boolean
+      min_value:
+        oneOf:
+          - type: "null"
+          - $ref: "#/$defs/integerString"
+      max_value:
+        oneOf:
+          - type: "null"
+          - $ref: "#/$defs/integerString"
+      defaults:
+        type: array
+        items:
+          $ref: "#/$defs/defaultEntry"
+
+  defaultEntry:
+    type: object
+    minProperties: 1
+    maxProperties: 1
+    additionalProperties:
+      type: object
+      additionalProperties: false
+      required: [regex, description]
+      properties:
+        regex:
+          type: string
+          minLength: 1
+        description:
+          type: string
+          minLength: 1

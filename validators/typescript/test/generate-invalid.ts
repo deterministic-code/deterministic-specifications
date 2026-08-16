@@ -156,22 +156,52 @@ function dsLoc(path: string): Mut | null {
       return { host, loc: ["types", 0, "user", "indexes", 0, "idx", "fields"] };
     return { host, loc: ["types", 0, "user", "indexes", 0, "idx"] };
   }
+  if (path.includes("datetimeDefault"))
+    return {
+      host: dsField({ type: "datetime", default_value: "Now" }),
+      loc: ["types", 0, "user", "fields", 0, "n", "default_value"],
+    };
+  if (path.includes("uuidDefault"))
+    return {
+      host: dsField({ type: "uuid", default_value: "NewId" }),
+      loc: ["types", 0, "user", "fields", 0, "n", "default_value"],
+    };
+  if (path.includes("hexDefault"))
+    return {
+      host: dsField({ type: "binary", size: 4, default_value: "Hex('')" }),
+      loc: ["types", 0, "user", "fields", 0, "n", "default_value"],
+    };
+  if (path.includes("signedIntegerString"))
+    return {
+      host: dsField({ type: "biginteger", default_value: "0" }),
+      loc: ["types", 0, "user", "fields", 0, "n", "default_value"],
+    };
+  if (path.includes("unsignedIntegerString"))
+    return {
+      host: dsField({ type: "unsignedbiginteger", default_value: "0" }),
+      loc: ["types", 0, "user", "fields", 0, "n", "default_value"],
+    };
+  if (path.includes("decimalString"))
+    return {
+      host: dsField({ type: "decimal", size: [10, 2], default_value: "0.00" }),
+      loc: ["types", 0, "user", "fields", 0, "n", "default_value"],
+    };
   const fieldHosts: Record<string, Host> = {
     stringField: { type: "string", size: 8 },
-    characterField: { type: "character", size: 1 },
-    numberField: { type: "number" },
-    integerField: { type: "integer" },
+    characterField: { type: "character", size: 1, default_value: "X" },
+    numberField: { type: "number", default_value: 0 },
+    integerField: { type: "integer", default_value: 0 },
     unsignedIntegerField: { type: "unsignedinteger", default_value: 0 },
-    bigIntegerField: { type: "biginteger" },
-    unsignedBigIntegerField: { type: "unsignedbiginteger" },
-    smallIntegerField: { type: "smallinteger" },
+    bigIntegerField: { type: "biginteger", default_value: "0" },
+    unsignedBigIntegerField: { type: "unsignedbiginteger", default_value: "0" },
+    smallIntegerField: { type: "smallinteger", default_value: 0 },
     unsignedSmallIntegerField: { type: "unsignedsmallinteger", default_value: 0 },
     floatField: { type: "float" },
-    decimalField: { type: "decimal", size: [10, 2] },
+    decimalField: { type: "decimal", size: [10, 2], default_value: "0.00" },
     booleanField: { type: "boolean" },
-    binaryField: { type: "binary", size: 4 },
-    datetimeField: { type: "datetime" },
-    uuidField: { type: "uuid" },
+    binaryField: { type: "binary", size: 4, default_value: "Hex('')" },
+    datetimeField: { type: "datetime", default_value: "Now" },
+    uuidField: { type: "uuid", default_value: "NewId" },
     referenceField: { references: "user.id" },
   };
   for (const [def, field] of Object.entries(fieldHosts)) {
@@ -1142,11 +1172,11 @@ function mutate(
   }
   if (keyword === "minimum") {
     const current = get(host, loc);
-    if (Array.isArray(current)) return { data: set(host, loc, [-1]), includes: ">=" };
-    return { data: set(host, loc, -1), includes: ">=" };
+    if (Array.isArray(current)) return { data: set(host, loc, [-9999999999999]), includes: ">=" };
+    return { data: set(host, loc, -9999999999999), includes: ">=" };
   }
   if (keyword === "maximum") {
-    return { data: set(host, loc, 9999), includes: "<=" };
+    return { data: set(host, loc, 9999999999999), includes: "<=" };
   }
   if (keyword === "minItems") {
     return { data: set(host, loc, []), includes: "fewer than" };

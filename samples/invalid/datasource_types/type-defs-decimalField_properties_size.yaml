@@ -8,3 +8,4 @@ types:
         - n:
             type: decimal
             size: {}
+            default_value: "0.00"

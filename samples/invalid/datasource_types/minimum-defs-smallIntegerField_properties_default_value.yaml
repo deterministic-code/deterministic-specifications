@@ -1,0 +1,10 @@
+expect:
+  covers: minimum:#/$defs/smallIntegerField/properties/default_value
+---
+version: CURRENT
+types:
+  - user:
+      fields:
+        - n:
+            type: smallinteger
+            default_value: -9999999999999

@@ -58,7 +58,9 @@ Archive a new version (moves `backend/`, `frontend/`, and this package's engine 
 npm run bump-version -- 1.1.0
 ```
 
-This package validates **schema shape** first. `DatasourceSeedsValidator` then
+This package validates **schema shape** first. `DatasourceTypesValidator` then
+checks `default_value` tokens and integer ranges against
+[`backend/types.yaml`](../../backend/types.yaml). `DatasourceSeedsValidator`
 checks seed rows against the companion `datasource_types.yaml` (known tables and
 fields, value types, required vs `is_nullable` / `default_value`). Other
 cross-document rules (foreign-key resolution, merged includes) stay in the

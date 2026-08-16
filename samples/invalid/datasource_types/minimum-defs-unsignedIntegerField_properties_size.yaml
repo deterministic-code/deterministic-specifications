@@ -8,4 +8,4 @@ types:
         - n:
             type: unsignedinteger
             default_value: 0
-            size: -1
+            size: -9999999999999
