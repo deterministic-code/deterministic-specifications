@@ -1,7 +1,7 @@
 version: 1.0.0
 includes:
   - view_type_services:
-      filter: type is datasource_type || type inherits datasource_types
+      filter: type is datasource_type || inherits == datasource_types
   - file: shared/services.yaml
     combine_options:
       source:

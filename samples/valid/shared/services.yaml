@@ -1,0 +1,4 @@
+version: 1.0.0
+services:
+  - name: LegacyService
+    description: Included service dropped by combine_options

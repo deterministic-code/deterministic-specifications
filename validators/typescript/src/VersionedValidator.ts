@@ -95,9 +95,33 @@ export class DatasourceTypesValidator extends facades.DatasourceTypesValidator {
   }
 }
 
-export const ViewTypesValidator = facades.ViewTypesValidator;
-export const RoutesValidator = facades.RoutesValidator;
-export const ServicesValidator = facades.ServicesValidator;
+export class ViewTypesValidator extends facades.ViewTypesValidator {
+  protected async optionsForFile(
+    path: string,
+    options?: ValidateOptions,
+  ): Promise<ValidateOptions | undefined> {
+    return withIncludeFilePath(path, options);
+  }
+}
+
+export class RoutesValidator extends facades.RoutesValidator {
+  protected async optionsForFile(
+    path: string,
+    options?: ValidateOptions,
+  ): Promise<ValidateOptions | undefined> {
+    return withIncludeFilePath(path, options);
+  }
+}
+
+export class ServicesValidator extends facades.ServicesValidator {
+  protected async optionsForFile(
+    path: string,
+    options?: ValidateOptions,
+  ): Promise<ValidateOptions | undefined> {
+    return withIncludeFilePath(path, options);
+  }
+}
+
 export const FrontendBindingsValidator = facades.FrontendBindingsValidator;
 
 export class DatasourceSeedsValidator extends facades.DatasourceSeedsValidator {

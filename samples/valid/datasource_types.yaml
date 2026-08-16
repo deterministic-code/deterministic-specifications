@@ -225,6 +225,11 @@ types:
         - score_idx:
             fields: [score, count]
             is_unique: false
+  - role:
+      fields:
+        - name:
+            type: string
+            size: 64
   - link:
       datasource_type: many-to-many
       target: Crud
@@ -243,6 +248,7 @@ types:
             type: string
             size: 1024
   - _internal:
+      target: Crud
       use_optimistic_concurrency: true
       skip_migrations: false
       fields:

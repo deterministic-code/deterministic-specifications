@@ -10,13 +10,13 @@ includes:
         remove_types:
           - old
         remove_fields:
-          - old.Name
+          - old.name
         modify_types: []
         modify_fields:
-          - field: old.Name
-            new_field: Display
+          - field: old.name
+            new_field: display
         add_fields:
           - type: old
             add_field:
-              Extra:
+              extra:
                 type: string

@@ -9,9 +9,7 @@ routes:
       description: x
       request: person
       response: person
-      service: PersonService
-      serviceMethod: ""
-      routeClass: PingRoute
-      module: ./x
       authentication: none
       x-implementation: stub
+      service: PersonService
+      serviceMethod: ""

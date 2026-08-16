@@ -9,9 +9,7 @@ routes:
       description: x
       request: person
       response: person
-      service: PersonService
-      serviceMethod: run
-      routeClass: ""
-      module: ./x
       authentication: none
       x-implementation: stub
+      routeClass: ""
+      module: ./x

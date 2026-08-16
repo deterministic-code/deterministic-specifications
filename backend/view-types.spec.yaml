@@ -57,7 +57,28 @@ $defs:
         additionalProperties: false
         properties:
           include: { type: string, minLength: 1 }
-          filter: { type: string, minLength: 1 }
+          filter:
+            type: string
+            minLength: 1
+            description: >
+              Inclusion predicate. The candidate is KEPT when TRUE. view_types,
+              routes, and services share this grammar:
+
+                expr     ::= or
+                or       ::= and ( "||" and )*
+                and      ::= atom ( "&&" atom )*
+                atom     ::= "(" expr ")" | isExpr | compare
+                isExpr   ::= "type" "is" ["not"] kind
+                compare  ::= accessor ("==" | "!=") value
+                accessor ::= "type" | "inherits"
+                kind     ::= "datasource_type" | "view_type"
+                value    ::= quoted-string | "datasource_types"
+
+              `type` is the candidate name (`type == "person"`) or, with `is`,
+              the candidate kind (`type is datasource_type`). `inherits` is the
+              inheritance namespace; use the bare sentinel `datasource_types`
+              (`inherits == datasource_types`). String literals must be
+              double-quoted. Any other identifier is a parse error.
           auto_enrich: { type: boolean }
 
   fileInclude:
@@ -165,8 +186,8 @@ $defs:
 
   viewFieldRef:
     type: string
-    pattern: "^[a-z_][a-z0-9_]*\\.[A-Za-z_][A-Za-z0-9_]*$"
-    description: A view field in the form `<view>.<field>`.
+    pattern: "^[a-z_][a-z0-9_]*\\.[a-z_][a-z0-9_]*$"
+    description: A view field in the form `<view>.<field>` (snake_case identifiers).
 
   modifyTypeOp:
     type: object
@@ -189,8 +210,7 @@ $defs:
       field:
         $ref: "#/$defs/viewFieldRef"
       new_field:
-        type: string
-        pattern: "^[A-Za-z_][A-Za-z0-9_]*$"
+        $ref: "#/$defs/identifier"
       def:
         $ref: "#/$defs/fieldDef"
 
@@ -208,6 +228,8 @@ $defs:
     type: object
     minProperties: 1
     maxProperties: 1
+    propertyNames:
+      $ref: "#/$defs/identifier"
     additionalProperties:
       $ref: "#/$defs/viewDef"
 
@@ -246,7 +268,8 @@ $defs:
           pattern: "^[a-z_][a-z0-9_]*$"
         description: >
           Property names inherited from the referenced datasource type that
-          should be dropped from the resulting view shape.
+          should be dropped from the resulting view shape. Same snake_case
+          identifier as view field names, `references`, and routes `eager_*`.
       fields:
         type: array
         minItems: 0
@@ -257,8 +280,11 @@ $defs:
     type: object
     minProperties: 1
     maxProperties: 1
+    description: >
+      One view field. The key is a snake_case identifier — the same pattern
+      as `omit` items, `references` field segments, and routes `eager_*`.
     propertyNames:
-      pattern: "^[A-Za-z_][A-Za-z0-9_]*$"
+      $ref: "#/$defs/identifier"
     additionalProperties:
       $ref: "#/$defs/fieldDef"
 

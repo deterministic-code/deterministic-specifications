@@ -41,6 +41,21 @@ $defs:
     type: object
     additionalProperties: false
     required: [type, schema_type, schema]
+    allOf:
+      - if:
+          properties:
+            type: { const: REST }
+          required: [type]
+        then:
+          properties:
+            schema_type: { const: OpenAPI }
+      - if:
+          properties:
+            type: { const: GraphQL }
+          required: [type]
+        then:
+          properties:
+            schema_type: { const: GraphQL }
     properties:
       type:
         type: string
@@ -49,7 +64,9 @@ $defs:
       schema_type:
         type: string
         enum: [OpenAPI, GraphQL]
-        description: The schema format describing the datasource's operations.
+        description: >
+          The schema format describing the datasource's operations. REST
+          requires OpenAPI; GraphQL requires GraphQL.
       schema:
         type: string
         minLength: 1
@@ -58,6 +75,10 @@ $defs:
           URL, a `file:<path>` local file, or `id:<deterministic id | uuid |
           name>` referencing another deterministic backend whose OpenAPI doc is
           generated on demand.
+        anyOf:
+          - pattern: "^https://.+"
+          - pattern: "^file:.+"
+          - pattern: "^id:.+"
       clients:
         type: array
         uniqueItems: true

@@ -1,0 +1,12 @@
+expect:
+  covers: anyOf:#/$defs/datasourceDef/properties/schema
+---
+version: 1.0.0
+datasources:
+  - core:
+      type: REST
+      schema_type: OpenAPI
+      schema:
+        nope: true
+      clients:
+        - fetch

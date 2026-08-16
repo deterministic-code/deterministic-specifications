@@ -39,6 +39,7 @@ describe("accepted default_value for every catalog type", () => {
     ["string", '""', "            size: 8\n"],
     ["string", "hello", "            size: 8\n"],
     ["character", "X"],
+    ["character", "ABCD", "            size: 4\n"],
     ["number", "0"],
     ["number", "-3"],
     ["integer", "0"],

@@ -1,0 +1,6 @@
+version: 1.0.0
+routes:
+  - OldRoute:
+      path: /old
+      method: GET
+      response: health

@@ -3,10 +3,12 @@ $schema: https://json-schema.org/draft/2020-12/schema
 $id: https://cali-services.local/schemas/deterministic/backend/datasource-seeds.spec.yaml
 title: datasource_seeds.yaml
 description: >
-  Strict schema for deterministic/datasource_seeds.yaml. Seed rows for
-  datasource_types tables, keyed by table name. The `seeds:` key is required
-  (must exist) but may be an empty array — an app with no seed data declares
-  `seeds: []`.
+  Strict schema for deterministic/datasource_seeds.yaml — the only place
+  seed rows are authored. Seed rows for datasource_types tables, keyed by
+  table name. The `seeds:` key is required (must exist) but may be an empty
+  array — an app with no seed data declares `seeds: []`. A row body may be
+  empty (`id1: {}`) when every field is `is_nullable: true` or declares a
+  `default_value`.
 
   Shape is only the first gate. DatasourceSeedsValidator then checks each row
   against the companion datasource_types.yaml: table names must exist, every

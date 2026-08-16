@@ -126,6 +126,18 @@ export function checkFieldDefaults(
       const token = tokenError(field, value);
       if (token) errors.push(err(parsed, path, token));
     }
+    if (typeName === "character" && typeof value === "string") {
+      const size = typeof def.size === "number" ? def.size : 1;
+      if (value.length !== size) {
+        errors.push(
+          err(
+            parsed,
+            path,
+            `character default_value length must equal size (${size})`,
+          ),
+        );
+      }
+    }
     const range = rangeError(field, value);
     if (range) errors.push(err(parsed, path, range));
   });

@@ -5,6 +5,6 @@ version: 1.0.0
 types:
   - person:
       fields:
-        - Role:
+        - role:
             type: datasource_types.role
             references: NOT VALID

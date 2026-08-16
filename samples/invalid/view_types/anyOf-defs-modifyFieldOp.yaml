@@ -10,7 +10,7 @@ includes:
         remove_types:
           - old
         remove_fields:
-          - old.Name
+          - old.name
         modify_types:
           - type: old
             new_type: person
@@ -19,5 +19,5 @@ includes:
         add_fields:
           - type: old
             add_field:
-              Extra:
+              extra:
                 type: string

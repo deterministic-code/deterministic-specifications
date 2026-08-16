@@ -1,5 +1,5 @@
 expect:
-  covers: minLength:#/$defs/customRouteShape/properties/response
+  covers: minLength:#/$defs/customRouteShape/properties/response/oneOf/1
 ---
 version: 1.0.0
 routes:
@@ -9,9 +9,7 @@ routes:
       description: x
       request: person
       response: ""
-      service: PersonService
-      serviceMethod: run
-      routeClass: PingRoute
-      module: ./x
       authentication: none
       x-implementation: stub
+      service: PersonService
+      serviceMethod: run

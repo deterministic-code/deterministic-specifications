@@ -21,8 +21,8 @@ types:
       max_value: null
       defaults:
         - Literal:
-            regex: "^.$"
-            description: single character literal
+            regex: "^.+$"
+            description: character literal whose length equals size (default 1)
   - number:
       supports_size: false
       implicit_default: 0

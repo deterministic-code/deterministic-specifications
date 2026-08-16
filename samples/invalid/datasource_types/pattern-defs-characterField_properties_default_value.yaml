@@ -8,4 +8,4 @@ types:
         - n:
             type: character
             size: 1
-            default_value: NOT VALID
+            default_value: ""

@@ -5,6 +5,6 @@ version: 1.0.0
 types:
   - person:
       fields:
-        - Name:
+        - name:
             type:
               nope: true

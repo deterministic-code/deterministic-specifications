@@ -1,8 +1,0 @@
-expect:
-  covers: pattern:#/$defs/fieldEntry/propertyNames
----
-version: 1.0.0
-types:
-  - person:
-      fields:
-        - NOT VALID
