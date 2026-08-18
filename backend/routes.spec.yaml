@@ -5,8 +5,9 @@ title: routes.yaml
 description: >
   Strict schema for deterministic/routes.yaml. Declares the REST route
   surface (method, path, request/response view types, aliases) plus the
-  combined_routes composition metadata consumed by the OpenAPI generator and
-  the Express route loader in src/app.ts.
+  combined_routes composition metadata. Expansion into the flattened
+  routes-api IR (see routes-api.spec.yaml) feeds OpenAPI, GraphQL, proto,
+  and the Express route loader.
 
 type: object
 additionalProperties: false

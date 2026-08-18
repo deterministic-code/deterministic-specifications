@@ -1,0 +1,186 @@
+version: 1.0.0
+$schema: https://json-schema.org/draft/2020-12/schema
+$id: https://cali-services.local/schemas/deterministic/backend/routes-api.spec.yaml
+title: routes-api
+description: >
+  Strict schema for the routes-api intermediate representation (IR): the
+  flattened HTTP API catalog produced from `routes.yaml` + `view_types.yaml` +
+  `datasource_types.yaml` by `expandRoutes`. It is not authored by hand.
+
+  Authored `routes.yaml` (see routes.spec.yaml) keeps includes, filters,
+  combined_routes, and by-field shorthands. This document is that expansion:
+  one named operation per endpoint, plus the OpenAPI-shaped component map
+  those operations $ref.
+
+  Downstream projections (REST OpenAPI, GraphQL, Protobuf/gRPC, route codegen)
+  MUST start from routes-api rather than from OpenAPI. OpenAPI is one
+  projection (`paths` + `components.schemas`); GraphQL and proto are sibling
+  projections. Fields such as `entity`, `isCustom`, `byField`, and body
+  `example` exist here so those projections do not have to recover them from
+  HTTP paths.
+
+  Shape: `{ version, routes, components }`. `routes` is a flat array of
+  single-key maps `{ <routeName>: def }`. Custom authored routes pass through
+  with `entity: null` and `isCustom: true`. View-type includes expand to CRUD
+  (GET-only for readonly-lookup). Combined-route children expand to nested
+  direct-FK or M2M endpoints. Request/response names are resolved against
+  `components` into `{ name, schema, example }`; unknown names keep
+  `schema: null` and `example: null`. Paths stay Express-style (`:id`).
+
+type: object
+additionalProperties: false
+required: [version, routes, components]
+
+properties:
+  version:
+    description: >
+      Contract version this document targets. Must be a semver
+      (e.g. 1.0.0). The document is validated against that version's
+      specs and engine; there is no floating alias. Emitters stamp the
+      same version as the authored `routes.yaml` they expanded.
+    type: string
+    pattern: '^[0-9]+\.[0-9]+\.[0-9]+$'
+  routes:
+    description: >
+      Flattened operations in expansion order: custom routes, then view-type
+      CRUD, then combined-route children. Each item is one named operation.
+      Route names are unique across the array (generator invariant; JSON Schema
+      cannot unique-key a list of maps).
+    type: array
+    minItems: 0
+    items:
+      $ref: "#/$defs/routeEntry"
+  components:
+    description: >
+      Named JSON Schema / OpenAPI schema objects. Body `$ref`s point here as
+      `#/components/schemas/<Name>`. OpenAPI projection nests this map under
+      `components.schemas`; GraphQL/proto projections treat each entry as a
+      type/message.
+    type: object
+    additionalProperties:
+      $ref: "#/$defs/openApiSchema"
+
+$defs:
+  routeName:
+    type: string
+    minLength: 1
+    pattern: "^[A-Za-z_][A-Za-z0-9_]*$"
+    description: >
+      Operation key. CRUD uses camelCase (`postList`, `postCreate`). Custom
+      routes keep their authored name (`health`). `--naming verb-entity`
+      rewrites keys (`getPosts`) without changing this pattern.
+
+  routeEntry:
+    type: object
+    minProperties: 1
+    maxProperties: 1
+    propertyNames:
+      $ref: "#/$defs/routeName"
+    additionalProperties:
+      $ref: "#/$defs/expandedRouteDef"
+
+  expandedRouteDef:
+    type: object
+    additionalProperties: false
+    required: [path, method, entity, isCustom]
+    properties:
+      path:
+        type: string
+        minLength: 1
+        pattern: "^/"
+        description: >
+          Express-style path (`/api/posts/:id`). OpenAPI projection rewrites
+          `:name` to `{name}`.
+      method:
+        type: string
+        enum: [GET, POST, PUT, PATCH, DELETE]
+      entity:
+        description: >
+          Datasource/view entity this operation belongs to, or null for custom
+          routes. GraphQL/proto projections group operations by this key.
+        oneOf:
+          - $ref: "#/$defs/identifier"
+          - type: "null"
+      isCustom:
+        type: boolean
+        description: true when the route was authored in `routes:`, not generated.
+      request:
+        $ref: "#/$defs/bodyShape"
+      response:
+        $ref: "#/$defs/bodyShape"
+      byField:
+        $ref: "#/$defs/identifier"
+        description: Lookup column when this operation is a by-field expansion.
+      byFieldUnique:
+        type: boolean
+      primaryKeyField:
+        description: Non-standard primary-key column, or null for the default `id`.
+        oneOf:
+          - $ref: "#/$defs/identifier"
+          - type: "null"
+
+  identifier:
+    type: string
+    minLength: 1
+    pattern: "^[a-z_][a-z0-9_]*$"
+
+  bodyShape:
+    type: object
+    additionalProperties: false
+    required: [name, schema, example]
+    properties:
+      name:
+        type: string
+        minLength: 1
+        description: Component name this body resolved from (view type or synthetic).
+      schema:
+        description: >
+          Resolved OpenAPI schema, usually `{ $ref: "#/components/schemas/<name>" }`.
+          `null` when the name is missing from `components`.
+        oneOf:
+          - $ref: "#/$defs/openApiSchema"
+          - type: "null"
+      example:
+        description: Rendered example payload (any JSON), or null when unresolved.
+
+  openApiSchema:
+    type: object
+    additionalProperties: false
+    properties:
+      type:
+        type: string
+        enum: [object, array, string, integer, number, boolean, "null"]
+      format:
+        type: string
+        minLength: 1
+      properties:
+        type: object
+        additionalProperties:
+          $ref: "#/$defs/openApiSchema"
+      items:
+        $ref: "#/$defs/openApiSchema"
+      required:
+        type: array
+        minItems: 1
+        uniqueItems: true
+        items:
+          type: string
+          minLength: 1
+      $ref:
+        type: string
+        minLength: 1
+        pattern: "^#/components/schemas/"
+      nullable:
+        type: boolean
+      enum:
+        type: array
+        minItems: 1
+        uniqueItems: true
+      default: true
+      maxLength:
+        type: integer
+        minimum: 1
+      x-references:
+        type: string
+        minLength: 1
+        description: FK target as `<table>.<column>`, copied from datasource types.

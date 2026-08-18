@@ -10,7 +10,8 @@ The canonical YAML contract for the [deterministic](https://github.com/rmcfadden
 | [`backend/types.yaml`](backend/types.yaml) | field `default_value` tokens and ranges | Language-agnostic field-type catalog. Shape locked by [`backend/types.spec.yaml`](backend/types.spec.yaml). |
 | [`backend/datasource-seeds.spec.yaml`](backend/datasource-seeds.spec.yaml) | `datasource_seeds.yaml` | Seed rows for datasource tables. Validated against `datasource_types.yaml`. |
 | [`backend/view-types.spec.yaml`](backend/view-types.spec.yaml) | `view_types.yaml` | View shapes composed from datasource tables and other views. |
-| [`backend/routes.spec.yaml`](backend/routes.spec.yaml) | `routes.yaml` | The HTTP route surface. |
+| [`backend/routes.spec.yaml`](backend/routes.spec.yaml) | `routes.yaml` | The authored HTTP route surface. |
+| [`backend/routes-api.spec.yaml`](backend/routes-api.spec.yaml) | routes-api IR | Flattened API catalog from `expandRoutes` (OpenAPI / GraphQL / proto source). |
 | [`backend/services.spec.yaml`](backend/services.spec.yaml) | `services.yaml` | Service classes resolved via DI at app bootstrap. |
 | [`backend/app.spec.yaml`](backend/app.spec.yaml) | `backend-app.yaml` | Express app bootstrap — middleware, statics, tail handlers. |
 | [`frontend/bindings.spec.yaml`](frontend/bindings.spec.yaml) | `frontend_bindings.yaml` | External datasources a frontend binds to (REST/GraphQL). |

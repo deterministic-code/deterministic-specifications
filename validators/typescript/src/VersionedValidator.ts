@@ -113,6 +113,8 @@ export class RoutesValidator extends facades.RoutesValidator {
   }
 }
 
+export const RoutesApiValidator = facades.RoutesApiValidator;
+
 export class ServicesValidator extends facades.ServicesValidator {
   protected async optionsForFile(
     path: string,

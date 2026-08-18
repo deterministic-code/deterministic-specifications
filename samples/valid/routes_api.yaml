@@ -1,0 +1,173 @@
+version: 1.0.0
+routes:
+  - health:
+      path: /api/health
+      method: GET
+      entity: null
+      isCustom: true
+      response:
+        name: Health
+        schema:
+          $ref: "#/components/schemas/Health"
+        example:
+          ok: true
+  - generate:
+      path: /api/generate
+      method: POST
+      entity: null
+      isCustom: true
+      request:
+        name: GenerateRequest
+        schema: null
+        example: null
+      response:
+        name: GenerateResult
+        schema:
+          $ref: "#/components/schemas/GenerateResult"
+        example:
+          status: queued
+  - postList:
+      path: /api/posts
+      method: GET
+      entity: post
+      isCustom: false
+      response:
+        name: PostList
+        schema:
+          $ref: "#/components/schemas/PostList"
+        example:
+          - id: 1
+            title: Hello
+  - postCreate:
+      path: /api/posts
+      method: POST
+      entity: post
+      isCustom: false
+      request:
+        name: PostCreate
+        schema:
+          $ref: "#/components/schemas/PostCreate"
+        example:
+          title: Hello
+          published: true
+          rating: 1.5
+          tags: []
+      response:
+        name: Post
+        schema:
+          $ref: "#/components/schemas/Post"
+        example:
+          id: 1
+          title: Hello
+  - postUpdate:
+      path: /api/posts/:id
+      method: PUT
+      entity: post
+      isCustom: false
+      primaryKeyField: id
+      request:
+        name: PostUpdate
+        schema:
+          $ref: "#/components/schemas/PostUpdate"
+        example:
+          title: Hello
+      response:
+        name: Post
+        schema:
+          $ref: "#/components/schemas/Post"
+        example:
+          id: 1
+          title: Hello
+  - postPatch:
+      path: /api/posts/:id
+      method: PATCH
+      entity: post
+      isCustom: false
+      request:
+        name: PostUpdate
+        schema:
+          $ref: "#/components/schemas/PostUpdate"
+        example:
+          title: Hello
+      response:
+        name: Post
+        schema:
+          $ref: "#/components/schemas/Post"
+        example:
+          id: 1
+          title: Hello
+  - postDelete:
+      path: /api/posts/:id
+      method: DELETE
+      entity: post
+      isCustom: false
+      primaryKeyField: null
+  - getPostsByHandle:
+      path: /api/posts/handle/:handle
+      method: GET
+      entity: post
+      isCustom: false
+      byField: handle
+      byFieldUnique: true
+      response:
+        name: Post
+        schema:
+          $ref: "#/components/schemas/Post"
+        example:
+          id: 1
+          title: Hello
+components:
+  Health:
+    type: object
+    required: [ok]
+    properties:
+      ok:
+        type: boolean
+        default: true
+  GenerateResult:
+    type: object
+    properties:
+      status:
+        type: string
+        enum: [queued, done]
+  PostList:
+    type: array
+    items:
+      $ref: "#/components/schemas/Post"
+  Post:
+    type: object
+    required: [id, title]
+    properties:
+      id:
+        type: integer
+      uuid:
+        type: string
+        format: uuid
+      title:
+        type: string
+        maxLength: 255
+      published:
+        type: boolean
+      rating:
+        type: number
+      note:
+        type: "null"
+      author_id:
+        type: integer
+        nullable: true
+        x-references: author.id
+  PostCreate:
+    type: object
+    required: [title]
+    properties:
+      title:
+        type: string
+      tags:
+        type: array
+        items:
+          type: string
+  PostUpdate:
+    type: object
+    properties:
+      title:
+        type: string

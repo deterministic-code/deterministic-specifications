@@ -41,6 +41,7 @@ error gallery live under [`examples/`](../../examples).
 | `DatasourceSeedsValidator`  | `backend/datasource-seeds.spec.yaml` |
 | `ViewTypesValidator`        | `backend/view-types.spec.yaml` |
 | `RoutesValidator`           | `backend/routes.spec.yaml`     |
+| `RoutesApiValidator`        | `backend/routes-api.spec.yaml` |
 | `ServicesValidator`         | `backend/services.spec.yaml`   |
 | `FrontendBindingsValidator` | `frontend/bindings.spec.yaml`  |
 
