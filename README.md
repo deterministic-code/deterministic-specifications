@@ -15,6 +15,18 @@ The canonical YAML contract for the [deterministic](https://github.com/rmcfadden
 | [`backend/app.spec.yaml`](backend/app.spec.yaml) | `backend-app.yaml` | Express app bootstrap — middleware, statics, tail handlers. |
 | [`frontend/bindings.spec.yaml`](frontend/bindings.spec.yaml) | `frontend_bindings.yaml` | External datasources a frontend binds to (REST/GraphQL). |
 
+## TypeScript parser
+
+[`validators/typescript`](./validators/typescript) also ships `SpecificationParser`: a typed walk of `datasource_types.yaml`, `view_types.yaml`, `services.yaml`, and `routes.yaml` that returns strict objects (resolved FK types, view pass-throughs, nested routes). Consume it from `@deterministic-code/deterministic-specifications`:
+
+```ts
+import { SpecificationParser, memoryReader } from "@deterministic-code/deterministic-specifications";
+
+const spec = await new SpecificationParser(memoryReader(files)).load({
+  idType: "integer",
+});
+```
+
 ## Samples
 
 Kitchen-sink documents under [`samples/valid/`](samples/valid) exercise every property, enum, const, oneOf branch, and pattern in the live specs. [`samples/invalid/`](samples/invalid) holds one document per independently observable schema constraint; together they must fail `validate()`. Both suites live in `validators/typescript/test/samples.integration.test.ts`.

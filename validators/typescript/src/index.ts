@@ -42,3 +42,8 @@ export type {
   ValidateOptions,
 } from "./types.ts";
 export type { SpecRef, ParseSpecVersionResult, EngineName, EngineDef } from "./specVersion.ts";
+export { SpecificationParser } from "./parser/specification-parser.ts";
+export { YamlNode } from "./parser/yaml-node.ts";
+export { memoryReader } from "./parser/reader.ts";
+export type { IDeterministicReader } from "./parser/reader.ts";
+export * from "./parser/specification.ts";
