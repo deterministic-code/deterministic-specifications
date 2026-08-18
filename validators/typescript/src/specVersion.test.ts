@@ -18,6 +18,7 @@ describe("catalog", () => {
       "DatasourceSeedsValidator",
       "ViewTypesValidator",
       "RoutesValidator",
+      "RoutesApiValidator",
       "ServicesValidator",
       "FrontendBindingsValidator",
     ]);

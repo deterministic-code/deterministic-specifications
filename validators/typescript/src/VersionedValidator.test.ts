@@ -6,6 +6,7 @@ import {
   DatasourceSeedsValidator,
   DatasourceTypesValidator,
   FrontendBindingsValidator,
+  RoutesApiValidator,
   RoutesValidator,
   ServicesValidator,
   ViewTypesValidator,
@@ -27,6 +28,7 @@ const MINIMAL: Record<string, string> = {
   ViewTypesValidator: "version: 1.0.0\ntypes: []\n",
   ServicesValidator: "version: 1.0.0\nservices: []\n",
   RoutesValidator: "version: 1.0.0\nroutes: []\n",
+  RoutesApiValidator: "version: 1.0.0\nroutes: []\ncomponents: {}\n",
   FrontendBindingsValidator: "version: 1.0.0\ndatasources: []\n",
 };
 
@@ -143,6 +145,10 @@ describe("VersionedValidator dispatcher", () => {
     ).toBe(true);
     expect(
       (await new RoutesValidator().validate(MINIMAL.RoutesValidator)).valid,
+    ).toBe(true);
+    expect(
+      (await new RoutesApiValidator().validate(MINIMAL.RoutesApiValidator))
+        .valid,
     ).toBe(true);
     expect(
       (

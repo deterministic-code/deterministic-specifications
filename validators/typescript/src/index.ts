@@ -4,6 +4,7 @@ export {
   DatasourceSeedsValidator,
   ViewTypesValidator,
   RoutesValidator,
+  RoutesApiValidator,
   ServicesValidator,
   FrontendBindingsValidator,
   VersionedValidator,

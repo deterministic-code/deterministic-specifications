@@ -36,6 +36,7 @@ const MINIMAL: Record<string, string> = {
   ServicesValidator: "services: []\n",
   FrontendBindingsValidator: "datasources: []\n",
   RoutesValidator: "routes: []\n",
+  RoutesApiValidator: "routes: []\ncomponents: {}\n",
 };
 
 const versions = await listSpecVersions();
