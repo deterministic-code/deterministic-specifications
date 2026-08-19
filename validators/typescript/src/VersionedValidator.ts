@@ -1,10 +1,6 @@
 import { pathToFileURL } from "node:url";
 import { join } from "node:path";
-import {
-  mapEngines,
-  parseSpecVersion,
-  VALIDATOR_ENGINE_FILE,
-} from "./specVersion.ts";
+import { parseSpecVersion, VALIDATOR_ENGINE_FILE } from "./specVersion.ts";
 import { resolveEngineDir } from "./resolveSpecPath.ts";
 import {
   errorFromUnknown,
@@ -78,15 +74,11 @@ export class VersionedValidator extends FileValidator {
   }
 }
 
-const facades = mapEngines(({ className }) =>
-  class extends VersionedValidator {
-    constructor() {
-      super(className);
-    }
-  },
-);
+export class DatasourceTypesValidator extends VersionedValidator {
+  constructor() {
+    super("DatasourceTypesValidator");
+  }
 
-export class DatasourceTypesValidator extends facades.DatasourceTypesValidator {
   protected async optionsForFile(
     path: string,
     options?: ValidateOptions,
@@ -95,7 +87,11 @@ export class DatasourceTypesValidator extends facades.DatasourceTypesValidator {
   }
 }
 
-export class ViewTypesValidator extends facades.ViewTypesValidator {
+export class ViewTypesValidator extends VersionedValidator {
+  constructor() {
+    super("ViewTypesValidator");
+  }
+
   protected async optionsForFile(
     path: string,
     options?: ValidateOptions,
@@ -104,7 +100,11 @@ export class ViewTypesValidator extends facades.ViewTypesValidator {
   }
 }
 
-export class RoutesValidator extends facades.RoutesValidator {
+export class RoutesValidator extends VersionedValidator {
+  constructor() {
+    super("RoutesValidator");
+  }
+
   protected async optionsForFile(
     path: string,
     options?: ValidateOptions,
@@ -113,9 +113,17 @@ export class RoutesValidator extends facades.RoutesValidator {
   }
 }
 
-export const RoutesApiValidator = facades.RoutesApiValidator;
+export class RoutesApiValidator extends VersionedValidator {
+  constructor() {
+    super("RoutesApiValidator");
+  }
+}
 
-export class ServicesValidator extends facades.ServicesValidator {
+export class ServicesValidator extends VersionedValidator {
+  constructor() {
+    super("ServicesValidator");
+  }
+
   protected async optionsForFile(
     path: string,
     options?: ValidateOptions,
@@ -124,9 +132,17 @@ export class ServicesValidator extends facades.ServicesValidator {
   }
 }
 
-export const FrontendBindingsValidator = facades.FrontendBindingsValidator;
+export class FrontendBindingsValidator extends VersionedValidator {
+  constructor() {
+    super("FrontendBindingsValidator");
+  }
+}
 
-export class DatasourceSeedsValidator extends facades.DatasourceSeedsValidator {
+export class DatasourceSeedsValidator extends VersionedValidator {
+  constructor() {
+    super("DatasourceSeedsValidator");
+  }
+
   protected async optionsForFile(
     path: string,
     options?: ValidateOptions,
