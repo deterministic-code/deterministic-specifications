@@ -7,10 +7,22 @@
   "files": [
     "backend",
     "frontend",
-    "versions"
+    "versions",
+    "validators/typescript/dist"
   ],
+  "exports": {
+    "./validators/typescript": {
+      "types": "./validators/typescript/dist/index.d.ts",
+      "import": "./validators/typescript/dist/index.js"
+    },
+    "./validators/typescript/src/index.ts": {
+      "types": "./validators/typescript/dist/index.d.ts",
+      "import": "./validators/typescript/dist/index.js"
+    }
+  },
   "scripts": {
-    "bump-version": "node scripts/bump-version.mjs"
+    "bump-version": "node scripts/bump-version.mjs",
+    "prepack": "npm run build --prefix validators/typescript"
   },
   "publishConfig": {
     "access": "public"
