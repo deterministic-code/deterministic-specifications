@@ -131,7 +131,13 @@ export function engineRelPath(version: string): string {
     : join("versions", version, "validators");
 }
 
-const LIVE_ENGINE_FILE = join("validators", VALIDATOR_ENGINE_FILE);
+const LIVE_ENGINE_FILE = join(
+  "validators",
+  "typescript",
+  "src",
+  "validators",
+  VALIDATOR_ENGINE_FILE,
+);
 
 export async function findEngineDir(
   version: string,
@@ -154,4 +160,17 @@ export async function resolveEngineDir(
     `validator engine not found: ${engineRelPath(version)}`,
     start,
   );
+}
+
+/** Runtime module is `engines.js`. Under Vitest, load sibling `engines.ts` so coverage maps to source. */
+export async function resolveEngineModulePath(
+  version: string,
+  start?: string,
+): Promise<string> {
+  const js = join(await resolveEngineDir(version, start), VALIDATOR_ENGINE_FILE);
+  if (process.env.VITEST) {
+    const ts = js.replace(/\.js$/, ".ts");
+    if (await fileExists(ts)) return ts;
+  }
+  return js;
 }

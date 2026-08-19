@@ -127,6 +127,21 @@ describe("SpecValidator constructed with an absolute spec path", () => {
 });
 
 describe("SpecValidator pinned to a version", () => {
+  test("pinnedEngines returns a constructor per catalogued engine", async () => {
+    const engines = SpecValidator.pinnedEngines(LIVE_VERSION);
+    expect(Object.keys(engines)).toEqual([
+      "DatasourceTypesValidator",
+      "DatasourceSeedsValidator",
+      "ViewTypesValidator",
+      "RoutesValidator",
+      "RoutesApiValidator",
+      "ServicesValidator",
+      "FrontendBindingsValidator",
+    ]);
+    const result = await new engines.DatasourceTypesValidator().validate(VALID);
+    expect(result).toEqual({ valid: true, errors: [] });
+  });
+
   test("rejects a document for a different version", async () => {
     const result = await new SpecValidator({
       subdir: "backend",

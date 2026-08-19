@@ -36,7 +36,7 @@ export const SPEC_FILES = [
   { subdir: "backend", name: "types.spec.yaml" },
 ];
 
-export const VALIDATOR_ENGINE_FILE = "engines.ts";
+export const VALIDATOR_ENGINE_FILE = "engines.js";
 
 export type SpecRef = {
   subdir: string;

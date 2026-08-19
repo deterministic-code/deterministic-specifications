@@ -1,5 +1,4 @@
-import { SpecValidator } from "../../../validators/typescript/src/SpecValidator.ts";
-
+import { SpecValidator } from "../../../validators/typescript/dist/index.js";
 export const {
   DatasourceTypesValidator,
   DatasourceSeedsValidator,
