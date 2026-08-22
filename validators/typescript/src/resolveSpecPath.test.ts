@@ -1,6 +1,7 @@
 import { access, mkdir, mkdtemp, readdir, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+import { pathToFileURL } from "node:url";
 import { afterAll, beforeAll, describe, expect, test } from "vitest";
 import {
   engineRelPath,
@@ -10,6 +11,7 @@ import {
   listPublishedVersions,
   listSpecVersions,
   resolveEngineDir,
+  resolveEngineModulePath,
   resolveSpecPath,
   specRelPath,
 } from "./resolveSpecPath.ts";
@@ -109,7 +111,7 @@ describe("published version completeness", () => {
     }
   });
 
-  test("every published version ships its spec set and engines.ts", async () => {
+  test("every published version ships its spec set and engines.js", async () => {
     const published = await listPublishedVersions();
     expect(published.length).toBeGreaterThan(0);
     const versionsDir = await findAncestorPath("versions");
@@ -211,5 +213,46 @@ describe("engineRelPath / resolveEngineDir", () => {
     } finally {
       await rm(dir, { force: true, recursive: true });
     }
+  });
+
+  test("Vitest loads sibling engines.ts when present", async () => {
+    await expect(resolveEngineModulePath(LIVE_VERSION)).resolves.toMatch(
+      /engines\.ts$/,
+    );
+  });
+
+  test("falls back to engines.js when no sibling .ts exists", async () => {
+    const dir = await mkdtemp(join(tmpdir(), "engine-js-only-"));
+    try {
+      const js = join(dir, "versions", "2.0.0", "validators", VALIDATOR_ENGINE_FILE);
+      await mkdir(join(dir, "versions", "2.0.0", "validators"), { recursive: true });
+      await writeFile(js, "export {}\n");
+      await expect(resolveEngineModulePath("2.0.0", dir)).resolves.toBe(js);
+    } finally {
+      await rm(dir, { force: true, recursive: true });
+    }
+  });
+
+  test("without VITEST, the runtime engines.js path is used", async () => {
+    const prev = process.env.VITEST;
+    delete process.env.VITEST;
+    try {
+      await expect(resolveEngineModulePath(LIVE_VERSION)).resolves.toMatch(
+        /engines\.js$/,
+      );
+    } finally {
+      if (prev === undefined) delete process.env.VITEST;
+      else process.env.VITEST = prev;
+    }
+  });
+
+  test("runtime engines.js exports catalogued engines", async () => {
+    const dir = await findEngineDir(LIVE_VERSION);
+    const runtime = (await import(
+      pathToFileURL(join(dir!, VALIDATOR_ENGINE_FILE)).href
+    )) as Record<string, unknown>;
+    expect(typeof runtime.DatasourceTypesValidator).toBe("function");
+    expect(typeof runtime.DatasourceSeedsValidator).toBe("function");
+    expect(typeof runtime.RoutesApiValidator).toBe("function");
   });
 });

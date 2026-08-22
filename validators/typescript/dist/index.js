@@ -90,7 +90,7 @@ var SPEC_FILES = [
   { subdir: "backend", name: "app.spec.yaml" },
   { subdir: "backend", name: "types.spec.yaml" }
 ];
-var VALIDATOR_ENGINE_FILE = "engines.ts";
+var VALIDATOR_ENGINE_FILE = "engines.js";
 var SEMVER = /^[0-9]+\.[0-9]+\.[0-9]+$/;
 function isPublishedVersion(value) {
   return SEMVER.test(value);
@@ -193,7 +193,13 @@ async function resolveSpecPath(subdir, name, version, start) {
 function engineRelPath(version) {
   return isLiveVersion(version) ? join("validators", "typescript", "src", "validators") : join("versions", version, "validators");
 }
-var LIVE_ENGINE_FILE = join("validators", VALIDATOR_ENGINE_FILE);
+var LIVE_ENGINE_FILE = join(
+  "validators",
+  "typescript",
+  "src",
+  "validators",
+  VALIDATOR_ENGINE_FILE
+);
 async function findEngineDir(version, start) {
   if (isLiveVersion(version)) {
     const engineFile = await findAncestorPath(LIVE_ENGINE_FILE, start);
@@ -208,6 +214,14 @@ async function resolveEngineDir(version, start) {
     `validator engine not found: ${engineRelPath(version)}`,
     start
   );
+}
+async function resolveEngineModulePath(version, start) {
+  const js = join(await resolveEngineDir(version, start), VALIDATOR_ENGINE_FILE);
+  if (process.env.VITEST) {
+    const ts = js.replace(/\.js$/, ".ts");
+    if (await fileExists(ts)) return ts;
+  }
+  return js;
 }
 
 // src/SpecValidator.ts
@@ -353,7 +367,6 @@ var SpecValidator = class _SpecValidator extends FileValidator {
 
 // src/VersionedValidator.ts
 import { pathToFileURL } from "node:url";
-import { join as join4 } from "node:path";
 
 // src/seedSemantics.ts
 import { readFile as readFile2 } from "node:fs/promises";
@@ -395,9 +408,7 @@ function engineConstructor(mod, exportName) {
   return Ctor;
 }
 async function loadEngine(exportName, version) {
-  const href = pathToFileURL(
-    join4(await resolveEngineDir(version), VALIDATOR_ENGINE_FILE)
-  ).href;
+  const href = pathToFileURL(await resolveEngineModulePath(version)).href;
   return new (engineConstructor(
     await import(href),
     exportName
@@ -501,6 +512,7 @@ export {
   parseYamlWithPositions,
   positionFor,
   resolveEngineDir,
+  resolveEngineModulePath,
   resolveSpecPath,
   specRelPath
 };

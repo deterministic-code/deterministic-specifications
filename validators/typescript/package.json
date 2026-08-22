@@ -15,10 +15,12 @@
     "src"
   ],
   "scripts": {
-    "build": "npm run build:dts && npm run build:js",
+    "build": "npm run build:dts && npm run build:js && npm run build:engines",
     "build:dts": "tsc -p tsconfig.dts.json",
     "build:js": "esbuild src/index.ts --bundle --format=esm --platform=node --packages=external --outfile=dist/index.js",
+    "build:engines": "esbuild src/validators/engines.ts --bundle --format=esm --platform=node --packages=external --outfile=src/validators/engines.js",
     "prepack": "npm run build",
+    "pretest": "npm run build:js && npm run build:engines",
     "typecheck": "tsc --noEmit",
     "test": "vitest run --coverage",
     "test:watch": "vitest",

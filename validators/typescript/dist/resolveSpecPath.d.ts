@@ -18,3 +18,5 @@ export declare function resolveSpecPath(subdir: string, name: string, version: s
 export declare function engineRelPath(version: string): string;
 export declare function findEngineDir(version: string, start?: string): Promise<string | null>;
 export declare function resolveEngineDir(version: string, start?: string): Promise<string>;
+/** Runtime module is `engines.js`. Under Vitest, load sibling `engines.ts` so coverage maps to source. */
+export declare function resolveEngineModulePath(version: string, start?: string): Promise<string>;

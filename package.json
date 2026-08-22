@@ -14,11 +14,13 @@
     "./package.json": "./package.json",
     "./validators/typescript": {
       "types": "./validators/typescript/dist/index.d.ts",
-      "import": "./validators/typescript/dist/index.js"
+      "import": "./validators/typescript/dist/index.js",
+      "default": "./validators/typescript/dist/index.js"
     },
     "./validators/typescript/src/index.ts": {
       "types": "./validators/typescript/dist/index.d.ts",
-      "import": "./validators/typescript/dist/index.js"
+      "import": "./validators/typescript/dist/index.js",
+      "default": "./validators/typescript/dist/index.js"
     }
   },
   "scripts": {

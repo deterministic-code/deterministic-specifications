@@ -12,7 +12,7 @@ export declare const SPEC_FILES: {
     subdir: string;
     name: string;
 }[];
-export declare const VALIDATOR_ENGINE_FILE = "engines.ts";
+export declare const VALIDATOR_ENGINE_FILE = "engines.js";
 export type SpecRef = {
     subdir: string;
     name: string;

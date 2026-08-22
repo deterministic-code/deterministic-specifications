@@ -1,13 +1,14 @@
 #!/usr/bin/env node
 /**
- * Archive the live backend/, frontend/, and engines.ts into versions/<semver>/.
+ * Archive the live backend/, frontend/, and engine files into versions/<semver>/.
  *
  *   node scripts/bump-version.mjs 1.1.0
  *
  * Moves the live spec folders and validators/typescript/src/validators/engines.ts
- * into the archive, stamps spec `version:` / `$id`, and rewrites the frozen
- * engine so it stays pinned to that semver. Live tests stay put and load every
- * archived engine by version.
+ * into the archive, stamps spec `version:` / `$id`, writes validators/engines.js
+ * (runtime; imports the compiled bundle), and rewrites the frozen engine so it
+ * stays pinned to that semver. Live tests stay put and load every archived
+ * engine by version.
  *
  * Does not move the rest of validators/typescript/ (shared engine, tests,
  * package.json, etc.).
@@ -29,7 +30,17 @@ import { stampSpecText, stampValidatorText } from "./lib/stamp-version.mjs";
 
 const SEMVER = /^[0-9]+\.[0-9]+\.[0-9]+$/;
 const LIVE_SPEC_DIRS = ["backend", "frontend"];
-const ENGINE_FILE = "engines.ts";
+const ENGINE_SOURCE = "engines.ts";
+const ENGINE_FILE = "engines.js";
+const ENGINE_EXPORTS = [
+  "DatasourceTypesValidator",
+  "DatasourceSeedsValidator",
+  "ViewTypesValidator",
+  "RoutesValidator",
+  "RoutesApiValidator",
+  "ServicesValidator",
+  "FrontendBindingsValidator",
+];
 
 const repoRoot = dirname(dirname(fileURLToPath(import.meta.url)));
 const liveEngineDir = join(
@@ -65,12 +76,24 @@ async function stampSpecs(dir, semver) {
   }
 }
 
+function archiveEnginesJs(semver) {
+  return `import { SpecValidator } from "../../../validators/typescript/dist/index.js";
+export const {
+  ${ENGINE_EXPORTS.join(",\n  ")},
+} = SpecValidator.pinnedEngines("${semver}");
+`;
+}
+
 async function moveLiveEngine(destRoot) {
   const to = join(destRoot, "validators");
   await mkdir(to, { recursive: true });
-  const dest = join(to, ENGINE_FILE);
-  await rename(join(liveEngineDir, ENGINE_FILE), dest);
-  await writeFile(dest, stampValidatorText(await readFile(dest, "utf8"), version));
+  const destTs = join(to, ENGINE_SOURCE);
+  await rename(join(liveEngineDir, ENGINE_SOURCE), destTs);
+  await writeFile(
+    destTs,
+    stampValidatorText(await readFile(destTs, "utf8"), version),
+  );
+  await writeFile(join(to, ENGINE_FILE), archiveEnginesJs(version));
 }
 
 async function assertCompleteArchive(dir) {
@@ -93,9 +116,9 @@ for (const name of LIVE_SPEC_DIRS) {
     process.exit(1);
   }
 }
-if (!(await exists(join(liveEngineDir, ENGINE_FILE)))) {
+if (!(await exists(join(liveEngineDir, ENGINE_SOURCE)))) {
   console.error(
-    `missing live engine: validators/typescript/src/validators/${ENGINE_FILE}`,
+    `missing live engine: validators/typescript/src/validators/${ENGINE_SOURCE}`,
   );
   process.exit(1);
 }

@@ -19,6 +19,7 @@ export {
   engineRelPath,
   findEngineDir,
   resolveEngineDir,
+  resolveEngineModulePath,
 } from "./resolveSpecPath.ts";
 export {
   LIVE_VERSION,

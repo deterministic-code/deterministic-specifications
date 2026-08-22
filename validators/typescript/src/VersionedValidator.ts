@@ -1,7 +1,6 @@
 import { pathToFileURL } from "node:url";
-import { join } from "node:path";
 import { parseSpecVersion, VALIDATOR_ENGINE_FILE } from "./specVersion.ts";
-import { resolveEngineDir } from "./resolveSpecPath.ts";
+import { resolveEngineModulePath } from "./resolveSpecPath.ts";
 import {
   errorFromUnknown,
   FileValidator,
@@ -33,9 +32,7 @@ export function engineConstructor(
 }
 
 async function loadEngine(exportName: string, version: string): Promise<Engine> {
-  const href = pathToFileURL(
-    join(await resolveEngineDir(version), VALIDATOR_ENGINE_FILE),
-  ).href;
+  const href = pathToFileURL(await resolveEngineModulePath(version)).href;
   return new (engineConstructor(
     (await import(href)) as Record<string, unknown>,
     exportName,

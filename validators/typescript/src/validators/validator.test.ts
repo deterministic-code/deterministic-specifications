@@ -3,20 +3,18 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { pathToFileURL } from "node:url";
 import { beforeAll, describe, expect, test } from "vitest";
-import { resolveEngineDir, listSpecVersions } from "../resolveSpecPath.ts";
+import { resolveEngineModulePath, listSpecVersions } from "../resolveSpecPath.ts";
 import type { SpecValidator } from "../SpecValidator.ts";
 import {
   LIVE_VERSION,
-  VALIDATOR_ENGINE_FILE,
   VALIDATOR_ENGINES,
 } from "../specVersion.ts";
 
 type Engines = Record<string, new () => SpecValidator>;
 
 async function loadEngines(version: string): Promise<Engines> {
-  const dir = await resolveEngineDir(version);
   return (await import(
-    pathToFileURL(join(dir, VALIDATOR_ENGINE_FILE)).href
+    pathToFileURL(await resolveEngineModulePath(version)).href
   )) as Engines;
 }
 
