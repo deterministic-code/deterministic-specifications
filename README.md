@@ -18,7 +18,7 @@ The canonical YAML contract for the [deterministic](https://github.com/rmcfadden
 
 ## Samples
 
-Kitchen-sink documents under [`samples/valid/`](samples/valid) exercise every property, enum, const, oneOf branch, and pattern in the live specs. [`samples/invalid/`](samples/invalid) holds one document per independently observable schema constraint; together they must fail `validate()`. Both suites live in `validators/typescript/test/samples.integration.test.ts`.
+Kitchen-sink documents under [`samples/valid/`](samples/valid) exercise every property, enum, const, oneOf branch, and pattern in the live specs. [`samples/invalid/`](samples/invalid) holds one document per independently observable schema constraint; together they must fail `validate()`. Both suites live in [deterministic-specifications-typescript](https://github.com/deterministic-code/deterministic-specifications-typescript).
 
 Readable apps live under [`examples/`](examples): [`examples/minimal/`](examples/minimal) (required keys only) and [`examples/tasks/`](examples/tasks) (a small user/project/task contract). [`examples/errors/`](examples/errors) is a human-curated gallery of typical authoring mistakes — one per file — not the exhaustive mutant dump.
 
@@ -30,12 +30,11 @@ Readable apps live under [`examples/`](examples): [`examples/minimal/`](examples
 
 ## Versioning
 
-The live contract is **1.0.0**. It lives at the repo root as three sibling folders:
+The live contract is **1.0.0**. It lives at the repo root as two sibling folders:
 
 ```
-backend/                               # live specs
+backend/    # live specs
 frontend/
-validators/typescript/src/validators/  # live engines + tests
 ```
 
 Every authored `deterministic/*.yaml` document must declare an exact semver. There is no floating alias:
@@ -44,21 +43,19 @@ Every authored `deterministic/*.yaml` document must declare an exact semver. The
 version: 1.0.0
 ```
 
-- **`1.0.0`** (the live version) binds to the root specs and the live [`validators/typescript/src/validators/`](./validators/typescript/src/validators) engines.
-- **Any other published semver** binds to [`versions/<semver>/`](./versions), which contains `backend/`, `frontend/`, and `validators/engines.ts`. After a bump, `1.0.0` falls back to that archive if the live tree is gone.
+- **`1.0.0`** (the live version) binds to the root specs.
+- **Any other published semver** binds to [`versions/<semver>/`](./versions), which contains `backend/` and `frontend/`. After a bump, `1.0.0` falls back to that archive if the live tree is gone.
 
-Validators require `version` and pin to it: a `1.0.0` engine rejects any other value. A missing or non-semver `version` is a validation error before an engine is loaded.
+TypeScript validators live in [deterministic-specifications-typescript](https://github.com/deterministic-code/deterministic-specifications-typescript). They require `version` and pin to it: a `1.0.0` engine rejects any other value. A missing or non-semver `version` is a validation error before an engine is loaded.
 
-Root spec files start with `version: 1.0.0`. Each frozen copy is stamped with `version: <semver>` and a versioned `$id`. Each frozen engine is pinned to that semver.
+Root spec files start with `version: 1.0.0`. Each frozen copy is stamped with `version: <semver>` and a versioned `$id`.
 
-Archive a new version by moving the live specs and engine file:
+Archive a new version by moving the live specs:
 
 ```sh
 npm run bump-version -- 1.1.0
 ```
 
-That relocates `backend/`, `frontend/`, and `validators/typescript/src/validators/engines.ts` into `versions/1.1.0/`, stamps the specs, and rewrites the engine so it stays pinned to `1.1.0`. Live tests stay at repo root and keep covering every archived version. After a bump, set `LIVE_VERSION` to the next unpublished semver when re-authoring the live tree. Bumps are infrequent and take an explicit semver — no auto-increment.
-
-The TypeScript validator suite enumerates every folder under `versions/` and fails if any published version is missing specs or `validators/engines.ts`.
+That relocates `backend/` and `frontend/` into `versions/1.1.0/` and stamps the specs. After a bump, set `LIVE_VERSION` in the TypeScript validators to the next unpublished semver when re-authoring the live tree. Bumps are infrequent and take an explicit semver — no auto-increment.
 
 These are contract files: adding a field, key, `x-` extension, or op annotation is a deliberate contract change. Freeze a new semver before changing the live specs so existing documents stay valid against their pinned snapshot.
