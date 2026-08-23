@@ -1,0 +1,6 @@
+expect:
+  covers: additionalProperties:#
+---
+version: 1.0.0
+types: []
+extra: true

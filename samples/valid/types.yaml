@@ -1,0 +1,354 @@
+version: 1.0.0
+includes:
+  - types:
+      filter: tag == "datasource_type" && type != "link"
+  - file: shared/base.yaml
+    combine_options:
+      source:
+        remove_types: [legacy_user]
+        remove_fields: [legacy_user.old_email]
+        modify_types:
+          - type: legacy_user
+            new_type: user
+        modify_fields:
+          - field: legacy_user.old_email
+            new_field: email
+          - field: legacy_user.legacy_flag
+            def:
+              type: boolean
+              default_value: false
+        add_fields:
+          - type: legacy_user
+            add_field:
+              extra_code:
+                type: string
+                size: 32
+      destination:
+        remove_types: [scratch]
+        remove_fields: [scratch.tmp]
+        modify_types:
+          - type: scratch
+            new_type: note
+        modify_fields:
+          - field: scratch.tmp
+            new_field: body
+          - field: scratch.flag
+            def:
+              type: integer
+              default_value: 0
+        add_fields:
+          - type: scratch
+            add_field:
+              tag:
+                type: string
+                size: 16
+  - id: saved_backend
+    combine_options:
+      source:
+        remove_types: [extra]
+  - id: 7
+    combine_options:
+      destination:
+        remove_types: [scratch]
+  - uuid: 11111111-1111-1111-1111-111111111111
+    combine_options:
+      source:
+        remove_fields: [user.bio]
+  - user_id: 1
+    name: demo_app
+    combine_options:
+      destination:
+        remove_fields: [note.body]
+  - file: shared/views.yaml
+    combine_options:
+      source:
+        remove_types: [old_view]
+        remove_fields: [old_view.old_field]
+        modify_types:
+          - type: old_view
+            new_type: person
+        modify_fields:
+          - field: old_view.old_field
+            new_field: display_name
+          - field: old_view.flag
+            def:
+              type: boolean
+              is_nullable: true
+        add_fields:
+          - type: old_view
+            add_field:
+              extra:
+                type: string
+                size: 32
+      destination:
+        remove_types: [scratch_view]
+        remove_fields: [scratch_view.tmp]
+        modify_types:
+          - type: scratch_view
+            new_type: summary
+        modify_fields:
+          - field: scratch_view.tmp
+            new_field: body
+          - field: scratch_view.n
+            def:
+              type: integer
+              min_size: 0
+        add_fields:
+          - type: scratch_view
+            add_field:
+              tag:
+                type: string
+  - id: saved_views
+    combine_options:
+      source:
+        remove_types: [extra_view]
+  - id: 3
+    combine_options:
+      destination:
+        remove_types: [scratch_view]
+  - uuid: 22222222-2222-2222-2222-222222222222
+    combine_options:
+      source:
+        remove_fields: [person.bio]
+  - user_id: 2
+    name: demo_views
+    combine_options:
+      destination:
+        remove_fields: [person.score]
+types:
+  - user:
+      tags: [datasource_type, view_type]
+      inherits: set
+      fields:
+        - email:
+            type: string
+            size: 256
+            min_size: 1
+            is_nullable: false
+            default_value: ""
+            references: user.email
+            validation:
+              - email
+              - 1
+        - bio:
+            type: string
+            size: unlimited
+        - initial:
+            type: character
+            size: 1
+            is_nullable: true
+            default_value: X
+        - score:
+            type: number
+            size: 8
+            min_size: 0
+            is_nullable: true
+            default_value: 0
+            references: user.score
+        - count:
+            type: integer
+            size: 4
+            min_size: 0
+            is_nullable: false
+            default_value: 0
+            references: user.count
+        - visits:
+            type: unsignedinteger
+            size: 4
+            min_size: 0
+            is_nullable: false
+            default_value: 0
+            references: user.visits
+        - big_count:
+            type: biginteger
+            is_nullable: false
+            default_value: "0"
+            references: user.big_count
+        - huge_count:
+            type: unsignedbiginteger
+            is_nullable: false
+            default_value: "0"
+            references: user.huge_count
+        - small_count:
+            type: smallinteger
+            size: 2
+            min_size: 0
+            is_nullable: false
+            default_value: 0
+            references: user.small_count
+        - tiny_count:
+            type: unsignedsmallinteger
+            size: 2
+            min_size: 0
+            is_nullable: false
+            default_value: 0
+            references: user.tiny_count
+        - ratio:
+            type: float
+            is_nullable: false
+            default_value: 1.5
+            references: user.ratio
+        - price:
+            type: decimal
+            size: [10, 2]
+            is_nullable: false
+            default_value: "0.00"
+        - amount:
+            type: decimal
+            default_value: 0
+        - active:
+            type: boolean
+            is_nullable: false
+            default_value: true
+        - avatar:
+            type: binary
+            size: 16
+            is_nullable: true
+            default_value: "Hex('')"
+        - payload:
+            type: binary
+            size: unlimited
+        - created_on:
+            type: datetime
+            is_nullable: false
+            default_value: "DateTime('2020-01-01T00:00:00Z')"
+        - created_local:
+            type: datetime
+            default_value: Now
+        - created_utc:
+            type: datetime
+            default_value: UtcNow
+        - uid:
+            type: uuid
+            is_nullable: false
+            default_value: Empty
+            references: user.uid
+        - new_uid:
+            type: uuid
+            default_value: NewId
+        - other_uid:
+            type: uuid
+            default_value: "uuid('11111111-1111-4111-8111-111111111111')"
+        - parent_id:
+            references: user.id
+            is_nullable: true
+  - role:
+      tags: [datasource_type, view_type]
+      inherits: dictionary
+      fields:
+        - code:
+            type: string
+            size: 64
+  - setting:
+      tags: [datasource_type]
+      inherits: dictionary
+  - keyed:
+      tags: [datasource_type]
+      fields:
+        - id:
+            type: integer
+            is_id: true
+        - label:
+            type: string
+            size: 32
+  - link:
+      tags: [datasource_type, many_to_many]
+      ids: [left_id, right_id]
+      fields:
+        - left_id:
+            type: integer
+            references: user.id
+        - right_id:
+            type: integer
+            references: role.id
+        - pair:
+            references: [link.left_id, link.right_id]
+  - note:
+      tags: [datasource_type]
+      fields:
+        - body:
+            type: string
+            size: 1024
+  - _internal:
+      tags: [datasource_type]
+      inherits: set
+      fields:
+        - key:
+            type: string
+            size: 64
+  - person:
+      tags: [view_type]
+      inherits: user
+      remove_fields: [bio, payload]
+      fields:
+        - display_name:
+            type: string
+            size: 128
+            min_size: 0
+            is_nullable: false
+            default_value: ""
+        - labels:
+            type: "string[]"
+        - scores:
+            type: "number[]"
+        - counts:
+            type: "integer[]"
+        - visit_list:
+            type: "unsignedinteger[]"
+        - big_list:
+            type: "biginteger[]"
+        - huge_list:
+            type: "unsignedbiginteger[]"
+        - small_list:
+            type: "smallinteger[]"
+        - tiny_list:
+            type: "unsignedsmallinteger[]"
+        - ratio_list:
+            type: "float[]"
+        - flags:
+            type: "boolean[]"
+        - dates:
+            type: "datetime[]"
+        - blobs:
+            type: "binary[]"
+        - ids:
+            type: "uuid[]"
+        - role:
+            type: role
+            references: role.id
+        - roles:
+            type: role[]
+            references: user.role_id
+        - manager:
+            type: person
+        - reports:
+            type: person[]
+            references: person.parent_id
+  - phone_contact:
+      tags: [view_type]
+      union: [user, role]
+      mapping:
+        name: role_name
+      remove_fields: [id]
+      fields:
+        - phone:
+            type: string
+            size: 32
+  - empty_shape:
+      tags: [view_type]
+      fields: []
+  - result:
+      tags: [view_type]
+      one_of: [person, empty_shape]
+  - scratch:
+      fields:
+        - tmp:
+            type: string
+        - flag:
+            type: integer
+  - scratch_view:
+      fields:
+        - tmp:
+            type: string
+        - n:
+            type: integer

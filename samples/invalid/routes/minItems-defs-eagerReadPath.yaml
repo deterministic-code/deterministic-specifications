@@ -1,0 +1,7 @@
+expect:
+  covers: minItems:#/$defs/eagerReadPath
+---
+version: 1.0.0
+routes:
+  - user:
+      eager_read_path: []

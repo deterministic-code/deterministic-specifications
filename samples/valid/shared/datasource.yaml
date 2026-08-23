@@ -1,0 +1,4 @@
+version: 1.0.0
+types:
+  - legacy_map:
+      mapping: legacy_maps

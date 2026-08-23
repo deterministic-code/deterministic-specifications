@@ -1,0 +1,9 @@
+expect:
+  covers: maxProperties:#/$defs/typeEntry
+---
+version: 1.0.0
+types:
+  - user:
+      fields: []
+    extra:
+      fields: []

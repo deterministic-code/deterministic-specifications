@@ -1,6 +1,0 @@
-expect:
-  covers: required:#/$defs/unionView:one_of
----
-version: 1.0.0
-types:
-  - result: {}

@@ -3,10 +3,21 @@ $schema: https://json-schema.org/draft/2020-12/schema
 $id: https://cali-services.local/schemas/deterministic/backend/types.spec.yaml
 title: types.yaml
 description: >
-  Strict schema for backend/types.yaml — the language-agnostic field-type
-  catalog. Every type declares the same keys; omitted bounds are null, not
-  absent. Token regexes must be the same grammar as the matching
-  default_value constraints in datasource-types.spec.yaml.
+  Strict schema for deterministic/types.yaml — the language-agnostic type
+  system. One `types:` array holds every type; `tags` distinguish
+  datasource_type, view_type, many_to_many, and future kinds (e.g.
+  client_type). Physical / migration concerns live in datasource.yaml.
+  Built-in inherit targets: `set` and `dictionary` (injects `name` and
+  `value`). A `set` is a collection of distinct members; its identity is
+  the single field with `is_id: true`, or type-level `ids: [field, …]`
+  (min 2) for a composite key. If neither is authored, `set` injects `id`.
+  `is_id: true` may appear on at most one field and must not be combined
+  with `ids` — enforced after schema validation (`ids` + `is_id: true` is
+  also rejected by the schema). `inherits` is is-a; `union` composes
+  fields; `one_of` is a discriminated union. The `types:` key is required
+  (must exist) but may be an empty array. Allowed field `default_value`
+  tokens and numeric ranges live in backend/types.yaml and are enforced
+  after schema validation.
 
 type: object
 additionalProperties: false
@@ -20,36 +31,277 @@ properties:
       specs and engine; there is no floating alias.
     type: string
     pattern: '^[0-9]+\.[0-9]+\.[0-9]+$'
-  types:
+  includes:
     type: array
     minItems: 1
+    description: >
+      Optional. Composes this types config. A `types:` directive entry
+      selects candidates from another types document via the shared tag
+      filter. `file:`/`id:`/`uuid:`/`user_id+name` entries pull in other
+      types configs and merge them via the combine module (each included
+      config's types prepended, this config's own types last). File/id
+      entries are resolved and stripped before emit; the `types:` directive
+      is consumed at expansion time.
+    items:
+      $ref: "#/$defs/includeEntry"
+  types:
+    type: array
+    minItems: 0
     items:
       $ref: "#/$defs/typeEntry"
 
 $defs:
   identifier:
     type: string
-    enum:
-      - string
-      - character
-      - number
-      - integer
-      - unsignedinteger
-      - biginteger
-      - unsignedbiginteger
-      - smallinteger
-      - unsignedsmallinteger
-      - float
-      - decimal
-      - boolean
-      - datetime
-      - binary
-      - uuid
-      - reference
+    minLength: 1
+    pattern: "^[a-z_][a-z0-9_]*$"
 
-  integerString:
+  tableColumnRef:
+    type: string
+    pattern: "^[a-z_][a-z0-9_]*\\.[a-z_][a-z0-9_]*$"
+    description: Field reference in the form `<type>.<field>`.
+
+  referencesValue:
+    description: >
+      Foreign-key target. A single `<type>.<field>`, or an array of exactly
+      two `<type>.<field>` values for a composite key.
+    oneOf:
+      - $ref: "#/$defs/tableColumnRef"
+      - type: array
+        minItems: 2
+        maxItems: 2
+        uniqueItems: true
+        items:
+          $ref: "#/$defs/tableColumnRef"
+
+  sizeValue:
+    oneOf:
+      - type: integer
+        minimum: 0
+      - type: string
+        const: unlimited
+
+  decimalSize:
+    type: array
+    minItems: 2
+    maxItems: 2
+    prefixItems:
+      - type: integer
+        minimum: 1
+        description: precision
+      - type: integer
+        minimum: 0
+        description: scale
+
+  datetimeDefault:
+    description: >
+      Allowed datetime defaults from backend/types.yaml — Now, UtcNow, or
+      DateTime('…') with an ISO-8601 timestamp.
+    oneOf:
+      - const: Now
+      - const: UtcNow
+      - type: string
+        pattern: "^DateTime\\('[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(Z|[+-][0-9]{2}:[0-9]{2})'\\)$"
+
+  uuidDefault:
+    description: >
+      Allowed uuid defaults from backend/types.yaml — NewId, Empty, or
+      uuid('…') with an RFC-4122 value.
+    oneOf:
+      - const: NewId
+      - const: Empty
+      - type: string
+        pattern: "^uuid\\('[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}'\\)$"
+
+  hexDefault:
+    type: string
+    pattern: "^Hex\\('([0-9a-fA-F]{2})*'\\)$"
+    description: "Hex byte literal from backend/types.yaml, e.g. Hex('DEADBEEF')."
+
+  signedIntegerString:
     type: string
     pattern: "^-?[0-9]+$"
+
+  unsignedIntegerString:
+    type: string
+    pattern: "^[0-9]+$"
+
+  decimalString:
+    type: string
+    pattern: "^-?[0-9]+(\\.[0-9]+)?$"
+
+  filterExpr:
+    type: string
+    minLength: 1
+    description: >
+      Inclusion predicate. The candidate is KEPT when TRUE. types,
+      datasource, routes, and services share this grammar:
+
+        expr     ::= or
+        or       ::= and ( "||" and )*
+        and      ::= atom ( "&&" atom )*
+        atom     ::= "(" expr ")" | compare
+        compare  ::= accessor ("==" | "!=") value
+        accessor ::= "type" | "tag" | "inherits"
+        value    ::= quoted-string
+
+      `type` is the candidate name (`type == "person"`). `tag` is true when
+      the candidate's `tags` array contains that string
+      (`tag == "datasource_type"`). `inherits` is the parent type name
+      (`inherits == "set"`). String literals must be double-quoted. Any
+      other identifier is a parse error.
+
+  includeEntry:
+    oneOf:
+      - $ref: "#/$defs/typesDirectiveInclude"
+      - $ref: "#/$defs/fileInclude"
+      - $ref: "#/$defs/idInclude"
+      - $ref: "#/$defs/uuidInclude"
+      - $ref: "#/$defs/userNameInclude"
+
+  typesDirectiveInclude:
+    type: object
+    additionalProperties: false
+    required: [types]
+    properties:
+      types:
+        type: object
+        additionalProperties: false
+        properties:
+          filter:
+            $ref: "#/$defs/filterExpr"
+
+  fileInclude:
+    type: object
+    additionalProperties: false
+    required: [file]
+    properties:
+      file:
+        type: string
+        minLength: 1
+        description: Path to another types.yaml, relative to this file's dir.
+      combine_options:
+        $ref: "#/$defs/combineOptions"
+
+  idInclude:
+    type: object
+    additionalProperties: false
+    required: [id]
+    properties:
+      id:
+        description: Deterministic id (number) or name (string) of a saved backend.
+        anyOf:
+          - type: string
+            minLength: 1
+          - type: integer
+            minimum: 1
+      combine_options:
+        $ref: "#/$defs/combineOptions"
+
+  uuidInclude:
+    type: object
+    additionalProperties: false
+    required: [uuid]
+    properties:
+      uuid:
+        type: string
+        minLength: 1
+        description: Stable uuid of a saved deterministic; portable across server instances.
+      combine_options:
+        $ref: "#/$defs/combineOptions"
+
+  userNameInclude:
+    type: object
+    additionalProperties: false
+    required: [user_id, name]
+    properties:
+      user_id:
+        type: integer
+        minimum: 1
+        description: Owner user id; pair with `name` to reference a saved deterministic.
+      name:
+        type: string
+        minLength: 1
+        description: Deterministic name (unique per user); pair with `user_id`.
+      combine_options:
+        $ref: "#/$defs/combineOptions"
+
+  combineOptions:
+    type: object
+    additionalProperties: false
+    description: >
+      Per-side transforms applied before merging. `source` transforms the
+      included config; `destination` transforms this config.
+    properties:
+      source:
+        $ref: "#/$defs/sideOptions"
+      destination:
+        $ref: "#/$defs/sideOptions"
+
+  sideOptions:
+    type: object
+    additionalProperties: false
+    properties:
+      remove_types:
+        type: array
+        minItems: 1
+        items:
+          $ref: "#/$defs/identifier"
+      remove_fields:
+        type: array
+        minItems: 1
+        items:
+          $ref: "#/$defs/tableColumnRef"
+      modify_types:
+        type: array
+        minItems: 1
+        items:
+          $ref: "#/$defs/modifyTypeOp"
+      modify_fields:
+        type: array
+        minItems: 1
+        items:
+          $ref: "#/$defs/modifyFieldOp"
+      add_fields:
+        type: array
+        minItems: 1
+        items:
+          $ref: "#/$defs/addFieldOp"
+
+  modifyTypeOp:
+    type: object
+    additionalProperties: false
+    required: [type, new_type]
+    properties:
+      type:
+        $ref: "#/$defs/identifier"
+      new_type:
+        $ref: "#/$defs/identifier"
+
+  modifyFieldOp:
+    type: object
+    additionalProperties: false
+    required: [field]
+    anyOf:
+      - required: [new_field]
+      - required: [def]
+    properties:
+      field:
+        $ref: "#/$defs/tableColumnRef"
+      new_field:
+        $ref: "#/$defs/identifier"
+      def:
+        $ref: "#/$defs/fieldDef"
+
+  addFieldOp:
+    type: object
+    additionalProperties: false
+    required: [type, add_field]
+    properties:
+      type:
+        $ref: "#/$defs/identifier"
+      add_field:
+        $ref: "#/$defs/fieldEntry"
 
   typeEntry:
     type: object
@@ -61,43 +313,272 @@ $defs:
       $ref: "#/$defs/typeDef"
 
   typeDef:
+    oneOf:
+      - $ref: "#/$defs/inheritType"
+      - $ref: "#/$defs/unionType"
+      - $ref: "#/$defs/oneOfType"
+      - $ref: "#/$defs/shapedType"
+
+  tagsProp:
+    type: array
+    minItems: 1
+    uniqueItems: true
+    items:
+      $ref: "#/$defs/identifier"
+    description: >
+      Kind labels used by include / services / routes filters, e.g.
+      `[datasource_type, view_type]`. A type may carry both. `many_to_many`
+      marks a junction type.
+
+  mappingProp:
+    type: object
+    minProperties: 1
+    propertyNames:
+      $ref: "#/$defs/identifier"
+    additionalProperties:
+      $ref: "#/$defs/identifier"
+    description: >
+      Rename inherited or unioned fields. Keys are source field names;
+      values are the names on this type (`name` → `phone_name`).
+
+  removeFieldsProp:
+    type: array
+    minItems: 1
+    uniqueItems: true
+    items:
+      $ref: "#/$defs/identifier"
+    description: >
+      Field names to drop from the inherited or unioned shape (e.g. drop
+      `id` when enriching).
+
+  idsProp:
+    type: array
+    minItems: 2
+    uniqueItems: true
+    items:
+      $ref: "#/$defs/identifier"
+    description: >
+      Composite identity for a `set` — two or more field names that
+      together identify a member. Must not be combined with any field
+      `is_id: true`. When `inherits: set`, the set uses these fields as
+      its identity instead of injecting `id`.
+
+  identityExclusive:
+    description: >
+      When `ids` is present, no field may set `is_id: true`.
+    if:
+      required: [ids]
+    then:
+      properties:
+        fields:
+          items:
+            additionalProperties:
+              properties:
+                is_id:
+                  not:
+                    const: true
+
+  isIdProp:
+    type: boolean
+    description: >
+      This field alone is the `set` identity. Allowed on at most one field
+      in the type. Must not be combined with type-level `ids`. When
+      `inherits: set`, the set uses this field instead of injecting `id`.
+      At-most-one is enforced after schema validation.
+
+  inheritType:
     type: object
     additionalProperties: false
-    required: [supports_size, implicit_default, min_value, max_value, defaults]
+    required: [inherits]
+    description: >
+      Is-a composition. Built-in parents: `set` (a collection of distinct
+      members) and `dictionary` (injects required `name` and `value`). A
+      set's identity is the single `is_id: true` field, or `ids` when the
+      key is composite; if neither is authored, `id` is injected. Any other
+      inherit value is a user type name.
     properties:
-      supports_size:
-        type: boolean
-      implicit_default:
-        oneOf:
-          - type: "null"
-          - type: string
-          - type: integer
-          - type: boolean
-      min_value:
-        oneOf:
-          - type: "null"
-          - $ref: "#/$defs/integerString"
-      max_value:
-        oneOf:
-          - type: "null"
-          - $ref: "#/$defs/integerString"
-      defaults:
+      tags:
+        $ref: "#/$defs/tagsProp"
+      inherits:
+        $ref: "#/$defs/identifier"
+      mapping:
+        $ref: "#/$defs/mappingProp"
+      remove_fields:
+        $ref: "#/$defs/removeFieldsProp"
+      ids:
+        $ref: "#/$defs/idsProp"
+      fields:
         type: array
+        minItems: 0
         items:
-          $ref: "#/$defs/defaultEntry"
+          $ref: "#/$defs/fieldEntry"
+    allOf:
+      - $ref: "#/$defs/identityExclusive"
 
-  defaultEntry:
+  unionType:
+    type: object
+    additionalProperties: false
+    required: [union]
+    description: >
+      Field composition (not is-a). Combined fields of the listed types,
+      optionally renamed via `mapping` and trimmed via `remove_fields`.
+    properties:
+      tags:
+        $ref: "#/$defs/tagsProp"
+      union:
+        type: array
+        minItems: 2
+        uniqueItems: true
+        items:
+          $ref: "#/$defs/identifier"
+      mapping:
+        $ref: "#/$defs/mappingProp"
+      remove_fields:
+        $ref: "#/$defs/removeFieldsProp"
+      ids:
+        $ref: "#/$defs/idsProp"
+      fields:
+        type: array
+        minItems: 0
+        items:
+          $ref: "#/$defs/fieldEntry"
+    allOf:
+      - $ref: "#/$defs/identityExclusive"
+
+  oneOfType:
+    type: object
+    additionalProperties: false
+    required: [one_of]
+    description: Discriminated union — the value is exactly one of the listed types.
+    properties:
+      tags:
+        $ref: "#/$defs/tagsProp"
+      one_of:
+        type: array
+        minItems: 2
+        uniqueItems: true
+        items:
+          $ref: "#/$defs/identifier"
+
+  shapedType:
+    type: object
+    additionalProperties: false
+    required: [fields]
+    properties:
+      tags:
+        $ref: "#/$defs/tagsProp"
+      ids:
+        $ref: "#/$defs/idsProp"
+      fields:
+        type: array
+        minItems: 0
+        items:
+          $ref: "#/$defs/fieldEntry"
+    allOf:
+      - $ref: "#/$defs/identityExclusive"
+
+  fieldEntry:
     type: object
     minProperties: 1
     maxProperties: 1
+    propertyNames:
+      $ref: "#/$defs/identifier"
     additionalProperties:
-      type: object
-      additionalProperties: false
-      required: [regex, description]
-      properties:
-        regex:
-          type: string
-          minLength: 1
-        description:
-          type: string
-          minLength: 1
+      $ref: "#/$defs/fieldDef"
+
+  fieldDef:
+    oneOf:
+      - $ref: "#/$defs/typedField"
+      - $ref: "#/$defs/referenceField"
+
+  referenceField:
+    type: object
+    additionalProperties: false
+    required: [references]
+    description: >
+      A foreign key that omits its own `type` and inherits the referenced
+      parent field's type.
+    properties:
+      references:
+        $ref: "#/$defs/referencesValue"
+      is_nullable: { type: boolean }
+      is_id:
+        $ref: "#/$defs/isIdProp"
+
+  typedField:
+    type: object
+    additionalProperties: false
+    required: [type]
+    properties:
+      type:
+        type: string
+        anyOf:
+          - enum:
+              [
+                string,
+                character,
+                number,
+                integer,
+                unsignedinteger,
+                biginteger,
+                unsignedbiginteger,
+                smallinteger,
+                unsignedsmallinteger,
+                float,
+                decimal,
+                boolean,
+                datetime,
+                binary,
+                uuid,
+              ]
+          - enum:
+              [
+                "string[]",
+                "character[]",
+                "number[]",
+                "integer[]",
+                "unsignedinteger[]",
+                "biginteger[]",
+                "unsignedbiginteger[]",
+                "smallinteger[]",
+                "unsignedsmallinteger[]",
+                "float[]",
+                "decimal[]",
+                "boolean[]",
+                "datetime[]",
+                "binary[]",
+                "uuid[]",
+              ]
+          - pattern: "^[a-z_][a-z0-9_]*(\\[\\])?$"
+      size:
+        oneOf:
+          - $ref: "#/$defs/sizeValue"
+          - $ref: "#/$defs/decimalSize"
+      min_size:
+        type: integer
+        minimum: 0
+        description: Minimum length (string) or value (number).
+      is_nullable: { type: boolean }
+      is_id:
+        $ref: "#/$defs/isIdProp"
+      default_value:
+        anyOf:
+          - type: string
+          - type: number
+          - type: boolean
+          - $ref: "#/$defs/datetimeDefault"
+          - $ref: "#/$defs/uuidDefault"
+          - $ref: "#/$defs/hexDefault"
+          - $ref: "#/$defs/signedIntegerString"
+          - $ref: "#/$defs/unsignedIntegerString"
+          - $ref: "#/$defs/decimalString"
+      references:
+        $ref: "#/$defs/referencesValue"
+      validation:
+        type: array
+        minItems: 1
+        items:
+          anyOf:
+            - type: string
+            - type: number
+        description: Free-form validation directives (rarely used; keep loose).

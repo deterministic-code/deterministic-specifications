@@ -1,8 +1,0 @@
-expect:
-  covers: minLength:#/$defs/viewTypeServicesDirectiveInclude/properties/view_type_services/properties/filter
----
-version: 1.0.0
-services: []
-includes:
-  - view_type_services:
-      filter: ""

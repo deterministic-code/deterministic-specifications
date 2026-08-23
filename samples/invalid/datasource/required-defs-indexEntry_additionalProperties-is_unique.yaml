@@ -1,0 +1,9 @@
+expect:
+  covers: required:#/$defs/indexEntry/additionalProperties:is_unique
+---
+version: 1.0.0
+types:
+  - user:
+      indexes:
+        - email_uidx:
+            fields: [email]

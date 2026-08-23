@@ -1,8 +1,0 @@
-expect:
-  covers: type:#/$defs/combineOptions
----
-version: 1.0.0
-types: []
-includes:
-  - file: x.yaml
-    combine_options: []

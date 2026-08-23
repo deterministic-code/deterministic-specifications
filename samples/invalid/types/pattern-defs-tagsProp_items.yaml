@@ -1,0 +1,8 @@
+expect:
+  covers: pattern:#/$defs/identifier
+---
+version: 1.0.0
+types:
+  - user:
+      tags: [ViewType]
+      fields: []

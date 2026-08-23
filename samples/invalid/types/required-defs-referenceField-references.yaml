@@ -1,0 +1,9 @@
+expect:
+  covers: required:#/$defs/referenceField:references
+---
+version: 1.0.0
+types:
+  - user:
+      fields:
+        - parent_id:
+            is_nullable: true

@@ -1,0 +1,9 @@
+expect:
+  covers: additionalProperties:#/$defs/typesDirectiveInclude
+---
+version: 1.0.0
+routes: []
+includes:
+  - types:
+      filter: tag == "view_type"
+    extra: true

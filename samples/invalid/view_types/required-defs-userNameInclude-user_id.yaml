@@ -1,7 +1,0 @@
-expect:
-  covers: required:#/$defs/userNameInclude:user_id
----
-version: 1.0.0
-types: []
-includes:
-  - name: app

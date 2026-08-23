@@ -1,0 +1,7 @@
+expect:
+  covers: minLength:#/$defs/tableDef/properties/mapping
+---
+version: 1.0.0
+types:
+  - user:
+      mapping: ""

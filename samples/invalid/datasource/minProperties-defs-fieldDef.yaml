@@ -1,0 +1,8 @@
+expect:
+  covers: minProperties:#/$defs/fieldDef
+---
+version: 1.0.0
+types:
+  - user:
+      fields:
+        - email: {}

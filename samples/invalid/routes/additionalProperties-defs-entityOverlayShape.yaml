@@ -1,0 +1,8 @@
+expect:
+  covers: additionalProperties:#/$defs/entityOverlayShape
+---
+version: 1.0.0
+routes:
+  - user:
+      eager_read_path: [posts]
+      extra: true

@@ -1,0 +1,9 @@
+expect:
+  covers: required:#/$defs/idInclude:id
+---
+version: 1.0.0
+types: []
+includes:
+  - combine_options:
+      destination:
+        remove_types: [x]

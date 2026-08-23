@@ -1,14 +1,7 @@
 version: 1.0.0
 includes:
-  - view_type_routes:
-      filter: type == "person" || inherits == datasource_types
-      eager_path:
-        - person.reports
-        - user.posts.tags
-      eager_read_member_only:
-        - person.reports
-      eager_write_path:
-        - person.reports
+  - types:
+      filter: tag == "view_type" || type == "person"
   - file: shared/routes.yaml
     combine_options:
       source:
@@ -35,7 +28,7 @@ includes:
 combined_routes:
   - people:
       route: /api/people
-      combined_types:
+      combines:
         - Person
         - org-unit
         - reports:
@@ -43,6 +36,17 @@ combined_routes:
             target: person
             route: /api/people/:id/reports
 routes:
+  - user:
+      eager_read_path:
+        - posts.tags
+        - reports
+      eager_update_path:
+        - reports
+      eager_read_member_only:
+        - reports
+  - person:
+      eager_read_path:
+        - reports
   - get_users_by_email
   - users_by_email:
   - by_email:
@@ -63,7 +67,7 @@ routes:
       request: person
       response: person
       service: PersonService
-      serviceMethod: create
+      function: create
       aliases: [/api/v1/people]
       authentication: signinSession
       scopes: [people.write]
@@ -95,4 +99,4 @@ routes:
       path: /api/people/:id
       method: DELETE
       service: PersonService
-      serviceMethod: remove
+      function: remove

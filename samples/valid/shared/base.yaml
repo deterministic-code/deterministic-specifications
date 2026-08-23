@@ -1,6 +1,7 @@
 version: 1.0.0
 types:
   - legacy_user:
+      tags: [datasource_type]
       fields:
         - old_email:
             type: string

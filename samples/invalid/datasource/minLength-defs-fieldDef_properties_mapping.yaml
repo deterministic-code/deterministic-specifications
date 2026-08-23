@@ -1,0 +1,9 @@
+expect:
+  covers: minLength:#/$defs/fieldDef/properties/mapping
+---
+version: 1.0.0
+types:
+  - user:
+      fields:
+        - email:
+            mapping: ""

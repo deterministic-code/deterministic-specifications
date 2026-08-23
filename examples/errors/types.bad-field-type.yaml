@@ -1,0 +1,10 @@
+expect:
+  includes: "must match exactly one"
+---
+version: 1.0.0
+types:
+  - user:
+      fields:
+        - email:
+            type: "not valid"
+            size: 256

@@ -1,0 +1,9 @@
+expect:
+  covers: type:#/$defs/combinedRouteEntry/additionalProperties/properties/combines
+---
+version: 1.0.0
+routes: []
+combined_routes:
+  - people:
+      route: /api/people
+      combines: {}

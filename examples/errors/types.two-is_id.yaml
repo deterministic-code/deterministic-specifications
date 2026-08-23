@@ -1,0 +1,14 @@
+expect:
+  includes: "at most one"
+---
+version: 1.0.0
+types:
+  - person:
+      inherits: set
+      fields:
+        - id:
+            type: integer
+            is_id: true
+        - i2:
+            type: integer
+            is_id: true

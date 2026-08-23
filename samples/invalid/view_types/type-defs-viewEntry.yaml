@@ -1,6 +1,0 @@
-expect:
-  covers: type:#/$defs/viewEntry
----
-version: 1.0.0
-types:
-  - []

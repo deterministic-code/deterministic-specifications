@@ -12,4 +12,4 @@ routes:
       authentication: none
       x-implementation: nope
       service: PersonService
-      serviceMethod: run
+      function: run

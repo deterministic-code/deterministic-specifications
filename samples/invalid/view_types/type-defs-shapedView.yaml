@@ -1,6 +1,0 @@
-expect:
-  covers: type:#/$defs/shapedView
----
-version: 1.0.0
-types:
-  - person: []

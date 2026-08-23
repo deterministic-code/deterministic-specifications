@@ -1,6 +1,6 @@
 expect:
   includes: "must be string"
-  datasource_types: |
+  types: |
     version: 1.0.0
     types:
       - user:

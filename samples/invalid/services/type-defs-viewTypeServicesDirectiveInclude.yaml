@@ -1,7 +1,0 @@
-expect:
-  covers: type:#/$defs/viewTypeServicesDirectiveInclude
----
-version: 1.0.0
-services: []
-includes:
-  - []

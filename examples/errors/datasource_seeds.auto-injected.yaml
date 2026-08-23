@@ -1,6 +1,6 @@
 expect:
   includes: "auto-injected"
-  datasource_types: |
+  types: |
     version: 1.0.0
     types:
       - user:

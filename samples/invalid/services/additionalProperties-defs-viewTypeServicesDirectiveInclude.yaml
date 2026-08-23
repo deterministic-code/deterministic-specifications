@@ -1,9 +1,0 @@
-expect:
-  covers: additionalProperties:#/$defs/viewTypeServicesDirectiveInclude
----
-version: 1.0.0
-services: []
-includes:
-  - view_type_services:
-      filter: type is datasource_type
-    extra: true

@@ -1,0 +1,7 @@
+expect:
+  covers: additionalProperties:#/$defs/tableDef
+---
+version: 1.0.0
+types:
+  - user:
+      skip_migrations: true

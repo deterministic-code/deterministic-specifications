@@ -1,0 +1,68 @@
+version: 1.0.0
+includes:
+  - types:
+      filter: tag == "datasource_type" && type != "legacy_table"
+  - file: shared/datasource.yaml
+    combine_options:
+      source:
+        remove_types: [legacy_map]
+      destination:
+        remove_types: [scratch_map]
+  - id: saved_datasource
+    combine_options:
+      source:
+        remove_types: [extra]
+  - id: 8
+    combine_options:
+      destination:
+        remove_types: [scratch_map]
+  - uuid: 55555555-5555-5555-5555-555555555555
+    combine_options:
+      source:
+        remove_fields: [user.bio]
+  - user_id: 5
+    name: demo_datasource
+    combine_options:
+      destination:
+        remove_fields: [note.body]
+types:
+  - user:
+      mapping: users
+      use_optimistic_concurrency: false
+      fields:
+        - email:
+            is_readonly: false
+            is_unique: true
+            mapping: email_address
+            is_fixed_id: false
+        - uid:
+            is_unique: true
+        - parent_id:
+            is_readonly: true
+      indexes:
+        - email_uidx:
+            fields: [email]
+            is_unique: true
+        - score_idx:
+            fields: [score, count]
+            is_unique: false
+  - role:
+      mapping: roles
+      fields:
+        - code:
+            mapping: perm_code
+            is_unique: true
+  - link:
+      fields:
+        - left_id:
+            is_readonly: true
+        - right_id:
+            is_readonly: true
+  - note: {}
+  - _internal:
+      use_optimistic_concurrency: true
+      fields:
+        - key:
+            is_unique: true
+            is_readonly: true
+            is_fixed_id: true

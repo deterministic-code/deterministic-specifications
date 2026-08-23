@@ -1,0 +1,11 @@
+expect:
+  covers: additionalProperties:#/$defs/indexEntry/additionalProperties
+---
+version: 1.0.0
+types:
+  - user:
+      indexes:
+        - email_uidx:
+            fields: [email]
+            is_unique: true
+            extra: true

@@ -1,8 +1,0 @@
-expect:
-  covers: required:#:version
----
-types:
-  - user:
-      fields:
-        - n:
-            type: integer

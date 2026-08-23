@@ -1,7 +1,0 @@
-expect:
-  covers: type:#/$defs/userNameInclude
----
-version: 1.0.0
-types: []
-includes:
-  - []

@@ -1,0 +1,6 @@
+expect:
+  covers: minProperties:#/$defs/entityOverlayShape
+---
+version: 1.0.0
+routes:
+  - user: {}

@@ -1,0 +1,8 @@
+expect:
+  covers: minProperties:#/$defs/fieldEntry
+---
+version: 1.0.0
+types:
+  - user:
+      fields:
+        - {}

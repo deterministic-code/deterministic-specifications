@@ -12,4 +12,4 @@ routes:
       authentication: none
       x-implementation: stub
       service: ""
-      serviceMethod: run
+      function: run

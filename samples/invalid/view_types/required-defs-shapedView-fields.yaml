@@ -1,6 +1,0 @@
-expect:
-  covers: required:#/$defs/shapedView:fields
----
-version: 1.0.0
-types:
-  - person: {}

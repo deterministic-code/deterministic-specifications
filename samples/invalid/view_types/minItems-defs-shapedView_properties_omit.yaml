@@ -1,9 +1,0 @@
-expect:
-  covers: minItems:#/$defs/shapedView/properties/omit
----
-version: 1.0.0
-types:
-  - person:
-      inherits: datasource_types.user
-      omit: []
-      fields: []

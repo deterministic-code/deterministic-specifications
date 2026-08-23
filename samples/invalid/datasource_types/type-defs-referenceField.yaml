@@ -1,8 +1,0 @@
-expect:
-  covers: type:#/$defs/referenceField
----
-version: 1.0.0
-types:
-  - user:
-      fields:
-        - n: []

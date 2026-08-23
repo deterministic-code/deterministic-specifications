@@ -1,7 +1,7 @@
 version: 1.0.0
 includes:
-  - view_type_routes:
-      filter: inherits == datasource_types
+  - types:
+      filter: tag == "view_type" && type != "health"
 routes:
   - health:
       path: /api/health

@@ -1,0 +1,7 @@
+expect:
+  covers: uniqueItems:#/$defs/eagerReadMemberOnly
+---
+version: 1.0.0
+routes:
+  - user:
+      eager_read_member_only: [reports, reports]
