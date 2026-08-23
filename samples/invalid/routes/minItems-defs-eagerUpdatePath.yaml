@@ -1,0 +1,7 @@
+expect:
+  covers: minItems:#/$defs/eagerUpdatePath
+---
+version: 1.0.0
+routes:
+  - user:
+      eager_update_path: []

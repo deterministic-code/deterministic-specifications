@@ -1,0 +1,8 @@
+expect:
+  covers: minItems:#/$defs/tagsProp
+---
+version: 1.0.0
+types:
+  - user:
+      tags: []
+      fields: []

@@ -1,12 +1,14 @@
 version: 1.0.0
 types:
   - old_view:
+      tags: [view_type]
       fields:
         - old_field:
             type: string
         - flag:
             type: boolean
   - extra_view:
+      tags: [view_type]
       fields:
         - n:
             type: integer

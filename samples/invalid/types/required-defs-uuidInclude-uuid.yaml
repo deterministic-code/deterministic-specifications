@@ -1,0 +1,9 @@
+expect:
+  covers: required:#/$defs/uuidInclude:uuid
+---
+version: 1.0.0
+types: []
+includes:
+  - combine_options:
+      source:
+        remove_types: [x]

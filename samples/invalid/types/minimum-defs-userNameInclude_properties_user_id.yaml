@@ -1,0 +1,8 @@
+expect:
+  covers: minimum:#/$defs/userNameInclude/properties/user_id
+---
+version: 1.0.0
+types: []
+includes:
+  - user_id: 0
+    name: demo

@@ -1,0 +1,13 @@
+expect:
+  covers: required:#/$defs/addFieldOp:type
+---
+version: 1.0.0
+types: []
+includes:
+  - file: shared/base.yaml
+    combine_options:
+      source:
+        add_fields:
+          - add_field:
+              extra:
+                type: string

@@ -6,6 +6,6 @@ routes: []
 combined_routes:
   - people:
       route: /api/people
-      combined_types:
+      combines:
         - Person
         - reports: []

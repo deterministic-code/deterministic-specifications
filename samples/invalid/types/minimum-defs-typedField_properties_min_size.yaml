@@ -1,0 +1,10 @@
+expect:
+  covers: minimum:#/$defs/typedField/properties/min_size
+---
+version: 1.0.0
+types:
+  - user:
+      fields:
+        - email:
+            type: string
+            min_size: -1

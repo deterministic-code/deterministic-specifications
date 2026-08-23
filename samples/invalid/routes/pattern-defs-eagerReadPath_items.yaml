@@ -1,0 +1,7 @@
+expect:
+  covers: pattern:#/$defs/eagerReadPath/items
+---
+version: 1.0.0
+routes:
+  - user:
+      eager_read_path: ["Not.valid"]

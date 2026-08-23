@@ -1,0 +1,8 @@
+expect:
+  covers: additionalProperties:#/$defs/fileInclude
+---
+version: 1.0.0
+types: []
+includes:
+  - file: shared/base.yaml
+    extra: true

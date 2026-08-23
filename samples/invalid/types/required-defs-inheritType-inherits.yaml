@@ -1,0 +1,8 @@
+expect:
+  covers: required:#/$defs/inheritType:inherits
+---
+version: 1.0.0
+types:
+  - user:
+      mapping:
+        a: b

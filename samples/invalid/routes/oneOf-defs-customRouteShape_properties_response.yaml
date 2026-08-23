@@ -13,4 +13,4 @@ routes:
       authentication: none
       x-implementation: stub
       service: PersonService
-      serviceMethod: run
+      function: run

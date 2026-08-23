@@ -6,7 +6,7 @@ description: >
   Strict schema for deterministic/frontend_bindings.yaml. Declares the external
   datasources a frontend binds to — REST or GraphQL APIs described by an OpenAPI
   or GraphQL schema. One entry per datasource, keyed by name (matching the
-  datasource_types.yaml convention). This is a BETA contract scoped to the
+  types.yaml convention). This is a BETA contract scoped to the
   `datasources:` section; the `components:` block that wires UI components to
   CRUD methods is a later addition. The `datasources:` key is required but may be
   an empty array.

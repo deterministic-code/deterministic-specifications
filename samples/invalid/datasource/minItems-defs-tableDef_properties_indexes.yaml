@@ -1,0 +1,7 @@
+expect:
+  covers: minItems:#/$defs/tableDef/properties/indexes
+---
+version: 1.0.0
+types:
+  - user:
+      indexes: []

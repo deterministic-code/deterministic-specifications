@@ -1,9 +1,0 @@
-expect:
-  covers: pattern:#/properties/version
----
-version: NOT VALID
-types:
-  - user:
-      fields:
-        - n:
-            type: integer

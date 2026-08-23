@@ -1,0 +1,9 @@
+expect:
+  covers: additionalProperties:#/$defs/combineOptions
+---
+version: 1.0.0
+types: []
+includes:
+  - file: shared/base.yaml
+    combine_options:
+      extra: true

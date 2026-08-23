@@ -18,27 +18,24 @@ required: [version, services]
 properties:
   version:
     description: >
-      Contract version this document targets. CURRENT binds to the live
-      root specs and may change without notice. A published semver
-      (e.g. 1.0.0) binds to the frozen snapshot under versions/<semver>/.
-    oneOf:
-      - const: CURRENT
-      - type: string
-        pattern: '^[0-9]+\.[0-9]+\.[0-9]+$'
+      Contract version this document targets. Must be a semver
+      (e.g. 1.0.0). The document is validated against that version's
+      specs and engine; there is no floating alias.
+    type: string
+    pattern: '^[0-9]+\.[0-9]+\.[0-9]+$'
   includes:
     type: array
     minItems: 1
     description: >
-      Optional. Composes this services config. The single `view_type_services`
-      directive entry auto-generates CRUD service entries for the datasource +
-      expanded view_types candidates its `filter` selects (was the top-level
-      `view_type_services:` block). `file:`/`id:` entries pull in other services
-      configs and merge them via the combine module (each included config's
-      services prepended, this config's own services last). An `id:` entry also
-      folds the referenced deterministic's datasource so the included services'
+      Optional. Composes this services config. A `types:` directive entry
+      auto-generates CRUD service entries for the types.yaml candidates its
+      `filter` selects. `file:`/`id:` entries pull in other services configs
+      and merge them via the combine module (each included config's services
+      prepended, this config's own services last). An `id:` entry also folds
+      the referenced deterministic's datasource so the included services'
       `repo` args resolve. The `file:`/`id:` entries are resolved and stripped
-      before emit; the `view_type_services` directive is consumed at
-      services-expansion time.
+      before emit; the `types:` directive is consumed at services-expansion
+      time.
     items:
       $ref: "#/$defs/includeEntry"
 
@@ -50,44 +47,45 @@ properties:
 $defs:
   includeEntry:
     oneOf:
-      - $ref: "#/$defs/viewTypeServicesDirectiveInclude"
+      - $ref: "#/$defs/typesDirectiveInclude"
       - $ref: "#/$defs/fileInclude"
       - $ref: "#/$defs/idInclude"
       - $ref: "#/$defs/uuidInclude"
       - $ref: "#/$defs/userNameInclude"
 
-  viewTypeServicesDirectiveInclude:
+  typesDirectiveInclude:
     type: object
     additionalProperties: false
-    required: [view_type_services]
+    required: [types]
     properties:
-      view_type_services:
+      types:
         type: object
         additionalProperties: false
         properties:
           filter:
-            type: string
-            minLength: 1
-            description: >
-              Inclusion predicate evaluated per candidate entity. The candidate is KEPT
-              when TRUE. Candidates are drawn from datasource_types.yaml (as
-              `datasource_type`) and from the expanded view_types.yaml (as
-              `view_type`); when the same name appears in both, the view-type candidate
-              wins. Grammar:
+            $ref: "#/$defs/filterExpr"
 
-                expr       ::= or
-                or         ::= and ( "||" and )*
-                and        ::= atom ( "&&" atom )*
-                atom       ::= group | isExpr | inheritsExpr | nameCompare
-                group      ::= "(" or ")"
-                isExpr     ::= "type" "is" ["not"] kind
-                inheritsExpr ::= "type" "inherits" ["not"] namespace
-                nameCompare ::= "type" ("==" | "!=") quoted-string
-                kind       ::= "datasource_type" | "view_type" | "service" | "route"
-                namespace  ::= "datasource_types"
+  filterExpr:
+    type: string
+    minLength: 1
+    description: >
+      Inclusion predicate. The candidate is KEPT when TRUE. Candidates
+      are drawn from types.yaml; `tag` selects kind. types, datasource,
+      routes, and services share this grammar:
 
-              String literals must be double-quoted. Any other identifier is a parse
-              error so typos fail loudly rather than silently selecting everything.
+        expr     ::= or
+        or       ::= and ( "||" and )*
+        and      ::= atom ( "&&" atom )*
+        atom     ::= "(" expr ")" | compare
+        compare  ::= accessor ("==" | "!=") value
+        accessor ::= "type" | "tag" | "inherits"
+        value    ::= quoted-string
+
+      `type` is the candidate name (`type == "person"`). `tag` is true when
+      the candidate's `tags` array contains that string
+      (`tag == "datasource_type"`). `inherits` is the parent type name
+      (`inherits == "set"`). String literals must be double-quoted. Any
+      other identifier is a parse error.
 
   fileInclude:
     type: object

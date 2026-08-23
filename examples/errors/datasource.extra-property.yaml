@@ -1,0 +1,10 @@
+expect:
+  includes: "property: skip_migrations"
+---
+version: 1.0.0
+types:
+  - user:
+      skip_migrations: true
+      fields:
+        - email:
+            is_unique: true

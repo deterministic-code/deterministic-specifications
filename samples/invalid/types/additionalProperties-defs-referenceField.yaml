@@ -1,0 +1,10 @@
+expect:
+  covers: additionalProperties:#/$defs/referenceField
+---
+version: 1.0.0
+types:
+  - user:
+      fields:
+        - parent_id:
+            references: user.id
+            extra: true

@@ -1,5 +1,5 @@
 version: 1.0.0
 includes:
-  - view_type_services:
-      filter: type is datasource_type
+  - types:
+      filter: tag == "datasource_type"
 services: []

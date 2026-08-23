@@ -1,0 +1,7 @@
+expect:
+  covers: type:#/$defs/typesDirectiveInclude
+---
+version: 1.0.0
+routes: []
+includes:
+  - types: []

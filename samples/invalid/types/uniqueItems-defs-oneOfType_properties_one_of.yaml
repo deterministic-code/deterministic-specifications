@@ -1,0 +1,7 @@
+expect:
+  covers: uniqueItems:#/$defs/oneOfType/properties/one_of
+---
+version: 1.0.0
+types:
+  - result:
+      one_of: [person, person]

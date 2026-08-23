@@ -1,0 +1,7 @@
+expect:
+  covers: required:#/$defs/shapedType:fields
+---
+version: 1.0.0
+types:
+  - user:
+      tags: [view_type]

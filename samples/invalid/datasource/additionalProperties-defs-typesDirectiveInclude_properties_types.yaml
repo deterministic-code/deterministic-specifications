@@ -1,0 +1,9 @@
+expect:
+  covers: additionalProperties:#/$defs/typesDirectiveInclude/properties/types
+---
+version: 1.0.0
+types: []
+includes:
+  - types:
+      filter: tag == "datasource_type"
+      extra: true

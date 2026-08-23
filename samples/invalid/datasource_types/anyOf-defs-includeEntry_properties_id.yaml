@@ -1,8 +1,0 @@
-expect:
-  covers: anyOf:#/$defs/includeEntry/properties/id
----
-version: 1.0.0
-types: []
-includes:
-  - id:
-      nope: true

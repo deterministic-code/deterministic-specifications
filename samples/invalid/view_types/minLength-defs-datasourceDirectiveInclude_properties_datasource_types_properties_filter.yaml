@@ -1,9 +1,0 @@
-expect:
-  covers: minLength:#/$defs/datasourceDirectiveInclude/properties/datasource_types/properties/filter
----
-version: 1.0.0
-types: []
-includes:
-  - datasource_types:
-      include: "*"
-      filter: ""

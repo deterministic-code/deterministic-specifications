@@ -1,0 +1,315 @@
+version: 1.0.0
+$schema: https://json-schema.org/draft/2020-12/schema
+$id: https://cali-services.local/schemas/deterministic/versions/1.0.0/backend/datasource.spec.yaml
+title: datasource.yaml
+description: >
+  Strict schema for deterministic/datasource.yaml — physical / migration
+  concerns for types declared in types.yaml. Field types stay in types.yaml;
+  this document names tables and columns, uniqueness, identity, indexes, and
+  optimistic-concurrency overrides. The `types:` key is required (must exist)
+  but may be an empty array — a no-data-model app declares `types: []` and
+  the migration emitter short-circuits. Which types become tables is selected
+  by `includes.types.filter` (replaces per-table skip_migrations).
+
+type: object
+additionalProperties: false
+required: [version, types]
+
+properties:
+  version:
+    description: >
+      Contract version this document targets. Must be a semver
+      (e.g. 1.0.0). The document is validated against that version's
+      specs and engine; there is no floating alias.
+    type: string
+    pattern: '^[0-9]+\.[0-9]+\.[0-9]+$'
+  includes:
+    type: array
+    minItems: 1
+    description: >
+      Optional. A `types:` directive selects candidates from types.yaml via
+      the shared tag filter (e.g. `tag == "datasource_type" && type !=
+      "legacy_table"`). `file:`/`id:`/`uuid:`/`user_id+name` entries pull in
+      other datasource configs and merge them via the combine module. File/id
+      entries are resolved and stripped before emit; the `types:` directive
+      is consumed at expansion time.
+    items:
+      $ref: "#/$defs/includeEntry"
+  types:
+    type: array
+    minItems: 0
+    items:
+      $ref: "#/$defs/tableEntry"
+
+$defs:
+  identifier:
+    type: string
+    minLength: 1
+    pattern: "^[a-z_][a-z0-9_]*$"
+
+  tableColumnRef:
+    type: string
+    pattern: "^[a-z_][a-z0-9_]*\\.[a-z_][a-z0-9_]*$"
+    description: Field reference in the form `<type>.<field>`.
+
+  filterExpr:
+    type: string
+    minLength: 1
+    description: >
+      Inclusion predicate. The candidate is KEPT when TRUE. types,
+      datasource, routes, and services share this grammar:
+
+        expr     ::= or
+        or       ::= and ( "||" and )*
+        and      ::= atom ( "&&" atom )*
+        atom     ::= "(" expr ")" | compare
+        compare  ::= accessor ("==" | "!=") value
+        accessor ::= "type" | "tag" | "inherits"
+        value    ::= quoted-string
+
+      `type` is the candidate name (`type == "person"`). `tag` is true when
+      the candidate's `tags` array contains that string
+      (`tag == "datasource_type"`). `inherits` is the parent type name
+      (`inherits == "set"`). String literals must be double-quoted. Any
+      other identifier is a parse error.
+
+  includeEntry:
+    oneOf:
+      - $ref: "#/$defs/typesDirectiveInclude"
+      - $ref: "#/$defs/fileInclude"
+      - $ref: "#/$defs/idInclude"
+      - $ref: "#/$defs/uuidInclude"
+      - $ref: "#/$defs/userNameInclude"
+
+  typesDirectiveInclude:
+    type: object
+    additionalProperties: false
+    required: [types]
+    properties:
+      types:
+        type: object
+        additionalProperties: false
+        properties:
+          filter:
+            $ref: "#/$defs/filterExpr"
+
+  fileInclude:
+    type: object
+    additionalProperties: false
+    required: [file]
+    properties:
+      file:
+        type: string
+        minLength: 1
+        description: Path to another datasource.yaml, relative to this file's dir.
+      combine_options:
+        $ref: "#/$defs/combineOptions"
+
+  idInclude:
+    type: object
+    additionalProperties: false
+    required: [id]
+    properties:
+      id:
+        description: Deterministic id (number) or name (string) of a saved backend.
+        anyOf:
+          - type: string
+            minLength: 1
+          - type: integer
+            minimum: 1
+      combine_options:
+        $ref: "#/$defs/combineOptions"
+
+  uuidInclude:
+    type: object
+    additionalProperties: false
+    required: [uuid]
+    properties:
+      uuid:
+        type: string
+        minLength: 1
+        description: Stable uuid of a saved deterministic; portable across server instances.
+      combine_options:
+        $ref: "#/$defs/combineOptions"
+
+  userNameInclude:
+    type: object
+    additionalProperties: false
+    required: [user_id, name]
+    properties:
+      user_id:
+        type: integer
+        minimum: 1
+        description: Owner user id; pair with `name` to reference a saved deterministic.
+      name:
+        type: string
+        minLength: 1
+        description: Deterministic name (unique per user); pair with `user_id`.
+      combine_options:
+        $ref: "#/$defs/combineOptions"
+
+  combineOptions:
+    type: object
+    additionalProperties: false
+    description: >
+      Per-side transforms applied before merging. `source` transforms the
+      included config; `destination` transforms this config.
+    properties:
+      source:
+        $ref: "#/$defs/sideOptions"
+      destination:
+        $ref: "#/$defs/sideOptions"
+
+  sideOptions:
+    type: object
+    additionalProperties: false
+    properties:
+      remove_types:
+        type: array
+        minItems: 1
+        items:
+          $ref: "#/$defs/identifier"
+      remove_fields:
+        type: array
+        minItems: 1
+        items:
+          $ref: "#/$defs/tableColumnRef"
+      modify_types:
+        type: array
+        minItems: 1
+        items:
+          $ref: "#/$defs/modifyTypeOp"
+      modify_fields:
+        type: array
+        minItems: 1
+        items:
+          $ref: "#/$defs/modifyFieldOp"
+      add_fields:
+        type: array
+        minItems: 1
+        items:
+          $ref: "#/$defs/addFieldOp"
+
+  modifyTypeOp:
+    type: object
+    additionalProperties: false
+    required: [type, new_type]
+    properties:
+      type:
+        $ref: "#/$defs/identifier"
+      new_type:
+        $ref: "#/$defs/identifier"
+
+  modifyFieldOp:
+    type: object
+    additionalProperties: false
+    required: [field]
+    anyOf:
+      - required: [new_field]
+      - required: [def]
+    properties:
+      field:
+        $ref: "#/$defs/tableColumnRef"
+      new_field:
+        $ref: "#/$defs/identifier"
+      def:
+        $ref: "#/$defs/fieldDef"
+
+  addFieldOp:
+    type: object
+    additionalProperties: false
+    required: [type, add_field]
+    properties:
+      type:
+        $ref: "#/$defs/identifier"
+      add_field:
+        $ref: "#/$defs/fieldEntry"
+
+  tableEntry:
+    type: object
+    minProperties: 1
+    maxProperties: 1
+    propertyNames:
+      $ref: "#/$defs/identifier"
+    additionalProperties:
+      $ref: "#/$defs/tableDef"
+
+  tableDef:
+    type: object
+    additionalProperties: false
+    description: >
+      Physical overrides for a type selected from types.yaml. An empty
+      object is valid — the type becomes a table with no remaps, flags, or
+      indexes.
+    properties:
+      mapping:
+        type: string
+        minLength: 1
+        description: Underlying source-system table name when it differs from the type name.
+      use_optimistic_concurrency:
+        type: boolean
+        description: >
+          Optional per-type override of the datasource-wide
+          use_optimistic_concurrency setting. Set false to opt a type out of
+          OCC (e.g. a legacy table with no `updated` version column); omit to
+          inherit the datasource default.
+      fields:
+        type: array
+        minItems: 1
+        items:
+          $ref: "#/$defs/fieldEntry"
+      indexes:
+        type: array
+        minItems: 1
+        items:
+          $ref: "#/$defs/indexEntry"
+
+  fieldEntry:
+    type: object
+    minProperties: 1
+    maxProperties: 1
+    propertyNames:
+      $ref: "#/$defs/identifier"
+    additionalProperties:
+      $ref: "#/$defs/fieldDef"
+
+  fieldDef:
+    type: object
+    additionalProperties: false
+    minProperties: 1
+    description: >
+      Physical flags for a field declared in types.yaml. `is_fixed_id: true`
+      requires `is_readonly: true` (identity seed); enforced after schema
+      validation.
+    properties:
+      is_readonly:
+        type: boolean
+      is_unique:
+        type: boolean
+      mapping:
+        type: string
+        minLength: 1
+        description: Underlying source-system column name when it differs from the field name.
+      is_fixed_id:
+        type: boolean
+        description: >
+          Identity / seed column. Must be paired with `is_readonly: true`.
+
+  indexEntry:
+    type: object
+    minProperties: 1
+    maxProperties: 1
+    propertyNames:
+      pattern: "^[a-z_][a-z0-9_]*$"
+    additionalProperties:
+      type: object
+      additionalProperties: false
+      required: [fields, is_unique]
+      properties:
+        fields:
+          type: array
+          minItems: 1
+          uniqueItems: true
+          items:
+            $ref: "#/$defs/identifier"
+        is_unique: { type: boolean }

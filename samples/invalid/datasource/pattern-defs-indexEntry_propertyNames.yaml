@@ -1,0 +1,10 @@
+expect:
+  covers: pattern:#/$defs/indexEntry/propertyNames
+---
+version: 1.0.0
+types:
+  - user:
+      indexes:
+        - EmailUidx:
+            fields: [email]
+            is_unique: true

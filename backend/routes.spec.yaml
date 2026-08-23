@@ -4,7 +4,7 @@ $id: https://cali-services.local/schemas/deterministic/backend/routes.spec.yaml
 title: routes.yaml
 description: >
   Strict schema for deterministic/routes.yaml. Declares the REST route
-  surface (method, path, request/response view types, aliases) plus the
+  surface (method, path, request/response types, aliases) plus the
   combined_routes composition metadata. Expansion into the flattened
   routes-api IR (see routes-api.spec.yaml) feeds OpenAPI, GraphQL, proto,
   and the Express route loader.
@@ -25,16 +25,17 @@ properties:
     type: array
     minItems: 1
     description: >
-      Optional. Composes this routes config. The single `view_type_routes`
-      directive entry auto-generates CRUD routes for the datasource + expanded
-      view_types candidates its `filter` selects, plus eager child projections
-      (`eager_path`) and nested-write reconciliation (`eager_write_path`) — it was
-      the top-level `view_type_routes:` block. `file:`/`id:` entries pull in other
-      routes configs and merge their `routes:` arrays via the combine module (each
-      included config's routes prepended, this config's own routes last). An `id:`
-      entry also folds the referenced deterministic's datasource. The `file:`/`id:`
-      entries are resolved and stripped before emit; the `view_type_routes`
-      directive is consumed at route-expansion time.
+      Optional. Composes this routes config. A `types:` directive entry
+      auto-generates CRUD routes for the types.yaml candidates its `filter`
+      selects. Eager child projections live on type-named entries under
+      `routes:` (`eager_read_path`, `eager_update_path`,
+      `eager_read_member_only`), not on the include. `file:`/`id:` entries
+      pull in other routes configs and merge their `routes:` arrays via the
+      combine module (each included config's routes prepended, this config's
+      own routes last). An `id:` entry also folds the referenced
+      deterministic's datasource. The `file:`/`id:` entries are resolved and
+      stripped before emit; the `types:` directive is consumed at
+      route-expansion time.
     items:
       $ref: "#/$defs/includeEntry"
 
@@ -53,19 +54,23 @@ properties:
 $defs:
   includeEntry:
     oneOf:
-      - $ref: "#/$defs/viewTypeRoutesDirectiveInclude"
+      - $ref: "#/$defs/typesDirectiveInclude"
       - $ref: "#/$defs/fileInclude"
       - $ref: "#/$defs/idInclude"
       - $ref: "#/$defs/uuidInclude"
       - $ref: "#/$defs/userNameInclude"
 
-  viewTypeRoutesDirectiveInclude:
+  typesDirectiveInclude:
     type: object
     additionalProperties: false
-    required: [view_type_routes]
+    required: [types]
     properties:
-      view_type_routes:
-        $ref: "#/$defs/viewTypeRoutesDirective"
+      types:
+        type: object
+        additionalProperties: false
+        properties:
+          filter:
+            $ref: "#/$defs/filterExpr"
 
   fileInclude:
     type: object
@@ -154,111 +159,118 @@ $defs:
       Route name to drop from the side before merge — the string-shorthand entry
       itself, or the single key of an object-form route entry.
 
-  viewTypeRoutesDirective:
+  filterExpr:
+    type: string
+    minLength: 1
+    description: >
+      Inclusion predicate. The candidate is KEPT when TRUE. types,
+      datasource, routes, and services share this grammar:
+
+        expr     ::= or
+        or       ::= and ( "||" and )*
+        and      ::= atom ( "&&" atom )*
+        atom     ::= "(" expr ")" | compare
+        compare  ::= accessor ("==" | "!=") value
+        accessor ::= "type" | "tag" | "inherits"
+        value    ::= quoted-string
+
+      `type` is the candidate name (`type == "person"`). `tag` is true when
+      the candidate's `tags` array contains that string
+      (`tag == "view_type"`). `inherits` is the parent type name
+      (`inherits == "set"`). String literals must be double-quoted. Any
+      other identifier is a parse error.
+
+  eagerReadPath:
+    description: |
+      Auto-attach array+reference children declared in types.yaml, selected
+      by a path relative to this route's type key. Each entry walks through
+      one or more nested array+reference fields:
+
+        - "tasks"            attach user.tasks (depth 1, under routes.user)
+        - "posts.tags"       attach user.posts and post.tags (depth 2)
+        - "tags"             attach user.tags (M2M via a junction field)
+
+      Each segment must match `^[a-z_][a-z0-9_]*$`. The first segment is an
+      array+reference field on this type; every later segment is a field on
+      the previous segment's element type.
+
+      Catalog vs. projection: types.yaml declares the *available* relations
+      on a type. routes.yaml selects which of those relations are
+      *projected* into the parent response via eager_read_path. Relations
+      declared on the type but not selected here are reachable only via
+      their combined_routes sub-route — they are NOT inlined and NOT
+      emitted as empty arrays in the parent response. Emitting [] would
+      mislead clients into reading length=0 as "no children" when it really
+      means "not fetched."
+    type: array
+    minItems: 1
+    uniqueItems: true
+    items:
+      type: string
+      minLength: 1
+      pattern: "^[a-z_][a-z0-9_]*(\\.[a-z_][a-z0-9_]*)*$"
+
+  eagerReadMemberOnly:
+    description: |
+      A subset of `eager_read_path`. Relations listed here are attached only
+      on member responses — `GET /:id` and the POST/PUT/PATCH result bodies
+      — and are NOT embedded in the collection list (`GET /`). Use it for
+      heavy or unbounded-text children (e.g. a file's `contents`) that would
+      bloat a list of N parents into an N×(child sizes) payload while the
+      list UI only needs parent metadata.
+
+      Every entry MUST also appear in `eager_read_path` (this key narrows
+      where an already-declared eager relation is projected; it does not
+      declare a new one). Depth-1 only — the collection-vs-member
+      distinction is meaningful only at the top-level entity whose list
+      route this governs.
+
+        - "files"   embed files on GET /api/projects/:id, omit on the list
+    type: array
+    minItems: 1
+    uniqueItems: true
+    items:
+      type: string
+      minLength: 1
+      pattern: "^[a-z_][a-z0-9_]*$"
+
+  eagerUpdatePath:
+    description: |
+      Declare which array+reference children accept write reconciliation
+      on POST/PUT/PATCH, selected by a path relative to this route's type
+      key. Each entry names a direct-FK array field:
+
+        - "addresses"     allow nested address writes on contact endpoints
+        - "phones"        allow nested phone writes on contact endpoints
+        - "tasks"         allow nested task writes on todo endpoints
+
+      v1: depth-1 only; direct-FK only (M2M not supported in v1).
+
+      Each segment must match `^[a-z_][a-z0-9_]*$`. The field's type must
+      be an array of a type with a `references:` back to this type
+      (direct-FK; M2M via junction tables is not supported in v1).
+    type: array
+    minItems: 1
+    uniqueItems: true
+    items:
+      type: string
+      minLength: 1
+      pattern: "^[a-z_][a-z0-9_]*$"
+
+  entityOverlayShape:
     type: object
     additionalProperties: false
+    minProperties: 1
+    description: >
+      Type-named overlay on auto-generated CRUD. No `path` or HTTP `method`.
+      Eager paths are relative to this entry's key.
     properties:
-      filter:
-        type: string
-        minLength: 1
-        description: >
-          Inclusion predicate. The candidate is KEPT when TRUE. view_types,
-          routes, and services share this grammar:
-
-            expr     ::= or
-            or       ::= and ( "||" and )*
-            and      ::= atom ( "&&" atom )*
-            atom     ::= "(" expr ")" | isExpr | compare
-            isExpr   ::= "type" "is" ["not"] kind
-            compare  ::= accessor ("==" | "!=") value
-            accessor ::= "type" | "inherits"
-            kind     ::= "datasource_type" | "view_type"
-            value    ::= quoted-string | "datasource_types"
-
-          `type` is the candidate name (`type == "person"`) or, with `is`, the
-          candidate kind (`type is datasource_type`). `inherits` is the
-          inheritance namespace; use the bare sentinel `datasource_types`
-          (`inherits == datasource_types`). String literals must be
-          double-quoted. Any other identifier is a parse error.
-      eager_path:
-        description: |
-          Auto-attach array+reference children declared in view_types.yaml,
-          selected by dotted path. Each entry walks from a root view type
-          through one or more nested array+reference fields:
-
-            - "todo.tasks"            attach todo.tasks (depth 1)
-            - "user.posts.tags"       attach user.posts and post.tags (depth 2)
-            - "user.tags"             attach user.tags (M2M is supported via
-                                       a junction table declared on the field)
-
-          Each segment must match `^[a-z_][a-z0-9_]*$`. The first segment is
-          the root view type name; every later segment is the name of an
-          array+reference field on the *previous* segment's element type.
-
-          Catalog vs. projection: view_types.yaml declares the *available*
-          relations on a view type (the catalog). routes.yaml selects which of
-          those relations are *projected* into the parent response via
-          eager_path. Relations declared on the view type but not selected
-          here are reachable only via their combined_routes sub-route — they
-          are NOT inlined and NOT emitted as empty arrays in the parent
-          response. Emitting [] would mislead clients into reading length=0
-          as "no children" when it really means "not fetched."
-        type: array
-        minItems: 1
-        uniqueItems: true
-        items:
-          type: string
-          minLength: 1
-          pattern: "^[a-z_][a-z0-9_]*(\\.[a-z_][a-z0-9_]*)+$"
+      eager_read_path:
+        $ref: "#/$defs/eagerReadPath"
+      eager_update_path:
+        $ref: "#/$defs/eagerUpdatePath"
       eager_read_member_only:
-        description: |
-          A subset of `eager_path`. Relations listed here are attached only on
-          member responses — `GET /:id` and the POST/PUT/PATCH result bodies —
-          and are NOT embedded in the collection list (`GET /`). Use it for
-          heavy or unbounded-text children (e.g. a file's `contents`) that would
-          bloat a list of N parents into an N×(child sizes) payload while the
-          list UI only needs parent metadata.
-
-          Every entry MUST also appear in `eager_path` (this key narrows where an
-          already-declared eager relation is projected; it does not declare a new
-          one). Depth-1 only (`<view>.<arrayField>`) — the collection-vs-member
-          distinction is meaningful only at the top-level entity whose list route
-          this governs.
-
-            - "project.files"   embed files on GET /api/projects/:id, omit on the list
-        type: array
-        minItems: 1
-        uniqueItems: true
-        items:
-          type: string
-          minLength: 1
-          pattern: "^[a-z_][a-z0-9_]*(\\.[a-z_][a-z0-9_]*)+$"
-      eager_write_path:
-        description: |
-          Declare which array+reference children accept write reconciliation
-          on POST/PUT/PATCH, selected by dotted path. Each entry names a
-          direct-FK array field reachable from a root view type:
-
-            - "contact.addresses"     allow nested address writes on contact endpoints
-            - "contact.phones"        allow nested phone writes on contact endpoints
-            - "todo.tasks"            allow nested task writes on todo endpoints
-
-          v1: depth-1 only (`<view>.<arrayField>`); direct-FK only
-          (M2M not supported in v1).
-
-          Each segment must match `^[a-z_][a-z0-9_]*$`. The first segment is
-          the root view type name; the second segment is the name of an
-          array+reference field on that view type. The field's type must be
-          `datasource_types.<entity>[]` with `reference: datasource_types.<table>.<column>`,
-          and the reference table must equal the array element type (direct-FK;
-          M2M via junction tables is not supported in v1).
-        type: array
-        minItems: 1
-        uniqueItems: true
-        items:
-          type: string
-          minLength: 1
-          pattern: "^[a-z_][a-z0-9_]*(\\.[a-z_][a-z0-9_]*)+$"
+        $ref: "#/$defs/eagerReadMemberOnly"
 
   routeArgSpec:
     oneOf:
@@ -299,12 +311,12 @@ $defs:
     additionalProperties:
       type: object
       additionalProperties: false
-      required: [route, combined_types]
+      required: [route, combines]
       properties:
         route:
           type: string
           pattern: "^/"
-        combined_types:
+        combines:
           type: array
           minItems: 1
           items:
@@ -338,7 +350,7 @@ $defs:
           `(get|put|delete)?_<pluralEntity>_by_<camelField>`. The optional
           verb prefix maps to methods=[GET], [PUT], or [DELETE]; without it
           the route emits all three. The pluralEntity's last token is
-          singularized to match an entry in datasource_types.yaml, and the
+          singularized to match an entry in types.yaml, and the
           camelField is converted to snake_case to match a column on that
           entity.
       - type: object
@@ -350,6 +362,7 @@ $defs:
               description: >
                 Empty-map shorthand. The map key follows the same grammar as
                 the string shorthand above.
+            - $ref: "#/$defs/entityOverlayShape"
             - $ref: "#/$defs/customRouteShape"
             - $ref: "#/$defs/byFieldRouteShape"
 
@@ -362,14 +375,15 @@ $defs:
         type: string
         pattern: "^[a-z_][a-z0-9_]*$"
         description: >
-          View type whose underlying datasource type is the lookup target.
+          Type whose underlying table is the lookup target.
           The route layer generates /api/<plural>/<byField>/{value} endpoints.
       byField:
         type: string
         pattern: "^[a-z_][a-z0-9_]*$"
         description: >
           Column on the entity used as the path parameter. If the column is
-          declared `primary_key: true`, `is_unique: true`, or covered by a
+          the type's identity (`inherits: set` / `is_fixed_id`), declared
+          `is_unique: true` on datasource.yaml, or covered by a
           single-column unique index, the generated handlers treat the route
           as a single-resource lookup (200 / 404 / 409); otherwise they
           return an array on GET and a count on PUT/DELETE.
@@ -405,12 +419,12 @@ $defs:
         type: string
         minLength: 1
         pattern: "^[a-z_][a-z0-9_]*$"
-        description: Name of a view type defined in view_types.yaml.
+        description: Name of a type defined in types.yaml.
       response:
         description: >
           Either the literal `redirect` (HTTP 302 with no body schema) or the
-          name of a view type defined in view_types.yaml. `redirect` is not a
-          view name.
+          name of a type defined in types.yaml. `redirect` is not a type
+          name.
         oneOf:
           - const: redirect
           - type: string
@@ -433,10 +447,11 @@ $defs:
         description: >
           Ordered array of service class names declared in services.yaml.
           Mutually exclusive with `service` and with `routeClass`/`module`.
-      serviceMethod:
+      function:
         type: string
         minLength: 1
         pattern: "^[a-z][A-Za-z0-9_]*$"
+        description: Service function to dispatch (renamed from serviceMethod).
       aliases:
         type: array
         minItems: 1
@@ -470,7 +485,7 @@ $defs:
           Route class name (PascalCase). When set together with `module:`, the
           framework dynamic-imports the module and instantiates the class to
           mount this route. Without this pair the route falls back to the
-          service+serviceMethod dispatch.
+          service+function dispatch.
       module:
         type: string
         minLength: 1

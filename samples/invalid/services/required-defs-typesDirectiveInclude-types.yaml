@@ -1,0 +1,7 @@
+expect:
+  covers: required:#/$defs/typesDirectiveInclude:types
+---
+version: 1.0.0
+services: []
+includes:
+  - filter: tag == "datasource_type"

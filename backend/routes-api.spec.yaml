@@ -4,8 +4,8 @@ $id: https://cali-services.local/schemas/deterministic/backend/routes-api.spec.y
 title: routes-api
 description: >
   Strict schema for the routes-api intermediate representation (IR): the
-  flattened HTTP API catalog produced from `routes.yaml` + `view_types.yaml` +
-  `datasource_types.yaml` by `expandRoutes`. It is not authored by hand.
+  flattened HTTP API catalog produced from `routes.yaml` + `types.yaml` +
+  `datasource.yaml` by `expandRoutes`. It is not authored by hand.
 
   Authored `routes.yaml` (see routes.spec.yaml) keeps includes, filters,
   combined_routes, and by-field shorthands. This document is that expansion:
@@ -21,8 +21,8 @@ description: >
 
   Shape: `{ version, routes, components }`. `routes` is a flat array of
   single-key maps `{ <routeName>: def }`. Custom authored routes pass through
-  with `entity: null` and `isCustom: true`. View-type includes expand to CRUD
-  (GET-only for readonly-lookup). Combined-route children expand to nested
+  with `entity: null` and `isCustom: true`. Type includes expand to CRUD
+  (GET-only for `inherits: dictionary`). Combined-route children expand to nested
   direct-FK or M2M endpoints. Request/response names are resolved against
   `components` into `{ name, schema, example }`; unknown names keep
   `schema: null` and `example: null`. Paths stay Express-style (`:id`).
@@ -42,7 +42,7 @@ properties:
     pattern: '^[0-9]+\.[0-9]+\.[0-9]+$'
   routes:
     description: >
-      Flattened operations in expansion order: custom routes, then view-type
+      Flattened operations in expansion order: custom routes, then type
       CRUD, then combined-route children. Each item is one named operation.
       Route names are unique across the array (generator invariant; JSON Schema
       cannot unique-key a list of maps).

@@ -5,7 +5,7 @@ version: 1.0.0
 routes: []
 combined_routes:
   - people:
-      combined_types:
+      combines:
         - Person
         - reports:
             via: manager

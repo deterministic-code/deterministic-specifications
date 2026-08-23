@@ -1,0 +1,8 @@
+expect:
+  covers: minLength:#/$defs/filterExpr
+---
+version: 1.0.0
+services: []
+includes:
+  - types:
+      filter: ""
