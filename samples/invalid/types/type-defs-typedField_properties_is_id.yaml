@@ -1,0 +1,10 @@
+expect:
+  covers: type:#/$defs/typedField/properties/is_id
+---
+version: 1.0.0
+types:
+  - person:
+      fields:
+        - id:
+            type: integer
+            is_id: "true"

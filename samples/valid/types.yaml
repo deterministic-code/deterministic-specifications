@@ -242,8 +242,18 @@ types:
   - setting:
       tags: [datasource_type]
       inherits: dictionary
+  - keyed:
+      tags: [datasource_type]
+      fields:
+        - id:
+            type: integer
+            is_id: true
+        - label:
+            type: string
+            size: 32
   - link:
       tags: [datasource_type, many_to_many]
+      ids: [left_id, right_id]
       fields:
         - left_id:
             type: integer

@@ -15,9 +15,11 @@ description: >
   types are tables): table names must exist, every key must be a declared
   field, values must match the field type, and a field may be omitted when
   it is `is_nullable: true` or declares a `default_value`. `null` is only
-  valid for nullable fields. Identity columns from `inherits: set` (`id`)
-  and audit columns (`created`, `updated`) are not authored here — the row
-  key (`id1`, `id2`, …) supplies `id`.
+  valid for nullable fields. Audit columns (`created`, `updated`) are not
+  authored here. Generated identity (`inherits: set` without
+  `is_fixed_id`) is supplied by the row key (`id1`, `id2`, …). Fields
+  marked `is_fixed_id: true` on datasource.yaml must appear in each seed
+  row with the same stable values every run.
 
 type: object
 additionalProperties: false

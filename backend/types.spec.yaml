@@ -7,11 +7,17 @@ description: >
   system. One `types:` array holds every type; `tags` distinguish
   datasource_type, view_type, many_to_many, and future kinds (e.g.
   client_type). Physical / migration concerns live in datasource.yaml.
-  Built-in inherit targets: `set` (injects `id`) and `dictionary` (injects
-  `name` and `value`). `inherits` is is-a; `union` composes fields; `one_of`
-  is a discriminated union. The `types:` key is required (must exist) but
-  may be an empty array. Allowed field `default_value` tokens and numeric
-  ranges live in backend/types.yaml and are enforced after schema validation.
+  Built-in inherit targets: `set` and `dictionary` (injects `name` and
+  `value`). A `set` is a collection of distinct members; its identity is
+  the single field with `is_id: true`, or type-level `ids: [field, …]`
+  (min 2) for a composite key. If neither is authored, `set` injects `id`.
+  `is_id: true` may appear on at most one field and must not be combined
+  with `ids` — enforced after schema validation (`ids` + `is_id: true` is
+  also rejected by the schema). `inherits` is is-a; `union` composes
+  fields; `one_of` is a discriminated union. The `types:` key is required
+  (must exist) but may be an empty array. Allowed field `default_value`
+  tokens and numeric ranges live in backend/types.yaml and are enforced
+  after schema validation.
 
 type: object
 additionalProperties: false
@@ -345,14 +351,51 @@ $defs:
       Field names to drop from the inherited or unioned shape (e.g. drop
       `id` when enriching).
 
+  idsProp:
+    type: array
+    minItems: 2
+    uniqueItems: true
+    items:
+      $ref: "#/$defs/identifier"
+    description: >
+      Composite identity for a `set` — two or more field names that
+      together identify a member. Must not be combined with any field
+      `is_id: true`. When `inherits: set`, the set uses these fields as
+      its identity instead of injecting `id`.
+
+  identityExclusive:
+    description: >
+      When `ids` is present, no field may set `is_id: true`.
+    if:
+      required: [ids]
+    then:
+      properties:
+        fields:
+          items:
+            additionalProperties:
+              properties:
+                is_id:
+                  not:
+                    const: true
+
+  isIdProp:
+    type: boolean
+    description: >
+      This field alone is the `set` identity. Allowed on at most one field
+      in the type. Must not be combined with type-level `ids`. When
+      `inherits: set`, the set uses this field instead of injecting `id`.
+      At-most-one is enforced after schema validation.
+
   inheritType:
     type: object
     additionalProperties: false
     required: [inherits]
     description: >
-      Is-a composition. Built-in parents: `set` (injects `id`) and
-      `dictionary` (injects required `name` and `value`). Any other value
-      is a user type name.
+      Is-a composition. Built-in parents: `set` (a collection of distinct
+      members) and `dictionary` (injects required `name` and `value`). A
+      set's identity is the single `is_id: true` field, or `ids` when the
+      key is composite; if neither is authored, `id` is injected. Any other
+      inherit value is a user type name.
     properties:
       tags:
         $ref: "#/$defs/tagsProp"
@@ -362,11 +405,15 @@ $defs:
         $ref: "#/$defs/mappingProp"
       remove_fields:
         $ref: "#/$defs/removeFieldsProp"
+      ids:
+        $ref: "#/$defs/idsProp"
       fields:
         type: array
         minItems: 0
         items:
           $ref: "#/$defs/fieldEntry"
+    allOf:
+      - $ref: "#/$defs/identityExclusive"
 
   unionType:
     type: object
@@ -388,11 +435,15 @@ $defs:
         $ref: "#/$defs/mappingProp"
       remove_fields:
         $ref: "#/$defs/removeFieldsProp"
+      ids:
+        $ref: "#/$defs/idsProp"
       fields:
         type: array
         minItems: 0
         items:
           $ref: "#/$defs/fieldEntry"
+    allOf:
+      - $ref: "#/$defs/identityExclusive"
 
   oneOfType:
     type: object
@@ -416,11 +467,15 @@ $defs:
     properties:
       tags:
         $ref: "#/$defs/tagsProp"
+      ids:
+        $ref: "#/$defs/idsProp"
       fields:
         type: array
         minItems: 0
         items:
           $ref: "#/$defs/fieldEntry"
+    allOf:
+      - $ref: "#/$defs/identityExclusive"
 
   fieldEntry:
     type: object
@@ -447,6 +502,8 @@ $defs:
       references:
         $ref: "#/$defs/referencesValue"
       is_nullable: { type: boolean }
+      is_id:
+        $ref: "#/$defs/isIdProp"
 
   typedField:
     type: object
@@ -502,6 +559,8 @@ $defs:
         minimum: 0
         description: Minimum length (string) or value (number).
       is_nullable: { type: boolean }
+      is_id:
+        $ref: "#/$defs/isIdProp"
       default_value:
         anyOf:
           - type: string

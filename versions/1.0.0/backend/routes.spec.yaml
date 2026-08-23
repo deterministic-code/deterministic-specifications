@@ -382,8 +382,8 @@ $defs:
         pattern: "^[a-z_][a-z0-9_]*$"
         description: >
           Column on the entity used as the path parameter. If the column is
-          the type's identity (`inherits: set` / `is_fixed_id`), declared
-          `is_unique: true` on datasource.yaml, or covered by a
+          the type's identity (`is_id` / `ids` / injected `id` on a set),
+          declared `is_unique: true` on datasource.yaml, or covered by a
           single-column unique index, the generated handlers treat the route
           as a single-resource lookup (200 / 404 / 409); otherwise they
           return an array on GET and a count on PUT/DELETE.

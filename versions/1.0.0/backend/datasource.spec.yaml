@@ -278,9 +278,8 @@ $defs:
     additionalProperties: false
     minProperties: 1
     description: >
-      Physical flags for a field declared in types.yaml. `is_fixed_id: true`
-      requires `is_readonly: true` (identity seed); enforced after schema
-      validation.
+      Physical flags for a field declared in types.yaml. `is_fixed_id`
+      marks identity fields whose values are authored (not generated).
     properties:
       is_readonly:
         type: boolean
@@ -293,7 +292,10 @@ $defs:
       is_fixed_id:
         type: boolean
         description: >
-          Identity / seed column. Must be paired with `is_readonly: true`.
+          The identity value is not assigned automatically. Authors and
+          seeds always supply the same stable value(s) for this field
+          (or for every field in `ids`). Omit or set false to let the
+          datasource generate identity on insert.
 
   indexEntry:
     type: object

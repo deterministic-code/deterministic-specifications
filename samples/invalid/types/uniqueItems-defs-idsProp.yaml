@@ -1,0 +1,12 @@
+expect:
+  covers: uniqueItems:#/$defs/idsProp
+---
+version: 1.0.0
+types:
+  - person:
+      ids: [id, id]
+      fields:
+        - id:
+            type: integer
+        - i2:
+            type: integer
