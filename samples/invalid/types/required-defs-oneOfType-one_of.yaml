@@ -1,7 +1,0 @@
-expect:
-  covers: required:#/$defs/oneOfType:one_of
----
-version: 1.0.0
-types:
-  - result:
-      tags: [view_type]

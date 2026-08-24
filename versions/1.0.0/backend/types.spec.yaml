@@ -14,7 +14,7 @@ description: >
   `is_id: true` may appear on at most one field and must not be combined
   with `ids` — enforced after schema validation (`ids` + `is_id: true` is
   also rejected by the schema). `inherits` is is-a; `union` composes
-  fields; `one_of` is a discriminated union. The `types:` key is required
+  fields. The `types:` key is required
   (must exist) but may be an empty array. Allowed field `default_value`
   tokens and numeric ranges live in backend/types.yaml and are enforced
   after schema validation.
@@ -316,7 +316,6 @@ $defs:
     oneOf:
       - $ref: "#/$defs/inheritType"
       - $ref: "#/$defs/unionType"
-      - $ref: "#/$defs/oneOfType"
       - $ref: "#/$defs/shapedType"
 
   tagsProp:
@@ -395,12 +394,20 @@ $defs:
       members) and `dictionary` (injects required `name` and `value`). A
       set's identity is the single `is_id: true` field, or `ids` when the
       key is composite; if neither is authored, `id` is injected. Any other
-      inherit value is a user type name.
+      inherit value is a user type name. Optional `union` flattens fields
+      from other types onto this shape (e.g. a view inherits `contacts_base`
+      and unions a single `readonly_lookup`).
     properties:
       tags:
         $ref: "#/$defs/tagsProp"
       inherits:
         $ref: "#/$defs/identifier"
+      union:
+        type: array
+        minItems: 1
+        uniqueItems: true
+        items:
+          $ref: "#/$defs/identifier"
       mapping:
         $ref: "#/$defs/mappingProp"
       remove_fields:
@@ -444,21 +451,6 @@ $defs:
           $ref: "#/$defs/fieldEntry"
     allOf:
       - $ref: "#/$defs/identityExclusive"
-
-  oneOfType:
-    type: object
-    additionalProperties: false
-    required: [one_of]
-    description: Discriminated union — the value is exactly one of the listed types.
-    properties:
-      tags:
-        $ref: "#/$defs/tagsProp"
-      one_of:
-        type: array
-        minItems: 2
-        uniqueItems: true
-        items:
-          $ref: "#/$defs/identifier"
 
   shapedType:
     type: object

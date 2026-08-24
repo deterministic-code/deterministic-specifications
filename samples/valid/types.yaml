@@ -324,6 +324,13 @@ types:
         - reports:
             type: person[]
             references: person.parent_id
+  - contact:
+      tags: [view_type]
+      inherits: person
+      union: [role]
+      mapping:
+        name: contact_source_name
+      remove_fields: [id]
   - phone_contact:
       tags: [view_type]
       union: [user, role]
@@ -339,7 +346,7 @@ types:
       fields: []
   - result:
       tags: [view_type]
-      one_of: [person, empty_shape]
+      union: [person, empty_shape]
   - scratch:
       fields:
         - tmp:
