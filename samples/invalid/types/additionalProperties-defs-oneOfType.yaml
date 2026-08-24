@@ -1,8 +1,0 @@
-expect:
-  covers: additionalProperties:#/$defs/oneOfType
----
-version: 1.0.0
-types:
-  - result:
-      one_of: [person, empty_shape]
-      extra: true

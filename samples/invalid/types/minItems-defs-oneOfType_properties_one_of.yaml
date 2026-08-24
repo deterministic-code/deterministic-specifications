@@ -1,7 +1,0 @@
-expect:
-  covers: minItems:#/$defs/oneOfType/properties/one_of
----
-version: 1.0.0
-types:
-  - result:
-      one_of: [person]
