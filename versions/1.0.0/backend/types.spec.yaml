@@ -345,10 +345,13 @@ $defs:
     minItems: 1
     uniqueItems: true
     items:
-      $ref: "#/$defs/identifier"
+      oneOf:
+        - $ref: "#/$defs/identifier"      # drop from the composed shape
+        - $ref: "#/$defs/tableColumnRef"  # drop only that field from that source
     description: >
-      Field names to drop from the inherited or unioned shape (e.g. drop
-      `id` when enriching).
+      Fields to drop from the inherited or unioned shape. Bare `id` drops
+      `id` wherever it appears after flatten. Qualified `contact_source.id`
+      drops `id` only from that inherit/union source.
 
   idsProp:
     type: array
