@@ -1,0 +1,8 @@
+expect:
+  covers: uniqueItems:#/$defs/extractProp
+---
+version: 1.0.0
+types:
+  - contact:
+      inherits: user
+      extract: [user.email, user.email]

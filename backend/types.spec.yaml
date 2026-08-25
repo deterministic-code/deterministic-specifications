@@ -14,10 +14,13 @@ description: >
   `is_id: true` may appear on at most one field and must not be combined
   with `ids` — enforced after schema validation (`ids` + `is_id: true` is
   also rejected by the schema). `inherits` is is-a; `union` composes
-  fields. The `types:` key is required
-  (must exist) but may be an empty array. Allowed field `default_value`
-  tokens and numeric ranges live in backend/types.yaml and are enforced
-  after schema validation.
+  fields. After flatten, `extract` allowlists source fields, `mapping`
+  renames them (keys may be fully qualified), and `remove_fields` drops
+  them. Unlike TypeScript, no two fields on the final composed type may
+  share a name — enforced after schema validation. The `types:` key is
+  required (must exist) but may be an empty array. Allowed field
+  `default_value` tokens and numeric ranges live in backend/types.yaml
+  and are enforced after schema validation.
 
 type: object
 additionalProperties: false
@@ -333,12 +336,35 @@ $defs:
     type: object
     minProperties: 1
     propertyNames:
-      $ref: "#/$defs/identifier"
+      oneOf:
+        - $ref: "#/$defs/identifier"       # name
+        - $ref: "#/$defs/tableColumnRef"   # contact_source.name
     additionalProperties:
       $ref: "#/$defs/identifier"
     description: >
-      Rename inherited or unioned fields. Keys are source field names;
-      values are the names on this type (`name` → `phone_name`).
+      Rename inherited or unioned fields. Keys are source field names —
+      bare `name` when that field is unique across compose sources, or
+      fully qualified `contact_source.name` when parent union types share
+      a property. Values are the names on this type
+      (`contact_source.name` → `contact_source_name`). A bare key that
+      matches more than one source is an error after schema validation;
+      qualify it. Qualified keys whose type is not an inherit or union
+      source of this type are also an error.
+
+  extractProp:
+    type: array
+    minItems: 1
+    uniqueItems: true
+    items:
+      $ref: "#/$defs/tableColumnRef"
+    description: >
+      Allowlist of inherited or unioned fields. Each entry is
+      `<type>.<field>`. For every compose source named in `extract`, only
+      the listed fields are kept; sources not mentioned keep their full
+      shape (still subject to `mapping` / `remove_fields`). Local
+      `fields:` are never filtered. An entry whose type is unknown, not
+      an inherit or union source of this type, or whose field does not
+      exist on that source is an error after schema validation.
 
   removeFieldsProp:
     type: array
@@ -399,7 +425,11 @@ $defs:
       key is composite; if neither is authored, `id` is injected. Any other
       inherit value is a user type name. Optional `union` flattens fields
       from other types onto this shape (e.g. a view inherits `contacts_base`
-      and unions a single `readonly_lookup`).
+      and unions `contact_source` and `contact_type`). After flatten,
+      `extract` allowlists source fields, `mapping` renames them (keys may
+      be fully qualified when parents share a property), and
+      `remove_fields` drops them. Final field names must be unique —
+      enforced after schema validation.
     properties:
       tags:
         $ref: "#/$defs/tagsProp"
@@ -411,6 +441,8 @@ $defs:
         uniqueItems: true
         items:
           $ref: "#/$defs/identifier"
+      extract:
+        $ref: "#/$defs/extractProp"
       mapping:
         $ref: "#/$defs/mappingProp"
       remove_fields:
@@ -431,7 +463,10 @@ $defs:
     required: [union]
     description: >
       Field composition (not is-a). Combined fields of the listed types,
-      optionally renamed via `mapping` and trimmed via `remove_fields`.
+      optionally allowlisted via `extract`, renamed via `mapping` (keys
+      may be fully qualified when parents share a property), and trimmed
+      via `remove_fields`. Final field names must be unique — enforced
+      after schema validation.
     properties:
       tags:
         $ref: "#/$defs/tagsProp"
@@ -441,6 +476,8 @@ $defs:
         uniqueItems: true
         items:
           $ref: "#/$defs/identifier"
+      extract:
+        $ref: "#/$defs/extractProp"
       mapping:
         $ref: "#/$defs/mappingProp"
       remove_fields:
