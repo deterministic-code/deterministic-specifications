@@ -21,8 +21,8 @@ description: >
 
   Shape: `{ version, routes, components }`. `routes` is a flat array of
   single-key maps `{ <routeName>: def }`. Custom authored routes pass through
-  with `entity: null` and `isCustom: true`. Type includes expand to CRUD
-  (GET-only for `inherits: dictionary`). Combined-route children expand to nested
+  with `entity: null` and `isCustom: true`. Type includes expand to CRUD.
+  Combined-route children expand to nested
   direct-FK or M2M endpoints. Request/response names are resolved against
   `components` into `{ name, schema, example }`; unknown names keep
   `schema: null` and `example: null`. Paths stay Express-style (`:id`).

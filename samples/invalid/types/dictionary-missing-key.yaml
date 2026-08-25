@@ -1,0 +1,13 @@
+expect:
+  includes: must contain
+---
+version: 1.0.0
+types:
+  - settings:
+      inherits: dictionary
+      fields:
+        - setting_id:
+            references: file.id
+        - value:
+            type: string
+            size: unlimited

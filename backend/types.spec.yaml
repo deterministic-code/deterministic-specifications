@@ -7,17 +7,21 @@ description: >
   system. One `types:` array holds every type; `tags` distinguish
   datasource_type, view_type, many_to_many, and future kinds (e.g.
   client_type). Physical / migration concerns live in datasource.yaml.
-  Built-in inherit targets: `set` and `dictionary` (injects `name` and
-  `value`). A `set` is a collection of distinct members; its identity is
-  the single field with `is_id: true`, or type-level `ids: [field, …]`
-  (min 2) for a composite key. If neither is authored, `set` injects `id`.
-  `is_id: true` may appear on at most one field and must not be combined
-  with `ids` — enforced after schema validation (`ids` + `is_id: true` is
-  also rejected by the schema). `inherits` is is-a; `union` composes
-  fields. After flatten, `extract` allowlists source fields, `mapping`
-  renames them (keys may be fully qualified), and `remove_fields` drops
-  them. Unlike TypeScript, no two fields on the final composed type may
-  share a name — enforced after schema validation. The `types:` key is
+  Built-in inherit targets: `set` and `dictionary`. These names are
+  reserved — a user type must not be named `set` or `dictionary`.
+  `set` injects `id`. Identity may instead be the single field with
+  `is_id: true`, or type-level `ids: [field, …]` (min 2) for a composite
+  key. `is_id: true` may appear on at most one field and must not be
+  combined with `ids` — enforced after schema validation (`ids` +
+  `is_id: true` is also rejected by the schema). `dictionary` is an
+  owned key-value collection; when `inherits: dictionary`, `fields`
+  must include `key` and `value` — enforced after schema validation
+  (also rejected by the schema). One field `references` the owner
+  identity. `inherits` is is-a; `union` composes fields. After flatten,
+  `extract` allowlists source fields, `mapping` renames them (keys may
+  be fully qualified), and `remove_fields` drops them. Unlike
+  TypeScript, no two fields on the final composed type may share a
+  name — enforced after schema validation. The `types:` key is
   required (must exist) but may be an empty array. Allowed field
   `default_value` tokens and numeric ranges live in backend/types.yaml
   and are enforced after schema validation.
@@ -311,12 +315,16 @@ $defs:
     minProperties: 1
     maxProperties: 1
     propertyNames:
-      $ref: "#/$defs/identifier"
+      allOf:
+        - $ref: "#/$defs/identifier"
+        - not:
+            enum: [set, dictionary]
     additionalProperties:
       $ref: "#/$defs/typeDef"
 
   typeDef:
     oneOf:
+      - $ref: "#/$defs/dictionaryType"
       - $ref: "#/$defs/inheritType"
       - $ref: "#/$defs/unionType"
       - $ref: "#/$defs/shapedType"
@@ -414,27 +422,79 @@ $defs:
       `inherits: set`, the set uses this field instead of injecting `id`.
       At-most-one is enforced after schema validation.
 
+  dictionaryType:
+    type: object
+    additionalProperties: false
+    required: [inherits, fields]
+    description: >
+      Owned key-value collection. `inherits` is the reserved built-in
+      `dictionary`. When `inherits: dictionary`, `fields` must include
+      `key` and `value` — enforced after schema validation (also
+      rejected by the schema). One field `references` the owner
+      identity so the dictionary nests on that parent; the owner FK is
+      omitted from the nested representation. The collection property
+      on the owner is this type's name. Optional `union` / `extract` /
+      `mapping` / `remove_fields` work as on other inherit forms.
+      Final field names must be unique — enforced after schema
+      validation.
+    properties:
+      tags:
+        $ref: "#/$defs/tagsProp"
+      inherits:
+        const: dictionary
+      union:
+        type: array
+        minItems: 1
+        uniqueItems: true
+        items:
+          $ref: "#/$defs/identifier"
+      extract:
+        $ref: "#/$defs/extractProp"
+      mapping:
+        $ref: "#/$defs/mappingProp"
+      remove_fields:
+        $ref: "#/$defs/removeFieldsProp"
+      ids:
+        $ref: "#/$defs/idsProp"
+      fields:
+        type: array
+        minItems: 2
+        items:
+          $ref: "#/$defs/fieldEntry"
+        allOf:
+          - contains:
+              type: object
+              required: [key]
+          - contains:
+              type: object
+              required: [value]
+    allOf:
+      - $ref: "#/$defs/identityExclusive"
+
   inheritType:
     type: object
     additionalProperties: false
     required: [inherits]
     description: >
-      Is-a composition. Built-in parents: `set` (a collection of distinct
-      members) and `dictionary` (injects required `name` and `value`). A
-      set's identity is the single `is_id: true` field, or `ids` when the
-      key is composite; if neither is authored, `id` is injected. Any other
-      inherit value is a user type name. Optional `union` flattens fields
-      from other types onto this shape (e.g. a view inherits `contacts_base`
-      and unions `contact_source` and `contact_type`). After flatten,
-      `extract` allowlists source fields, `mapping` renames them (keys may
-      be fully qualified when parents share a property), and
-      `remove_fields` drops them. Final field names must be unique —
-      enforced after schema validation.
+      Is-a composition. Built-in parent: `set` (injects `id`). A type's
+      identity is the single `is_id: true` field, or `ids` when the key
+      is composite; if neither is authored and the type inherits `set`,
+      `id` is injected. `inherits: dictionary` is a separate form
+      (`dictionaryType`). Any other inherit value is a user type name.
+      Optional `union` flattens fields from other types onto this shape
+      (e.g. a view inherits `contacts_base` and unions `contact_source`
+      and `contact_type`). After flatten, `extract` allowlists source
+      fields, `mapping` renames them (keys may be fully qualified when
+      parents share a property), and `remove_fields` drops them. Final
+      field names must be unique — enforced after schema validation.
     properties:
       tags:
         $ref: "#/$defs/tagsProp"
       inherits:
-        $ref: "#/$defs/identifier"
+        allOf:
+          - $ref: "#/$defs/identifier"
+          - not:
+              const: dictionary
       union:
         type: array
         minItems: 1
