@@ -331,6 +331,32 @@ types:
         - name:
             type: string
             size: 64
+  - contact_type:
+      tags: [datasource_type]
+      inherits: set
+      fields:
+        - name:
+            type: string
+            size: 64
+        - description:
+            type: string
+            size: unlimited
+            is_nullable: true
+  - contacts_base:
+      tags: [view_type]
+      inherits: set
+      fields:
+        - email:
+            type: string
+            size: 256
+  - typed_contact:
+      tags: [view_type]
+      inherits: contacts_base
+      union: [contact_source, contact_type]
+      extract: [contact_source.name, contact_type.name]
+      mapping:
+        contact_source.name: contact_source_name
+        contact_type.name: contact_type_name
   - contact:
       tags: [view_type]
       inherits: person
@@ -345,6 +371,13 @@ types:
       mapping:
         name: contact_source_name
       remove_fields: [contact_source.id]
+  - labeled_lookups:
+      tags: [view_type]
+      union: [role, contact_type]
+      extract: [role.name, contact_type.name]
+      mapping:
+        role.name: role_name
+        contact_type.name: type_name
   - phone_contact:
       tags: [view_type]
       union: [user, role]

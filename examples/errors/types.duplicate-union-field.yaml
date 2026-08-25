@@ -1,0 +1,20 @@
+expect:
+  includes: "composed shape"
+---
+version: 1.0.0
+types:
+  - contact_source:
+      inherits: set
+      fields:
+        - name:
+            type: string
+            size: 64
+  - contact_type:
+      inherits: set
+      fields:
+        - name:
+            type: string
+            size: 64
+  - contact:
+      tags: [view_type]
+      union: [contact_source, contact_type]
