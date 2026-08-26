@@ -1,0 +1,11 @@
+expect:
+  includes: "property: tags2"
+---
+version: 1.0.0
+types:
+  - base:
+      tags: [view_type]
+      tags2: [x]
+      fields:
+        - name:
+            type: string
