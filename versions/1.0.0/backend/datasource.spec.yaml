@@ -6,7 +6,7 @@ description: >
   Strict schema for deterministic/datasource.yaml — physical / migration
   concerns for types declared in types.yaml. Field types stay in types.yaml;
   this document names tables and columns, uniqueness, identity, indexes, and
-  optimistic-concurrency overrides. The `types:` key is required (must exist)
+  field-level optimistic-concurrency overlays. The `types:` key is required (must exist)
   but may be an empty array — a no-data-model app declares `types: []` and
   the migration emitter short-circuits. Which types become tables is selected
   by `includes.types.filter` (replaces per-table skip_migrations).
@@ -246,13 +246,6 @@ $defs:
         type: string
         minLength: 1
         description: Underlying source-system table name when it differs from the type name.
-      use_optimistic_concurrency:
-        type: boolean
-        description: >
-          Optional per-type override of the datasource-wide
-          use_optimistic_concurrency setting. Set false to opt a type out of
-          OCC (e.g. a legacy table with no `updated` version column); omit to
-          inherit the datasource default.
       fields:
         type: array
         minItems: 1
@@ -280,6 +273,7 @@ $defs:
     description: >
       Physical flags for a field declared in types.yaml. `is_fixed_id`
       marks identity fields whose values are authored (not generated).
+      At most one field per table may set `is_optimistic_concurrency`.
     properties:
       is_readonly:
         type: boolean
@@ -296,6 +290,18 @@ $defs:
           seeds always supply the same stable value(s) for this field
           (or for every field in `ids`). Omit or set false to let the
           datasource generate identity on insert.
+      is_optimistic_concurrency:
+        type: boolean
+        description: >
+          This field is the table's optimistic-concurrency token. At most
+          one field per table may set this to true.
+      use_native_row_version:
+        type: boolean
+        description: >
+          When true, emit a native rowversion column if the dialect has
+          one (e.g. SQL Server ROWVERSION); otherwise the pack converter
+          emulates an 8-byte binary watermark. Only valid together with
+          is_optimistic_concurrency: true.
 
   indexEntry:
     type: object
