@@ -232,6 +232,9 @@ types:
         - parent_id:
             references: user.id
             is_nullable: true
+        - version:
+            type: binary
+            default_value: Hex('')
   - role:
       tags: [datasource_type, view_type]
       inherits: set
@@ -301,6 +304,9 @@ types:
         - key:
             type: string
             size: 64
+        - version:
+            type: binary
+            default_value: Hex('')
   - person:
       tags: [view_type]
       inherits: user

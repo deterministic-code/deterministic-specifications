@@ -28,7 +28,6 @@ includes:
 types:
   - user:
       mapping: users
-      use_optimistic_concurrency: false
       fields:
         - email:
             is_readonly: false
@@ -39,6 +38,8 @@ types:
             is_unique: true
         - parent_id:
             is_readonly: true
+        - version:
+            is_optimistic_concurrency: true
       indexes:
         - email_uidx:
             fields: [email]
@@ -60,9 +61,11 @@ types:
             is_readonly: true
   - note: {}
   - _internal:
-      use_optimistic_concurrency: true
       fields:
         - key:
             is_unique: true
             is_readonly: true
             is_fixed_id: true
+        - version:
+            is_optimistic_concurrency: true
+            use_native_row_version: true
