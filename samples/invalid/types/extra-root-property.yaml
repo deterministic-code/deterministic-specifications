@@ -1,0 +1,6 @@
+expect:
+  includes: additional properties
+---
+version: 1.0.0
+types: []
+owner: true

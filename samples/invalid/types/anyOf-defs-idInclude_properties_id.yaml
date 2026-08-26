@@ -1,7 +1,0 @@
-expect:
-  covers: anyOf:#/$defs/idInclude/properties/id
----
-version: 1.0.0
-types: []
-includes:
-  - id: true

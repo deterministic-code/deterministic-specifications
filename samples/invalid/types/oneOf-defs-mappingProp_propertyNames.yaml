@@ -1,9 +1,0 @@
-expect:
-  covers: oneOf:#/$defs/mappingProp/propertyNames
----
-version: 1.0.0
-types:
-  - contact:
-      inherits: user
-      mapping:
-        NOT-VALID: other

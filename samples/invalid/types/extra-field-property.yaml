@@ -1,0 +1,11 @@
+expect:
+  includes: additional properties
+---
+version: 1.0.0
+types:
+  - user:
+      fields:
+        - email:
+            type: string
+            size: 256
+            owner: true

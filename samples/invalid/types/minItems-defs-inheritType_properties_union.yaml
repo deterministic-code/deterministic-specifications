@@ -1,8 +1,0 @@
-expect:
-  covers: minItems:#/$defs/inheritType/properties/union
----
-version: 1.0.0
-types:
-  - contact:
-      inherits: person
-      union: []

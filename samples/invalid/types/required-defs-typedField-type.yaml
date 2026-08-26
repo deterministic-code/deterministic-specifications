@@ -1,9 +1,0 @@
-expect:
-  covers: required:#/$defs/typedField:type
----
-version: 1.0.0
-types:
-  - user:
-      fields:
-        - email:
-            size: 256

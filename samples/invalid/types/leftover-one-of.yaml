@@ -1,0 +1,8 @@
+expect:
+  includes: additional properties
+---
+version: 1.0.0
+types:
+  - user:
+      inherits: set
+      one_of: [a, b]

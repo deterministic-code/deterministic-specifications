@@ -1,0 +1,13 @@
+expect:
+  includes: mutually exclusive
+---
+version: 1.0.0
+types:
+  - person:
+      ids: [id, i2]
+      fields:
+        - id:
+            type: integer
+            is_id: true
+        - i2:
+            type: integer

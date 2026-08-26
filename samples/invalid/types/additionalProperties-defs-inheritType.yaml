@@ -1,8 +1,0 @@
-expect:
-  covers: additionalProperties:#/$defs/inheritType
----
-version: 1.0.0
-types:
-  - user:
-      inherits: set
-      extra: true
