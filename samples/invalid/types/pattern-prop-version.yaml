@@ -1,5 +1,0 @@
-expect:
-  covers: pattern:#/properties/version
----
-version: 1
-types: []

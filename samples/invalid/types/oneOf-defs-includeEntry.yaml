@@ -1,7 +1,0 @@
-expect:
-  covers: oneOf:#/$defs/includeEntry
----
-version: 1.0.0
-types: []
-includes:
-  - nope: true

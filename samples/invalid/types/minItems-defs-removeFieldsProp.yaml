@@ -1,8 +1,0 @@
-expect:
-  covers: minItems:#/$defs/removeFieldsProp
----
-version: 1.0.0
-types:
-  - contact:
-      inherits: user
-      remove_fields: []

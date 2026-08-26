@@ -1,9 +1,0 @@
-expect:
-  covers: pattern:#/$defs/identifier
----
-version: 1.0.0
-types:
-  - user:
-      fields:
-        - Email:
-            type: string

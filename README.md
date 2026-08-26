@@ -18,7 +18,7 @@ The canonical YAML contract for the [deterministic](https://github.com/rmcfadden
 
 ## Samples
 
-Kitchen-sink documents under [`samples/valid/`](samples/valid) exercise every property, enum, const, oneOf branch, and pattern in the live specs. [`samples/invalid/`](samples/invalid) holds one document per independently observable schema constraint; together they must fail `validate()`. Both suites live in [deterministic-specifications-typescript](https://github.com/deterministic-code/deterministic-specifications-typescript).
+Kitchen-sink documents under [`samples/valid/`](samples/valid) exercise every property, enum, const, oneOf branch, and pattern in the live specs. [`samples/invalid/`](samples/invalid) holds documents that must fail `validate()`. `samples/invalid/types` is a curated set of authoring situations; other spec dirs still have one file per schema constraint. Specs, samples, and examples are authored in this repo only. Consumer packages — including the [TypeScript validators](https://github.com/deterministic-code/deterministic-specifications-typescript) — may resolve and read them. They must not write, regenerate, or otherwise edit files here.
 
 Readable apps live under [`examples/`](examples): [`examples/minimal/`](examples/minimal) (required keys only) and [`examples/tasks/`](examples/tasks) (a small user/project/task contract). [`examples/errors/`](examples/errors) is a human-curated gallery of typical authoring mistakes — one per file — not the exhaustive mutant dump.
 

@@ -1,0 +1,10 @@
+expect:
+  includes: not a valid datetime default
+---
+version: 1.0.0
+types:
+  - event:
+      fields:
+        - starts:
+            type: datetime
+            default_value: Yesterday

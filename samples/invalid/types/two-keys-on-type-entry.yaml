@@ -1,0 +1,9 @@
+expect:
+  includes: more than
+---
+version: 1.0.0
+types:
+  - user:
+      fields: []
+    note:
+      fields: []

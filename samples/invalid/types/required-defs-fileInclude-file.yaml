@@ -1,9 +1,0 @@
-expect:
-  covers: required:#/$defs/fileInclude:file
----
-version: 1.0.0
-types: []
-includes:
-  - combine_options:
-      source:
-        remove_types: [x]

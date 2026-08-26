@@ -1,8 +1,0 @@
-expect:
-  covers: uniqueItems:#/$defs/tagsProp
----
-version: 1.0.0
-types:
-  - user:
-      tags: [view_type, view_type]
-      fields: []

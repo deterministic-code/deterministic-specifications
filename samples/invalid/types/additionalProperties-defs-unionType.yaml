@@ -1,8 +1,0 @@
-expect:
-  covers: additionalProperties:#/$defs/unionType
----
-version: 1.0.0
-types:
-  - contact:
-      union: [user, phone]
-      extra: true

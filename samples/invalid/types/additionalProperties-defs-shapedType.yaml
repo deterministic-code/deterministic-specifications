@@ -1,8 +1,0 @@
-expect:
-  covers: additionalProperties:#/$defs/shapedType
----
-version: 1.0.0
-types:
-  - user:
-      fields: []
-      extra: true

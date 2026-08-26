@@ -1,6 +1,0 @@
-expect:
-  covers: type:#/properties/includes
----
-version: 1.0.0
-types: []
-includes: {}

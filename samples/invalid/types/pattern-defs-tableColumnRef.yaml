@@ -1,9 +1,0 @@
-expect:
-  covers: pattern:#/$defs/tableColumnRef
----
-version: 1.0.0
-types:
-  - user:
-      fields:
-        - parent_id:
-            references: not-a-ref

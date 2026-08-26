@@ -1,0 +1,9 @@
+expect:
+  includes: must match exactly one
+---
+version: 1.0.0
+types:
+  - note:
+      fields:
+        - author:
+            references: user

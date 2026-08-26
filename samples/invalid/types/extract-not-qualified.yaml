@@ -1,0 +1,8 @@
+expect:
+  includes: must match pattern
+---
+version: 1.0.0
+types:
+  - contact:
+      inherits: user
+      extract: [name]

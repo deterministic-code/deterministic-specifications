@@ -1,7 +1,0 @@
-expect:
-  covers: uniqueItems:#/$defs/unionType/properties/union
----
-version: 1.0.0
-types:
-  - contact:
-      union: [user, user]

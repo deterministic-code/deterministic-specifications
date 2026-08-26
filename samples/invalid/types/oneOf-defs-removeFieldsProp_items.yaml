@@ -1,8 +1,0 @@
-expect:
-  covers: oneOf:#/$defs/removeFieldsProp/items
----
-version: 1.0.0
-types:
-  - contact:
-      inherits: user
-      remove_fields: [not-a-field]

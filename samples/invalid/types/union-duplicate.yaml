@@ -1,0 +1,8 @@
+expect:
+  includes: duplicate
+---
+version: 1.0.0
+types:
+  - contact:
+      tags: [view_type]
+      union: [user, user]

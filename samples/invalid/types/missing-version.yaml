@@ -1,0 +1,4 @@
+expect:
+  includes: "required property 'version'"
+---
+types: []

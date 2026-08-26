@@ -239,6 +239,9 @@ types:
       tags: [datasource_type, view_type]
       inherits: set
       fields:
+        - name:
+            type: string
+            size: 64
         - code:
             type: string
             size: 64

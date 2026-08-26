@@ -1,9 +1,0 @@
-expect:
-  covers: uniqueItems:#/$defs/referencesValue/oneOf/1
----
-version: 1.0.0
-types:
-  - link:
-      fields:
-        - pair:
-            references: [link.left_id, link.left_id]

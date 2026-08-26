@@ -1,0 +1,11 @@
+expect:
+  includes: must match a schema
+---
+version: 1.0.0
+includes:
+  - file: shared/base.yaml
+    combine_options:
+      source:
+        modify_fields:
+          - field: user.email
+types: []

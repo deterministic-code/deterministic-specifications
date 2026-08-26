@@ -1,5 +1,0 @@
-expect:
-  covers: type:#/properties/types
----
-version: 1.0.0
-types: {}

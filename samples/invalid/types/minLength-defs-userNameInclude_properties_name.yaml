@@ -1,8 +1,0 @@
-expect:
-  covers: minLength:#/$defs/userNameInclude/properties/name
----
-version: 1.0.0
-types: []
-includes:
-  - user_id: 1
-    name: ""

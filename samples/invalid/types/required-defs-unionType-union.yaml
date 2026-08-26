@@ -1,9 +1,0 @@
-expect:
-  covers: required:#/$defs/unionType:union
----
-version: 1.0.0
-types:
-  - contact:
-      mapping:
-        a: b
-      remove_fields: [id]

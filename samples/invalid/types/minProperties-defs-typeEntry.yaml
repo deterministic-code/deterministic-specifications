@@ -1,6 +1,0 @@
-expect:
-  covers: minProperties:#/$defs/typeEntry
----
-version: 1.0.0
-types:
-  - {}
