@@ -234,14 +234,39 @@ types:
             is_nullable: true
   - role:
       tags: [datasource_type, view_type]
-      inherits: dictionary
+      inherits: set
       fields:
         - code:
             type: string
             size: 64
   - setting:
       tags: [datasource_type]
+      inherits: set
+  - file:
+      tags: [datasource_type]
+      inherits: set
+      fields:
+        - name:
+            type: string
+            size: 64
+        - description:
+            type: string
+            size: unlimited
+            is_nullable: true
+        - size:
+            type: integer
+  - settings:
+      tags: [datasource_type]
       inherits: dictionary
+      fields:
+        - setting_id:
+            references: file.id
+        - key:
+            type: string
+            size: 64
+        - value:
+            type: string
+            size: unlimited
   - keyed:
       tags: [datasource_type]
       fields:

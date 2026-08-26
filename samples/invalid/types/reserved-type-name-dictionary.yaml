@@ -1,0 +1,11 @@
+expect:
+  includes: must NOT be valid
+---
+version: 1.0.0
+types:
+  - dictionary:
+      inherits: set
+      fields:
+        - name:
+            type: string
+            size: 64
