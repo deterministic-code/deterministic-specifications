@@ -1,0 +1,21 @@
+expect:
+  includes: must match pattern
+---
+version: 1.0.0
+types:
+  - file:
+      fields:
+        - settings_map:
+            type: settings{}
+            references: settings.value
+  - settings:
+      inherits: dictionary
+      fields:
+        - setting_id:
+            references: file.id
+        - key:
+            type: string
+            size: 64
+        - value:
+            type: string
+            size: unlimited

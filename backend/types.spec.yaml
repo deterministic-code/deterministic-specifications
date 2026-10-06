@@ -24,7 +24,11 @@ description: >
   name — enforced after schema validation. The `types:` key is
   required (must exist) but may be an empty array. Allowed field
   `default_value` tokens and numeric ranges live in backend/types.yaml
-  and are enforced after schema validation.
+  and are enforced after schema validation. A field type may take a
+  `{}` suffix (`type: settings{}`) for a map of a dictionary type;
+  `references` is then required and must name that type's `key`. The
+  referenced type must inherit `dictionary` (have `key` and `value`) —
+  enforced after schema validation.
 
 type: object
 additionalProperties: false
@@ -68,6 +72,14 @@ $defs:
     pattern: "^[a-z_][a-z0-9_]*\\.[a-z_][a-z0-9_]*$"
     description: Field reference in the form `<type>.<field>`.
 
+  dictionaryKeyRef:
+    type: string
+    pattern: "^[a-z_][a-z0-9_]*\\.key$"
+    description: >
+      Key of a dictionary type (`<type>.key`). Write as a plain YAML
+      scalar. The named type must inherit `dictionary` — enforced
+      after schema validation.
+
   referencesValue:
     description: >
       Foreign-key target. A single `<type>.<field>`, or an array of exactly
@@ -103,7 +115,9 @@ $defs:
   datetimeDefault:
     description: >
       Allowed datetime defaults from backend/types.yaml — Now, UtcNow, or
-      DateTime('…') with an ISO-8601 timestamp.
+      DateTime('…') with an ISO-8601 timestamp. Write constructor tokens
+      as plain YAML scalars (default_value: DateTime('2020-01-01T00:00:00Z')),
+      not quoted.
     oneOf:
       - const: Now
       - const: UtcNow
@@ -113,7 +127,9 @@ $defs:
   uuidDefault:
     description: >
       Allowed uuid defaults from backend/types.yaml — NewId, Empty, or
-      uuid('…') with an RFC-4122 value.
+      uuid('…') with an RFC-4122 value. Write constructor tokens as
+      plain YAML scalars (default_value: uuid('11111111-1111-4111-8111-111111111111')),
+      not quoted.
     oneOf:
       - const: NewId
       - const: Empty
@@ -123,7 +139,10 @@ $defs:
   hexDefault:
     type: string
     pattern: "^Hex\\('([0-9a-fA-F]{2})*'\\)$"
-    description: "Hex byte literal from backend/types.yaml, e.g. Hex('DEADBEEF')."
+    description: >
+      Hex byte literal from backend/types.yaml, e.g. Hex('DEADBEEF').
+      Write as a plain YAML scalar (default_value: Hex('DEADBEEF')),
+      not quoted.
 
   signedIntegerString:
     type: string
@@ -336,8 +355,10 @@ $defs:
       `key` and `value` — enforced after schema validation (also
       rejected by the schema). One field `references` the owner
       identity so the dictionary nests on that parent; the owner FK
-      is omitted from the nested representation. Final field names
-      must be unique — enforced after schema validation.
+      is omitted from the nested representation. A parent field may
+      declare `type: <dictionary>{}` with `references: <dictionary>.key`
+      to nest that map. Final field names must be unique — enforced
+      after schema validation.
     properties:
       tags:
         $ref: "#/$defs/tagsProp"
@@ -519,6 +540,12 @@ $defs:
     properties:
       type:
         type: string
+        description: >
+          Built-in or user type name, optionally suffixed with [] for
+          arrays or {} for a map of a dictionary type. Write as a
+          plain YAML scalar (type: float[], type: settings{}), not
+          quoted. Quotes are not part of the name. A {} suffix
+          requires `references` naming that type's key.
         anyOf:
           - enum:
               [
@@ -539,24 +566,22 @@ $defs:
                 uuid,
               ]
           - enum:
-              [
-                "string[]",
-                "character[]",
-                "number[]",
-                "integer[]",
-                "unsignedinteger[]",
-                "biginteger[]",
-                "unsignedbiginteger[]",
-                "smallinteger[]",
-                "unsignedsmallinteger[]",
-                "float[]",
-                "decimal[]",
-                "boolean[]",
-                "datetime[]",
-                "binary[]",
-                "uuid[]",
-              ]
-          - pattern: "^[a-z_][a-z0-9_]*(\\[\\])?$"
+              - string[]
+              - character[]
+              - number[]
+              - integer[]
+              - unsignedinteger[]
+              - biginteger[]
+              - unsignedbiginteger[]
+              - smallinteger[]
+              - unsignedsmallinteger[]
+              - float[]
+              - decimal[]
+              - boolean[]
+              - datetime[]
+              - binary[]
+              - uuid[]
+          - pattern: "^[a-z_][a-z0-9_]*(\\[\\]|\\{\\})?$"
       size:
         oneOf:
           - $ref: "#/$defs/sizeValue"
@@ -569,6 +594,12 @@ $defs:
       is_id:
         $ref: "#/$defs/isIdProp"
       default_value:
+        description: >
+          Field default. Constructor tokens (Now, UtcNow, Empty, NewId,
+          Hex('…'), DateTime('…'), uuid('…')) are plain YAML scalars.
+          The empty string must be written "". Numeric string forms such
+          as "0" and "0.00" keep their quotes because they change YAML
+          type.
         anyOf:
           - type: string
           - type: number
@@ -589,3 +620,15 @@ $defs:
             - type: string
             - type: number
         description: Free-form validation directives (rarely used; keep loose).
+    allOf:
+      - if:
+          properties:
+            type:
+              type: string
+              pattern: "\\{\\}$"
+          required: [type]
+        then:
+          required: [references]
+          properties:
+            references:
+              $ref: "#/$defs/dictionaryKeyRef"

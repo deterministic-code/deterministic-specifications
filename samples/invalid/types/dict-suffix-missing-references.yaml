@@ -1,0 +1,9 @@
+expect:
+  includes: required
+---
+version: 1.0.0
+types:
+  - file:
+      fields:
+        - settings_map:
+            type: settings{}
