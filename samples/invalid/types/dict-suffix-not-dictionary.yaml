@@ -1,0 +1,27 @@
+expect:
+  includes: inherit
+---
+version: 1.0.0
+types:
+  - file:
+      fields:
+        - extras:
+            type: settings{}
+            references: _internal.key
+  - settings:
+      inherits: dictionary
+      fields:
+        - setting_id:
+            references: file.id
+        - key:
+            type: string
+            size: 64
+        - value:
+            type: string
+            size: unlimited
+  - _internal:
+      inherits: set
+      fields:
+        - key:
+            type: string
+            size: 64
