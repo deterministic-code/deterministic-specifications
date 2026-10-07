@@ -425,6 +425,25 @@ types:
         - phone:
             type: string
             size: 32
+  - card_labels:
+      tags: [view_type]
+      inherits: dictionary
+      fields:
+        - key:
+            type: string
+            size: 64
+        - value:
+            type: string
+            size: 128
+  - contact_card:
+      tags: [view_type]
+      fields:
+        - display_name:
+            type: string
+            size: 256
+        - labels:
+            type: card_labels{}
+            references: card_labels.key
   - empty_shape:
       tags: [view_type]
       fields: []
