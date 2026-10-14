@@ -18,7 +18,7 @@ The canonical YAML contract for the [deterministic](https://github.com/rmcfadden
 
 ## Samples
 
-Kitchen-sink documents under [`samples/valid/`](samples/valid) exercise every property, enum, const, oneOf branch, and pattern in the live specs. [`samples/invalid/`](samples/invalid) holds documents that must fail `validate()`. `samples/invalid/types` is a curated set of authoring situations; other spec dirs still have one file per schema constraint. Specs, samples, and examples are authored in this repo only. Consumer packages — including the [TypeScript validators](https://github.com/deterministic-code/deterministic-specifications-typescript) — may resolve and read them. They must not write, regenerate, or otherwise edit files here.
+Kitchen-sink documents under [`samples/valid/`](samples/valid) exercise every property, enum, const, oneOf branch, and pattern in the live specs. [`samples/invalid/`](samples/invalid) holds documents that must fail `validate()`. `samples/invalid/types` is a curated set of authoring situations; other spec dirs still have one file per schema constraint. Specs, samples, and examples are authored in this repo only. Consumer packages — including the [TypeScript validators](https://github.com/deterministic-code/deterministic-generators-common) — may resolve and read them. They must not write, regenerate, or otherwise edit files here.
 
 Readable apps live under [`examples/`](examples): [`examples/minimal/`](examples/minimal) (required keys only) and [`examples/tasks/`](examples/tasks) (a small user/project/task contract). [`examples/errors/`](examples/errors) is a human-curated gallery of typical authoring mistakes — one per file — not the exhaustive mutant dump.
 
@@ -47,7 +47,7 @@ version: 1.0.0
 - **`1.0.0`** (the live version) binds to the root specs.
 - **Any other published semver** binds to [`versions/<semver>/`](./versions), which contains `backend/` and `frontend/`. After a bump, `1.0.0` falls back to that archive if the live tree is gone.
 
-TypeScript validators live in [deterministic-specifications-typescript](https://github.com/deterministic-code/deterministic-specifications-typescript). They require `version` and pin to it: a `1.0.0` engine rejects any other value. A missing or non-semver `version` is a validation error before an engine is loaded.
+TypeScript validators live in [deterministic-generators-common](https://github.com/deterministic-code/deterministic-generators-common). They require `version` and pin to it: a `1.0.0` engine rejects any other value. A missing or non-semver `version` is a validation error before an engine is loaded.
 
 Root spec files start with `version: 1.0.0`. Each frozen copy is stamped with `version: <semver>` and a versioned `$id`.
 
