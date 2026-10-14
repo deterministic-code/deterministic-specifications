@@ -5,7 +5,7 @@
  *   node scripts/bump-version.mjs 1.1.0
  *
  * Moves the live spec folders into the archive and stamps spec `version:` / `$id`.
- * Validator engines live in deterministic-specifications-typescript.
+ * Validator engines live in deterministic-generators-common.
  */
 import { access, mkdir, readdir, readFile, rename, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
