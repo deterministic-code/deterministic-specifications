@@ -114,50 +114,6 @@ $defs:
         minimum: 0
         description: scale
 
-  datetimeDefault:
-    description: >
-      Allowed datetime defaults from backend/types.yaml — Now, UtcNow, or
-      DateTime('…') with an ISO-8601 timestamp. Write constructor tokens
-      as plain YAML scalars (default_value: DateTime('2020-01-01T00:00:00Z')),
-      not quoted.
-    oneOf:
-      - const: Now
-      - const: UtcNow
-      - type: string
-        pattern: "^DateTime\\('[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(Z|[+-][0-9]{2}:[0-9]{2})'\\)$"
-
-  uuidDefault:
-    description: >
-      Allowed uuid defaults from backend/types.yaml — NewId, Empty, or
-      uuid('…') with an RFC-4122 value. Write constructor tokens as
-      plain YAML scalars (default_value: uuid('11111111-1111-4111-8111-111111111111')),
-      not quoted.
-    oneOf:
-      - const: NewId
-      - const: Empty
-      - type: string
-        pattern: "^uuid\\('[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}'\\)$"
-
-  hexDefault:
-    type: string
-    pattern: "^Hex\\('([0-9a-fA-F]{2})*'\\)$"
-    description: >
-      Hex byte literal from backend/types.yaml, e.g. Hex('DEADBEEF').
-      Write as a plain YAML scalar (default_value: Hex('DEADBEEF')),
-      not quoted.
-
-  signedIntegerString:
-    type: string
-    pattern: "^-?[0-9]+$"
-
-  unsignedIntegerString:
-    type: string
-    pattern: "^[0-9]+$"
-
-  decimalString:
-    type: string
-    pattern: "^-?[0-9]+(\\.[0-9]+)?$"
-
   filterExpr:
     type: string
     minLength: 1
@@ -547,46 +503,12 @@ $defs:
         type: string
         description: >
           Built-in or user type name, optionally suffixed with [] for
-          arrays or {} for a map of a dictionary type. Write as a
-          plain YAML scalar (type: float[], type: settings{}), not
-          quoted. Quotes are not part of the name. A {} suffix
-          requires `references` naming that type's key.
-        anyOf:
-          - enum:
-              [
-                string,
-                character,
-                number,
-                integer,
-                unsignedinteger,
-                biginteger,
-                unsignedbiginteger,
-                smallinteger,
-                unsignedsmallinteger,
-                float,
-                decimal,
-                boolean,
-                datetime,
-                binary,
-                uuid,
-              ]
-          - enum:
-              - string[]
-              - character[]
-              - number[]
-              - integer[]
-              - unsignedinteger[]
-              - biginteger[]
-              - unsignedbiginteger[]
-              - smallinteger[]
-              - unsignedsmallinteger[]
-              - float[]
-              - decimal[]
-              - boolean[]
-              - datetime[]
-              - binary[]
-              - uuid[]
-          - pattern: "^[a-z_][a-z0-9_]*(\\[\\]|\\{\\})?$"
+          arrays or {} for a map of a dictionary type. Built-in names
+          live in backend/types.yaml. Write as a plain YAML scalar
+          (type: float[], type: settings{}), not quoted. Quotes are
+          not part of the name. A {} suffix requires `references`
+          naming that type's key.
+        pattern: "^[a-z_][a-z0-9_]*(\\[\\]|\\{\\})?$"
       size:
         oneOf:
           - $ref: "#/$defs/sizeValue"
@@ -609,12 +531,6 @@ $defs:
           - type: string
           - type: number
           - type: boolean
-          - $ref: "#/$defs/datetimeDefault"
-          - $ref: "#/$defs/uuidDefault"
-          - $ref: "#/$defs/hexDefault"
-          - $ref: "#/$defs/signedIntegerString"
-          - $ref: "#/$defs/unsignedIntegerString"
-          - $ref: "#/$defs/decimalString"
       references:
         $ref: "#/$defs/referencesValue"
       validation:
