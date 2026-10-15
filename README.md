@@ -7,7 +7,7 @@ The canonical YAML contract for the [deterministic](https://github.com/rmcfadden
 | Spec | Governs | Purpose |
 | --- | --- | --- |
 | [`backend/types.spec.yaml`](backend/types.spec.yaml) | `types.yaml` | Language-agnostic type system — one `types:` array; `tags` distinguish datasource_type / view_type / other kinds. |
-| [`backend/field-types.spec.yaml`](backend/field-types.spec.yaml) | [`backend/types.yaml`](backend/types.yaml) | Primitive field-type catalog (default-value tokens and ranges). |
+| [`backend/types.yaml`](backend/types.yaml) | field types | Primitive field-type catalog (default-value tokens, implicit defaults, and ranges). |
 | [`backend/datasource.spec.yaml`](backend/datasource.spec.yaml) | `datasource.yaml` | Physical / migration concerns — table/column mappings, uniqueness, identity, indexes. |
 | [`backend/datasource-seeds.spec.yaml`](backend/datasource-seeds.spec.yaml) | `datasource_seeds.yaml` | Seed rows for datasource tables. Validated against `types.yaml` + `datasource.yaml`. |
 | [`backend/routes.spec.yaml`](backend/routes.spec.yaml) | `routes.yaml` | The authored HTTP route surface. |
