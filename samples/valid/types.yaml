@@ -264,6 +264,7 @@ types:
         - settings_map:
             type: settings{}
             references: settings.key
+            default_value: {}
   - settings:
       tags: [datasource_type]
       inherits: dictionary
@@ -326,6 +327,7 @@ types:
             default_value: ""
         - labels:
             type: string[]
+            default_value: []
         - scores:
             type: number[]
         - counts:
@@ -361,6 +363,8 @@ types:
         - reports:
             type: person[]
             references: person.parent_id
+            is_nullable: true
+            default_value: null
   - contact_source:
       tags: [datasource_type]
       inherits: set
@@ -444,6 +448,8 @@ types:
         - labels:
             type: card_labels{}
             references: card_labels.key
+            is_nullable: true
+            default_value: null
   - empty_shape:
       tags: [view_type]
       fields: []

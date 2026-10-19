@@ -27,10 +27,13 @@ description: >
   required (must exist) but may be an empty array. Allowed field
   `default_value` tokens and numeric ranges live in backend/types.yaml
   and are enforced after schema validation. A field type may take a
-  `{}` suffix (`type: settings{}`) for a map of a dictionary type;
-  `references` is then required and must name that type's `key`. The
-  referenced type must inherit `dictionary` (have `key` and `value`) —
-  enforced after schema validation.
+  `[]` suffix (`type: phone[]`) for a list, or a `{}` suffix
+  (`type: settings{}`) for a map of a dictionary type; `references` is
+  then required and must name that type's `key`. The referenced type
+  must inherit `dictionary` (have `key` and `value`) — enforced after
+  schema validation. An omitted `default_value` on a list is `[]` and
+  on a dictionary is `{}`. An authored default must be that empty
+  collection; `null` is allowed only when `is_nullable: true`.
 
 type: object
 additionalProperties: false
@@ -526,11 +529,16 @@ $defs:
           Hex('…'), DateTime('…'), uuid('…')) are plain YAML scalars.
           The empty string must be written "". Numeric string forms such
           as "0" and "0.00" keep their quotes because they change YAML
-          type.
+          type. A list field defaults to [] and a dictionary field to
+          {}; those empty collections may be written explicitly. null is
+          allowed only on a nullable list or dictionary.
         anyOf:
           - type: string
           - type: number
           - type: boolean
+          - type: array
+          - type: object
+          - type: "null"
       references:
         $ref: "#/$defs/referencesValue"
       validation:
@@ -553,3 +561,76 @@ $defs:
           properties:
             references:
               $ref: "#/$defs/dictionaryKeyRef"
+      - if:
+          properties:
+            type:
+              type: string
+              pattern: "^[a-z_][a-z0-9_]*$"
+          required: [type]
+        then:
+          properties:
+            default_value:
+              anyOf:
+                - type: string
+                - type: number
+                - type: boolean
+      - if:
+          properties:
+            type:
+              type: string
+              pattern: "\\[\\]$"
+          required: [type]
+          not:
+            properties:
+              is_nullable: { const: true }
+            required: [is_nullable]
+        then:
+          properties:
+            default_value:
+              type: array
+              maxItems: 0
+      - if:
+          properties:
+            type:
+              type: string
+              pattern: "\\[\\]$"
+            is_nullable: { const: true }
+          required: [type, is_nullable]
+        then:
+          properties:
+            default_value:
+              oneOf:
+                - type: array
+                  maxItems: 0
+                - type: "null"
+      - if:
+          properties:
+            type:
+              type: string
+              pattern: "\\{\\}$"
+          required: [type]
+          not:
+            properties:
+              is_nullable: { const: true }
+            required: [is_nullable]
+        then:
+          properties:
+            default_value:
+              type: object
+              additionalProperties: false
+              maxProperties: 0
+      - if:
+          properties:
+            type:
+              type: string
+              pattern: "\\{\\}$"
+            is_nullable: { const: true }
+          required: [type, is_nullable]
+        then:
+          properties:
+            default_value:
+              oneOf:
+                - type: object
+                  additionalProperties: false
+                  maxProperties: 0
+                - type: "null"
