@@ -16,10 +16,10 @@ description: >
   `is_id: true` is also rejected by the schema).   `dictionary` is an
   owned key-value collection; when `inherits: dictionary`, `fields`
   must include `key` and `value` — enforced after schema validation
-  (also rejected by the schema). A `datasource_type` dictionary must
-  have one field that `references` the owner identity. A `view_type`
-  only dictionary is a DTO map (no owner FK, no table) and must not
-  also be tagged `datasource_type`. `inherits` is is-a; `union` composes fields. After flatten,
+  (also rejected by the schema). `dictionary` is a `view_type` only
+  — it must not be tagged `datasource_type`. Pair columns default to
+  `key` and `value` on the referenced datasource; a role field may
+  `references` a different column on that table. `inherits` is is-a; `union` composes fields. After flatten,
   `extract` allowlists source fields, `mapping` renames them (keys may
   be fully qualified), and `remove_fields` drops them. Unlike
   TypeScript, no two fields on the final composed type may share a
@@ -29,9 +29,10 @@ description: >
   and are enforced after schema validation. A field type may take a
   `[]` suffix (`type: phone[]`) for a list, or a `{}` suffix
   (`type: settings{}`) for a map of a dictionary type; `references` is
-  then required and must name that type's `key`. The referenced type
-  must inherit `dictionary` (have `key` and `value`) — enforced after
-  schema validation. An omitted `default_value` on a list is `[]` and
+  then required and must name the datasource owner foreign key
+  (`contact_settings.contact_id`). The referenced type must inherit
+  `dictionary` (have `key` and `value`) — enforced after schema
+  validation. An omitted `default_value` on a list is `[]` and
   on a dictionary is `{}`. An authored default must be that empty
   collection; `null` is allowed only when `is_nullable: true`.
 
@@ -76,14 +77,6 @@ $defs:
     type: string
     pattern: "^[a-z_][a-z0-9_]*\\.[a-z_][a-z0-9_]*$"
     description: Field reference in the form `<type>.<field>`.
-
-  dictionaryKeyRef:
-    type: string
-    pattern: "^[a-z_][a-z0-9_]*\\.key$"
-    description: >
-      Key of a dictionary type (`<type>.key`). Write as a plain YAML
-      scalar. The named type must inherit `dictionary` — enforced
-      after schema validation.
 
   referencesValue:
     description: >
@@ -314,14 +307,12 @@ $defs:
       property), and `remove_fields` drops them. Local `fields` are
       appended. When `inherits: dictionary`, `fields` must include
       `key` and `value` — enforced after schema validation (also
-      rejected by the schema). A `datasource_type` dictionary has one
-      field that `references` the owner identity so the dictionary
-      nests on that parent; the owner FK is omitted from the nested
-      map. A `view_type`-only dictionary has no owner FK. A parent
-      field may declare `type: <dictionary>{}` with
-      `references: <dictionary>.key` to nest that map (same pattern
-      as `[]` for lists). Dictionary types are not emitted as view
-      classes. Final field names must be unique — enforced after
+      rejected by the schema). A dictionary must be tagged `view_type`
+      and must not be tagged `datasource_type`. A parent field may
+      declare `type: <dictionary>{}` with
+      `references: <datasource>.<ownerFk>` to nest that map (same
+      pattern as `[]` for lists). Dictionary types are not emitted as
+      view classes. Final field names must be unique — enforced after
       schema validation.
     properties:
       tags:
@@ -510,7 +501,7 @@ $defs:
           live in backend/types.yaml. Write as a plain YAML scalar
           (type: float[], type: settings{}), not quoted. Quotes are
           not part of the name. A {} suffix requires `references`
-          naming that type's key.
+          naming the datasource owner foreign key.
         pattern: "^[a-z_][a-z0-9_]*(\\[\\]|\\{\\})?$"
       size:
         oneOf:
@@ -560,7 +551,7 @@ $defs:
           required: [references]
           properties:
             references:
-              $ref: "#/$defs/dictionaryKeyRef"
+              $ref: "#/$defs/tableColumnRef"
       - if:
           properties:
             type:

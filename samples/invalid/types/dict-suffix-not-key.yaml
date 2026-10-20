@@ -1,18 +1,31 @@
 expect:
-  includes: must match pattern
+  includes: owner identity
 ---
 version: 1.0.0
 types:
   - file:
+      tags: [datasource_type]
+      inherits: set
       fields:
         - settings_map:
-            type: settings{}
+            type: settings_map{}
             references: settings.value
   - settings:
-      inherits: dictionary
+      tags: [datasource_type]
+      inherits: set
       fields:
         - setting_id:
             references: file.id
+        - key:
+            type: string
+            size: 64
+        - value:
+            type: string
+            size: unlimited
+  - settings_map:
+      tags: [view_type]
+      inherits: dictionary
+      fields:
         - key:
             type: string
             size: 64
