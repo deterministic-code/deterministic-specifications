@@ -262,15 +262,25 @@ types:
         - size:
             type: integer
         - settings_map:
-            type: settings{}
-            references: settings.key
+            type: settings_map{}
+            references: settings.setting_id
             default_value: {}
   - settings:
       tags: [datasource_type]
-      inherits: dictionary
+      inherits: set
       fields:
         - setting_id:
             references: file.id
+        - key:
+            type: string
+            size: 64
+        - value:
+            type: string
+            size: unlimited
+  - settings_map:
+      tags: [view_type]
+      inherits: dictionary
+      fields:
         - key:
             type: string
             size: 64
@@ -445,11 +455,6 @@ types:
         - display_name:
             type: string
             size: 256
-        - labels:
-            type: card_labels{}
-            references: card_labels.key
-            is_nullable: true
-            default_value: null
   - empty_shape:
       tags: [view_type]
       fields: []
