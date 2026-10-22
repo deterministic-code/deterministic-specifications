@@ -34,6 +34,8 @@ types:
             is_unique: true
             mapping: email_address
             is_fixed_id: false
+            include_in_create: true
+            include_in_update: false
         - uid:
             is_unique: true
         - parent_id:
