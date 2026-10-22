@@ -290,6 +290,20 @@ $defs:
           seeds always supply the same stable value(s) for this field
           (or for every field in `ids`). Omit or set false to let the
           datasource generate identity on insert.
+      include_in_create:
+        type: boolean
+        description: >
+          When false, omit this column from generated insert statements.
+          When omitted, datasources apply identity defaults. An ancestor
+          overlay applies to child tables until a closer overlay sets
+          this key.
+      include_in_update:
+        type: boolean
+        description: >
+          When false, omit this column from generated update statements.
+          When omitted, datasources apply identity defaults. An ancestor
+          overlay applies to child tables until a closer overlay sets
+          this key.
       is_optimistic_concurrency:
         type: boolean
         description: >
