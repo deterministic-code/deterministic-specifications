@@ -1,0 +1,7 @@
+expect:
+  covers: required:#/$defs/userNameInclude:name
+---
+version: 1.0.0
+seeds: []
+includes:
+  - user_id: 1

@@ -1,0 +1,7 @@
+expect:
+  covers: type:#/$defs/uuidInclude
+---
+version: 1.0.0
+seeds: []
+includes:
+  - []

@@ -1,0 +1,7 @@
+expect:
+  covers: type:#/$defs/fileInclude
+---
+version: 1.0.0
+seeds: []
+includes:
+  - []

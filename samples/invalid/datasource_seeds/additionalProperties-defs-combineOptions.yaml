@@ -1,0 +1,12 @@
+expect:
+  covers: additionalProperties:#/$defs/combineOptions
+---
+version: 1.0.0
+seeds: []
+includes:
+  - file: x.yaml
+    combine_options:
+      source:
+        remove_types:
+          - old
+      extra: true
