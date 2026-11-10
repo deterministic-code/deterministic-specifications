@@ -1,4 +1,28 @@
 version: 1.0.0
+includes:
+  - file: shared/datasource_seeds.yaml
+    combine_options:
+      source:
+        remove_types: [legacy_user]
+      destination:
+        remove_types: [scratch]
+  - id: saved_seeds
+    combine_options:
+      source:
+        remove_types: [extra]
+  - id: 8
+    combine_options:
+      destination:
+        remove_types: [scratch]
+  - uuid: 55555555-5555-5555-5555-555555555555
+    combine_options:
+      source:
+        remove_types: [user]
+  - user_id: 5
+    name: demo_seeds
+    combine_options:
+      destination:
+        remove_types: [note]
 seeds:
   - user:
       - id1:

@@ -10,6 +10,13 @@ description: >
   declares `seeds: []`. A row body may be empty (`id1: {}`) when every field
   is `is_nullable: true` or declares a `default_value`.
 
+  Optional `includes:` pull in other seed documents (`file:`, `id:`, `uuid:`,
+  or `user_id` + `name`). Each included document's seeds are prepended and
+  this document's seeds come last. `combine_options` may drop a type's seed
+  block by name before the merge. File entries are resolved and stripped
+  before the parser sees one document. There is no `types: { filter }`
+  directive on seeds.
+
   Shape is only the first gate. DatasourceSeedsValidator then checks each row
   against the companion types.yaml (field types) and datasource.yaml (which
   types are tables): table names must exist, every key must be a declared
@@ -33,6 +40,17 @@ properties:
       specs and engine; there is no floating alias.
     type: string
     pattern: '^[0-9]+\.[0-9]+\.[0-9]+$'
+  includes:
+    type: array
+    minItems: 1
+    description: >
+      Optional. `file:`/`id:`/`uuid:`/`user_id+name` entries pull in other
+      datasource_seeds configs and merge them (each included config's seeds
+      prepended, this config's own seeds last). File entries are resolved
+      and stripped before emit. Remote entries stay until a resolver loads
+      them. There is no `types:` filter directive.
+    items:
+      $ref: "#/$defs/includeEntry"
   seeds:
     type: array
     minItems: 0
@@ -44,6 +62,92 @@ $defs:
     type: string
     minLength: 1
     pattern: "^[a-z_][a-z0-9_]*$"
+
+  includeEntry:
+    oneOf:
+      - $ref: "#/$defs/fileInclude"
+      - $ref: "#/$defs/idInclude"
+      - $ref: "#/$defs/uuidInclude"
+      - $ref: "#/$defs/userNameInclude"
+
+  fileInclude:
+    type: object
+    additionalProperties: false
+    required: [file]
+    properties:
+      file:
+        type: string
+        minLength: 1
+        description: Path to another datasource_seeds.yaml, relative to this file's dir.
+      combine_options:
+        $ref: "#/$defs/combineOptions"
+
+  idInclude:
+    type: object
+    additionalProperties: false
+    required: [id]
+    properties:
+      id:
+        description: Deterministic id (number) or name (string) of a saved backend.
+        anyOf:
+          - type: string
+            minLength: 1
+          - type: integer
+            minimum: 1
+      combine_options:
+        $ref: "#/$defs/combineOptions"
+
+  uuidInclude:
+    type: object
+    additionalProperties: false
+    required: [uuid]
+    properties:
+      uuid:
+        type: string
+        minLength: 1
+        description: Stable uuid of a saved deterministic; portable across server instances.
+      combine_options:
+        $ref: "#/$defs/combineOptions"
+
+  userNameInclude:
+    type: object
+    additionalProperties: false
+    required: [user_id, name]
+    properties:
+      user_id:
+        type: integer
+        minimum: 1
+        description: Owner user id; pair with `name` to reference a saved deterministic.
+      name:
+        type: string
+        minLength: 1
+        description: Deterministic name (unique per user); pair with `user_id`.
+      combine_options:
+        $ref: "#/$defs/combineOptions"
+
+  combineOptions:
+    type: object
+    additionalProperties: false
+    description: >
+      Per-side transforms applied before merging. `source` transforms the
+      included seeds config; `destination` transforms this config. The only
+      supported op is dropping a type's seed block by name.
+    properties:
+      source:
+        $ref: "#/$defs/sideOptions"
+      destination:
+        $ref: "#/$defs/sideOptions"
+
+  sideOptions:
+    type: object
+    additionalProperties: false
+    properties:
+      remove_types:
+        type: array
+        minItems: 1
+        description: Type names whose seed blocks are dropped from this side before merge.
+        items:
+          $ref: "#/$defs/identifier"
 
   tableSeedsEntry:
     type: object
