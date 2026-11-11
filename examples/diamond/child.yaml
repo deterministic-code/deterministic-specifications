@@ -1,0 +1,11 @@
+version: 1.0.0
+includes:
+  - file: base.yaml
+types:
+  - status:
+      tags: [datasource_type]
+      inherits: base
+      fields:
+        - name:
+            type: string
+            size: 64

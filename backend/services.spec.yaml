@@ -95,7 +95,13 @@ $defs:
       file:
         type: string
         minLength: 1
-        description: Path to another services.yaml, relative to this file's dir.
+        description: >
+          Path to another services.yaml, relative to this file's dir. Each
+          canonical path is loaded once. A later include of the same path is
+          skipped when combine_options match (missing and {} are the same) and
+          is an error when they differ. A path already on the include stack is
+          still a cycle. The same type name defined in two different files is
+          still an error.
       combine_options:
         $ref: "#/$defs/combineOptions"
 
