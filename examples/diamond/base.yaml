@@ -1,0 +1,7 @@
+version: 1.0.0
+types:
+  - base:
+      fields:
+        - id:
+            type: integer
+            is_id: true

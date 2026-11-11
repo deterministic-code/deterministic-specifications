@@ -1,0 +1,11 @@
+version: 1.0.0
+includes:
+  - file: base.yaml
+  - file: child.yaml
+types:
+  - item:
+      tags: [datasource_type]
+      inherits: base
+      fields:
+        - status_id:
+            references: status.id
